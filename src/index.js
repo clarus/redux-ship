@@ -27,7 +27,7 @@ function* mainPar(): Ship.t<void> {
   console.log('start par');
   const messages = yield* Ship.all2(
     Ship.wait2(waitWith, 3 * 1000, 'hi'),
-    Ship.wait0(waitWith(3 * 1000, 2))
+    Ship.wait(waitWith(3 * 1000, 2))
   );
   console.log(messages);
 }

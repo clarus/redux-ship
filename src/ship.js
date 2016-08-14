@@ -6,7 +6,8 @@ export type Effect = {
   fn: (...args: any[]) => Promise<any>
 } | {
   type: 'Call',
-  arg: Generator<Effect, any, any>
+  args: any[],
+  fn: (...args: any[]) => Generator<Effect, any, any>
 } | {
   type: 'All',
   args: Generator<Effect, any, any>[]
@@ -25,7 +26,7 @@ export async function run<A>(ship: t<A>, answer?: any): Promise<A> {
         return result.value.fn(...result.value.args);
       }
       case 'Call': {
-        return run(result.value.arg);
+        return run(result.value.fn(...result.value.args));
       }
       case 'All': {
         return Promise.all(result.value.args.map(run));
@@ -46,12 +47,15 @@ export function* waitn<A>(fn: (...args: any[]) => Promise<A>, args: any[]): t<A>
   return (result: any);
 }
 
-export function* wait<A, B>(fn: (arg: A) => Promise<B>, arg: A): t<B> {
-  return yield* waitn(fn, [arg]);
+export function* wait<A>(promise: Promise<A>): t<A> {
+  return yield* waitn(() => promise, []);
 }
 
-export function* wait0<A>(arg: Promise<A>): t<A> {
-  return yield* waitn(() => arg, []);
+export function* wait1<A1, B>(
+  fn: (arg: A1) => Promise<B>,
+  arg1: A1)
+  : t<B> {
+  return yield* waitn(fn, [arg1]);
 }
 
 export function* wait2<A1, A2, B>(
@@ -61,12 +65,17 @@ export function* wait2<A1, A2, B>(
   return yield* waitn(fn, [arg1, arg2]);
 }
 
-export function* call<A>(arg: t<A>): t<A> {
+export function* calln<A>(fn: (...args: any[]) => t<A>, args: any[]): t<A> {
   const result = yield {
     type: 'Call',
-    arg,
+    args,
+    fn,
   };
   return (result: any);
+}
+
+export function* call<A>(ship: t<A>): t<A> {
+  return yield* calln(() => ship, []);
 }
 
 export function* alln(args: t<any>[]): t<any[]> {
