@@ -19,22 +19,22 @@ export async function run<A>(ship: t<A>, answer?: any): Promise<A> {
   if (result.done) {
     return result.value;
   }
-  switch (result.value.type) {
-    case 'Wait': {
-      const newAnswer = await result.value.fn(...result.value.args);
-      return run(ship, newAnswer);
+  const newAnswer = await (() => {
+    switch (result.value.type) {
+      case 'Wait': {
+        return result.value.fn(...result.value.args);
+      }
+      case 'Call': {
+        return run(result.value.arg);
+      }
+      case 'All': {
+        return Promise.all(result.value.args.map(run));
+      }
+      default:
+        return result.value;
     }
-    case 'Call': {
-      const newAnswer = await run(result.value.arg);
-      return run(ship, newAnswer);
-    }
-    case 'All': {
-      const newAnswer = await Promise.all(result.value.args.map(run));
-      return run(ship, newAnswer);
-    }
-    default:
-      return result.value;
-  }
+  })();
+  return await run(ship, newAnswer);
 }
 
 export function* waitn<A>(fn: (...args: any[]) => Promise<A>, args: any[]): t<A> {
