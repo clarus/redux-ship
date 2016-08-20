@@ -9,6 +9,10 @@ export type Effect = {
   args: any[],
   fn: (...args: any[]) => Generator<Effect, any, any>
 } | {
+  type: 'Impure',
+  args: any[],
+  fn: (...args: any[]) => any
+} | {
   type: 'All',
   ships: Generator<Effect, any, any>[]
 };
@@ -26,6 +30,8 @@ export async function run<A>(ship: t<A>, answer?: any): Promise<A> {
         return result.value.fn(...result.value.args);
       case 'Call':
         return run(result.value.fn(...result.value.args));
+      case 'Impure':
+        return Promise.resolve(result.value.fn(...result.value.args));
       case 'All':
         return Promise.all(result.value.ships.map(run));
       default:
@@ -73,6 +79,23 @@ export function* calln<A>(fn: (...args: any[]) => t<A>, args: any[]): t<A> {
 
 export function* call<A>(ship: t<A>): t<A> {
   return yield* calln(() => ship, []);
+}
+
+export function* impuren<A>(fn: (...args: any[]) => A, args: any[]): t<A> {
+  const result = yield {
+    type: 'Impure',
+    args,
+    fn,
+  };
+  return (result: any);
+}
+
+export function* impure<A>(value: A): t<A> {
+  return yield* impuren(() => value, []);
+}
+
+export function* impure1<A1, B>(fn: (arg1: A1) => B, arg1: A1): t<B> {
+  return yield* impuren(fn, [arg1]);
 }
 
 export function* alln(ships: t<any>[]): t<any[]> {

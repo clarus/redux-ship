@@ -10,6 +10,10 @@ export type Effect = {
   args: any[],
   result: any
 } | {
+  type: 'Impure',
+  args: any[],
+  result: any
+} | {
   type: 'All',
   simulators: Generator<Effect, void, void>[]
 };
@@ -40,6 +44,11 @@ export function run<A>(ship: Ship.t<A>, simulator: t, answer?: any): A {
           return resultSimulator.value.result;
         }
         throw new Error(`Expected ${resultSimulator.value.type} but got Call`);
+      case 'Impure':
+        if (resultSimulator.value.type === 'Impure') {
+          return resultSimulator.value.result;
+        }
+        throw new Error(`Expected ${resultSimulator.value.type} but got Impure`);
       case 'All': {
         const { ships } = resultShip.value;
         if (resultSimulator.value.type === 'All') {
@@ -68,6 +77,14 @@ export function* wait<A>(args: any[], result: A): t {
 export function* call<A>(args: any[], result: A): t {
   return yield {
     type: 'Call',
+    args,
+    result,
+  };
+}
+
+export function* impure<A>(args: any[], result: A): t {
+  return yield {
+    type: 'Impure',
     args,
     result,
   };
