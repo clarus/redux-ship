@@ -35,6 +35,6 @@
     "eslint-plugin-jsx-a11y": "^2.1.0",
     "eslint-plugin-react": "^6.0.0",
     "flow-bin": "^0.30.0",
-    "lodash": "^4.15.0"
+    "lodash.isequal": "^4.4.0"
   }
 }

@@ -1,4 +1,5 @@
 // @flow
+import _isEqual from 'lodash.isequal';
 import * as Ship from './ship';
 
 export type Effect = {
@@ -20,6 +21,17 @@ export type Effect = {
 
 export type t = Generator<Effect, void, void>;
 
+function checkArgs(args1: any[], args2: any[]): void {
+  if (!_isEqual(args1, args2)) {
+    console.log('checkArgs', args1, args2);
+    throw new Error(JSON.stringify({
+      message: 'Arguments mismatch',
+      args1,
+      args2,
+    }));
+  }
+}
+
 export function run<A>(ship: Ship.t<A>, simulator: t, answer?: any): A {
   const resultShip = ship.next(answer);
   const resultSimulator = simulator.next();
@@ -36,17 +48,23 @@ export function run<A>(ship: Ship.t<A>, simulator: t, answer?: any): A {
     switch (resultShip.value.type) {
       case 'Wait':
         if (resultSimulator.value.type === 'Wait') {
-          return resultSimulator.value.result;
+          const { result } = resultSimulator.value;
+          checkArgs(resultSimulator.value.args, resultShip.value.args);
+          return result;
         }
         throw new Error(`Expected ${resultSimulator.value.type} but got Wait`);
       case 'Call':
         if (resultSimulator.value.type === 'Call') {
-          return resultSimulator.value.result;
+          const { result } = resultSimulator.value;
+          checkArgs(resultSimulator.value.args, resultShip.value.args);
+          return result;
         }
         throw new Error(`Expected ${resultSimulator.value.type} but got Call`);
       case 'Impure':
         if (resultSimulator.value.type === 'Impure') {
-          return resultSimulator.value.result;
+          const { result } = resultSimulator.value;
+          checkArgs(resultSimulator.value.args, resultShip.value.args);
+          return result;
         }
         throw new Error(`Expected ${resultSimulator.value.type} but got Impure`);
       case 'All': {

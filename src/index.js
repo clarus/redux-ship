@@ -48,13 +48,21 @@ function* mainParSimulator(): Simulator.t {
   ]);
 }
 
+function runSimulators(): void {
+  try {
+    console.log('simulator wait', Simulator.run(mainWait(), mainWaitSimulator()));
+    console.log('simulator call', Simulator.run(mainCall(), mainCallSimulator()));
+    console.log('simulator par', Simulator.run(mainPar(), mainParSimulator()));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 async function main(): Promise<void> {
   console.log('start');
   const message = await waitWith(3 * 1000, 'hi');
   console.log(message);
-  console.log('simulator wait', Simulator.run(mainWait(), mainWaitSimulator()));
-  console.log('simulator call', Simulator.run(mainCall(), mainCallSimulator()));
-  console.log('simulator par', Simulator.run(mainPar(), mainParSimulator()));
+  runSimulators();
   await Ship.run(mainWait());
   await Ship.run(mainCall());
   await Ship.run(mainPar());
