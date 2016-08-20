@@ -13,26 +13,26 @@ async function waitWith<A>(ms: number, result: A): Promise<A> {
   return result;
 }
 
-function* mainWait(): Ship.t<void> {
+function* mainWait(): Ship.t<void, void, void> {
   console.log('start wait');
   const message = yield* Ship.wait2(waitWith, 3 * 1000, 'hi');
   console.log(message);
 }
 
-function* mainWaitSimulator(): Simulator.t {
+function* mainWaitSimulator(): Simulator.t<void, void> {
   yield* Simulator.wait([3 * 1000, 'hi'], 'hi');
 }
 
-function* mainCall(): Ship.t<void> {
+function* mainCall(): Ship.t<void, void, void> {
   console.log('start call');
   return yield* Ship.call(mainWait());
 }
 
-function* mainCallSimulator(): Simulator.t {
+function* mainCallSimulator(): Simulator.t<void, void> {
   yield* Simulator.call([], undefined);
 }
 
-function* mainPar(): Ship.t<void> {
+function* mainPar(): Ship.t<void, void, void> {
   console.log('start par');
   const messages = yield* Ship.all2(
     Ship.wait2(waitWith, 3 * 1000, 'hi'),
@@ -41,12 +41,17 @@ function* mainPar(): Ship.t<void> {
   console.log(messages);
 }
 
-function* mainParSimulator(): Simulator.t {
+function* mainParSimulator(): Simulator.t<void, void> {
   yield* Simulator.all([
     Simulator.wait([3 * 1000, 'hi'], 'hi'),
     Simulator.wait([2], 2),
   ]);
 }
+
+function reduce(): void {
+}
+
+const initialModel: void = undefined;
 
 function runSimulators(): void {
   try {
@@ -63,9 +68,9 @@ async function main(): Promise<void> {
   const message = await waitWith(3 * 1000, 'hi');
   console.log(message);
   runSimulators();
-  await Ship.run(mainWait());
-  await Ship.run(mainCall());
-  await Ship.run(mainPar());
+  await Ship.run(reduce, initialModel, mainWait());
+  await Ship.run(reduce, initialModel, mainCall());
+  await Ship.run(reduce, initialModel, mainPar());
 }
 
 main();
