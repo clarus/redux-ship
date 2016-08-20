@@ -1,7 +1,7 @@
 {
-  "name": "js-async",
-  "version": "1.0.0",
-  "description": "Asynchronous JS with types and tests",
+  "name": "redux-ship",
+  "version": "0.0.1",
+  "description": "Redux middleware",
   "main": "index.js",
   "scripts": {
     "eslint": "eslint src",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/clarus/js-async.git"
+    "url": "git+https://github.com/clarus/redux-ship.git"
   },
   "author": "Guillaume Claret",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/clarus/js-async/issues"
+    "url": "https://github.com/clarus/redux-ship/issues"
   },
-  "homepage": "https://github.com/clarus/js-async#readme",
+  "homepage": "https://github.com/clarus/redux-ship#readme",
   "dependencies": {
     "babel-cli": "^6.11.4",
     "babel-core": "^6.9.1",
