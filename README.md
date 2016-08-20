@@ -1,2 +1,2 @@
-# js-async
-Asynchronous JS with types and tests
+# Redux Ship
+> Redux middleware
