@@ -10,7 +10,7 @@ export type Effect = {
   fn: (...args: any[]) => Generator<Effect, any, any>
 } | {
   type: 'All',
-  args: Generator<Effect, any, any>[]
+  ships: Generator<Effect, any, any>[]
 };
 
 export type t<A> = Generator<Effect, A, any>;
@@ -22,15 +22,12 @@ export async function run<A>(ship: t<A>, answer?: any): Promise<A> {
   }
   const newAnswer = await (() => {
     switch (result.value.type) {
-      case 'Wait': {
+      case 'Wait':
         return result.value.fn(...result.value.args);
-      }
-      case 'Call': {
+      case 'Call':
         return run(result.value.fn(...result.value.args));
-      }
-      case 'All': {
-        return Promise.all(result.value.args.map(run));
-      }
+      case 'All':
+        return Promise.all(result.value.ships.map(run));
       default:
         return result.value;
     }
@@ -78,18 +75,18 @@ export function* call<A>(ship: t<A>): t<A> {
   return yield* calln(() => ship, []);
 }
 
-export function* alln(args: t<any>[]): t<any[]> {
+export function* alln(ships: t<any>[]): t<any[]> {
   const result = yield {
     type: 'All',
-    args,
+    ships,
   };
   return (result: any);
 }
 
-export function* all<A>(args: t<A>[]): t<A[]> {
-  return yield* alln(args);
+export function* all<A>(ships: t<A>[]): t<A[]> {
+  return yield* alln(ships);
 }
 
-export function* all2<A1, A2>(arg1: t<A1>, arg2: t<A2>): t<[A1, A2]> {
-  return yield* alln([arg1, arg2]);
+export function* all2<A1, A2>(ship1: t<A1>, ship2: t<A2>): t<[A1, A2]> {
+  return yield* alln([ship1, ship2]);
 }
