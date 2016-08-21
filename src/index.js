@@ -48,10 +48,62 @@ function* mainParSimulator(): Simulator.t<void, void> {
   ]);
 }
 
-function reduce(): void {
+function reduceVoid(): void {
 }
 
-const initialModel: void = undefined;
+const initialModelVoid: void = undefined;
+
+type Action = {
+  type: 'Add',
+  title: string
+} | {
+  type: 'Remove',
+  index: number
+};
+
+type Model = {
+  todos: string[]
+};
+
+function reduce(model: Model, action: Action): Model {
+  switch (action.type) {
+    case 'Add':
+      return {
+        ...model,
+        todos: [...model.todos, action.title],
+      };
+    case 'Remove': {
+      const { index } = action;
+      return {
+        ...model,
+        todos: model.todos.filter((title, currentIndex) => currentIndex !== index),
+      };
+    }
+    default:
+      return action;
+  }
+}
+
+const initialModel: Model = {
+  todos: [],
+};
+
+function* mainRedux(): Ship.t<Action, Model, string> {
+  yield* Ship.dispatch({
+    type: 'Add',
+    title: 'First todo',
+  });
+  yield* Ship.dispatch({
+    type: 'Add',
+    title: `Second todo ${yield* Ship.impure(Math.random())}`,
+  });
+  yield* Ship.dispatch({
+    type: 'Remove',
+    index: 0,
+  });
+  const state = yield* Ship.getState();
+  return state.todos[0];
+}
 
 function runSimulators(): void {
   try {
@@ -68,9 +120,11 @@ async function main(): Promise<void> {
   const message = await waitWith(3 * 1000, 'hi');
   console.log(message);
   runSimulators();
-  await Ship.run(reduce, initialModel, mainWait());
-  await Ship.run(reduce, initialModel, mainCall());
-  await Ship.run(reduce, initialModel, mainPar());
+  await Ship.run(reduceVoid, initialModelVoid, mainWait());
+  await Ship.run(reduceVoid, initialModelVoid, mainCall());
+  await Ship.run(reduceVoid, initialModelVoid, mainPar());
+  const todo = await Ship.run(reduce, initialModel, mainRedux());
+  console.log('todo:', todo);
 }
 
 main();
