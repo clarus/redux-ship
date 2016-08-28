@@ -2,8 +2,9 @@
   "name": "redux-ship",
   "version": "0.0.1",
   "description": "Redux middleware",
-  "main": "index.js",
+  "main": "build/main.js",
   "scripts": {
+    "build": "rollup -c",
     "eslint": "eslint src",
     "flow": "flow",
     "start": "babel-node src/index.js",
@@ -31,6 +32,9 @@
     "babylon": "^6.8.0",
     "eslint": "^3.3.0",
     "eslint-plugin-babel": "^3.3.0",
-    "flow-bin": "^0.30.0"
+    "flow-bin": "^0.30.0",
+    "rollup": "^0.34.10",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-uglify": "^1.0.1"
   }
 }
