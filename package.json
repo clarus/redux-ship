@@ -2,7 +2,7 @@
   "name": "redux-ship",
   "version": "0.0.1",
   "description": "Redux middleware",
-  "main": "build/main.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
     "eslint": "eslint src",

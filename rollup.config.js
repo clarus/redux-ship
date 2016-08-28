@@ -2,8 +2,8 @@ import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
+  dest: 'dist/index.js',
   entry: 'src/index.js',
-  dest: 'build/main.js',
   format: 'umd',
   moduleName: 'ReduxShip',
   plugins: [
