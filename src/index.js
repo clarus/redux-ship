@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable no-undef */
 
 export type Effect<Action, Model> = {
   type: 'Wait',
@@ -66,84 +67,119 @@ export async function run<Action, Model, A>(
   }
 }
 
-export function* waitn<Action, Model, A>(fn: (...args: any[]) => Promise<A>, args: any[])
-  : t<Action, Model, A> {
-  const result = yield {
-    type: 'Wait',
-    args,
-    fn,
+export const wait:
+  (<Action, Model, B>(
+    promise: Promise<B>
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, B>(
+    fn: (arg1: A1) => Promise<B>,
+    arg1: A1
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, B>(
+    fn: (arg1: A1, arg2: A2) => Promise<B>,
+    arg1: A1, arg2: A2
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, A3, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3) => Promise<B>,
+    arg1: A1, arg2: A2, arg3: A3
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, A3, A4, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<B>,
+    arg1: A1, arg2: A2, arg3: A3, arg4: A4
+  ) => t<Action, Model, B>) =
+  function* (fn: any, ...args: any[]) {
+    const result = yield {
+      type: 'Wait',
+      args,
+      fn: args.length === 0 ? () => fn : fn,
+    };
+    return (result: any);
   };
-  return (result: any);
-}
 
-export function* wait<Action, Model, A>(promise: Promise<A>): t<Action, Model, A> {
-  return yield* waitn(() => promise, []);
-}
-
-export function* wait1<Action, Model, A1, B>(
-  fn: (arg: A1) => Promise<B>,
-  arg1: A1)
-  : t<Action, Model, B> {
-  return yield* waitn(fn, [arg1]);
-}
-
-export function* wait2<Action, Model, A1, A2, B>(
-  fn: (arg1: A1, arg2: A2) => Promise<B>,
-  arg1: A1, arg2: A2)
-  : t<Action, Model, B> {
-  return yield* waitn(fn, [arg1, arg2]);
-}
-
-export function* calln<Action, Model, A>(fn: (...args: any[]) => t<Action, Model, A>, args: any[])
-  : t<Action, Model, A> {
-  const result = yield {
-    type: 'Call',
-    args,
-    fn,
+export const call:
+  (<Action, Model, B>(
+    ship: t<Action, Model, B>
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, B>(
+    fn: (arg1: A1) => t<Action, Model, B>,
+    arg1: A1
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, B>(
+    fn: (arg1: A1, arg2: A2) => t<Action, Model, B>,
+    arg1: A1, arg2: A2
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, A3, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3) => t<Action, Model, B>,
+    arg1: A1, arg2: A2, arg3: A3
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, A3, A4, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, Model, B>,
+    arg1: A1, arg2: A2, arg3: A3, arg4: A4
+  ) => t<Action, Model, B>) =
+  function* (fn: any, ...args: any[]) {
+    const result = yield {
+      type: 'Call',
+      args,
+      fn: args.length === 0 ? () => fn : fn,
+    };
+    return (result: any);
   };
-  return (result: any);
-}
 
-export function* call<Action, Model, A>(ship: t<Action, Model, A>): t<Action, Model, A> {
-  return yield* calln(() => ship, []);
-}
-
-export function* impuren<Action, Model, A>(fn: (...args: any[]) => A, args: any[])
-  : t<Action, Model, A> {
-  const result = yield {
-    type: 'Impure',
-    args,
-    fn,
+export const impure:
+  (<Action, Model, B>(
+    value: B
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, B>(
+    fn: (arg1: A1) => B,
+    arg1: A1
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, B>(
+    fn: (arg1: A1, arg2: A2) => B,
+    arg1: A1, arg2: A2
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, A3, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3) => B,
+    arg1: A1, arg2: A2, arg3: A3
+  ) => t<Action, Model, B>) &
+  (<Action, Model, A1, A2, A3, A4, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => B,
+    arg1: A1, arg2: A2, arg3: A3, arg4: A4
+  ) => t<Action, Model, B>) =
+  function* (fn: any, ...args: any[]) {
+    const result = yield {
+      type: 'Call',
+      args,
+      fn: args.length === 0 ? () => fn : fn,
+    };
+    return (result: any);
   };
-  return (result: any);
-}
 
-export function* impure<Action, Model, A>(value: A): t<Action, Model, A> {
-  return yield* impuren(() => value, []);
-}
-
-export function* impure1<Action, Model, A1, B>(fn: (arg1: A1) => B, arg1: A1): t<Action, Model, B> {
-  return yield* impuren(fn, [arg1]);
-}
-
-export function* alln<Action, Model>(ships: t<Action, Model, any>[]): t<Action, Model, any[]> {
-  const result = yield {
-    type: 'All',
-    ships,
+export const all:
+  (<Action, Model, A>(
+    ...ships: t<Action, Model, A>[]
+  ) => t<Action, Model, A[]>) &
+  (<Action, Model, A1, A2>(
+    ship1: t<Action, Model, A1>,
+    ship2: t<Action, Model, A2>
+  ) => t<Action, Model, [A1, A2]>) &
+  (<Action, Model, A1, A2, A3>(
+    ship1: t<Action, Model, A1>,
+    ship2: t<Action, Model, A2>,
+    ship3: t<Action, Model, A3>
+  ) => t<Action, Model, [A1, A2, A3]>) &
+  (<Action, Model, A1, A2, A3, A4>(
+    ship1: t<Action, Model, A1>,
+    ship2: t<Action, Model, A2>,
+    ship3: t<Action, Model, A3>,
+    ship4: t<Action, Model, A4>
+  ) => t<Action, Model, [A1, A2, A3, A4]>) =
+  function* (...ships: any[]) {
+    const result = yield {
+      type: 'All',
+      ships,
+    };
+    return (result: any);
   };
-  return (result: any);
-}
-
-export function* all<Action, Model, A>(ships: t<Action, Model, A>[]): t<Action, Model, A[]> {
-  return yield* alln(ships);
-}
-
-export function* all2<Action, Model, A1, A2>(
-  ship1: t<Action, Model, A1>,
-  ship2: t<Action, Model, A2>)
-  : t<Action, Model, [A1, A2]> {
-  return yield* alln([ship1, ship2]);
-}
 
 export function* dispatch<Action, Model>(action: Action): t<Action, Model, void> {
   yield {
