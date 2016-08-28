@@ -25,7 +25,7 @@ export type Effect<Action, Model> = {
 
 export type t<Action, Model, A> = Generator<Effect<Action, Model>, A, any>;
 
-export async function run<Action, Model, A>(
+export function run<Action, Model, A>(
   reduce: (model: Model, action: Action) => Model,
   model: Model,
   ship: t<Action, Model, A>,
@@ -33,34 +33,34 @@ export async function run<Action, Model, A>(
   : Promise<A> {
   const result = ship.next(answer);
   if (result.done) {
-    return result.value;
+    return Promise.resolve(result.value);
   }
   switch (result.value.type) {
-  case 'Wait': {
-    const newAnswer = await result.value.fn(...result.value.args);
-    return await run(reduce, model, ship, newAnswer);
-  }
-  case 'Call': {
-    const newAnswer = await run(reduce, model, result.value.fn(...result.value.args));
-    return await run(reduce, model, ship, newAnswer);
-  }
+  case 'Wait':
+    return result.value.fn(...result.value.args).then(newAnswer =>
+      run(reduce, model, ship, newAnswer)
+    );
+  case 'Call':
+    return run(reduce, model, result.value.fn(...result.value.args)).then(newAnswer =>
+      run(reduce, model, ship, newAnswer)
+    );
   case 'Impure': {
     const newAnswer = result.value.fn(...result.value.args);
-    return await run(reduce, model, ship, newAnswer);
+    return run(reduce, model, ship, newAnswer);
   }
-  case 'All': {
-    const newAnswer = await Promise.all(result.value.ships.map(currentShip =>
+  case 'All':
+    return Promise.all(result.value.ships.map(currentShip =>
       run(reduce, model, currentShip))
+    ).then(newAnswer =>
+      run(reduce, model, ship, newAnswer)
     );
-    return await run(reduce, model, ship, newAnswer);
-  }
   case 'Dispatch': {
     const newModel = reduce(model, result.value.action);
-    return await run(reduce, newModel, ship);
+    return run(reduce, newModel, ship);
   }
   case 'GetState': {
     const newAnswer = model;
-    return await run(reduce, model, ship, newAnswer);
+    return run(reduce, model, ship, newAnswer);
   }
   default:
     return result.value;
