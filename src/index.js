@@ -4,30 +4,30 @@
 export type Effect<Action, Model> = {
   type: 'Wait',
   args: any[],
-  fn: (...args: any[]) => Promise<any>
+  fn: (...args: any[]) => Promise<any>,
 } | {
   type: 'Call',
   args: any[],
-  fn: (...args: any[]) => Generator<Effect<Action, Model>, any, any>
+  fn: (...args: any[]) => Generator<Effect<Action, Model>, any, any>,
 } | {
   type: 'Impure',
   args: any[],
-  fn: (...args: any[]) => any
+  fn: (...args: any[]) => any,
 } | {
   type: 'All',
-  ships: Generator<Effect<Action, Model>, any, any>[]
+  ships: Generator<Effect<Action, Model>, any, any>[],
 } | {
   type: 'Dispatch',
-  action: Action
+  action: Action,
 } | {
-  type: 'GetState'
+  type: 'GetState',
 };
 
 export type t<Action, Model, A> = Generator<Effect<Action, Model>, A, any>;
 
-export function run<Action, Model, A>(
-  reduce: (model: Model, action: Action) => Model,
-  model: Model,
+function run<Action, Model, A>(
+  dispatch: (action: Action) => void | Promise<void>,
+  getState: () => Model,
   ship: t<Action, Model, A>,
   answer?: any)
   : Promise<A> {
@@ -38,33 +38,47 @@ export function run<Action, Model, A>(
   switch (result.value.type) {
   case 'Wait':
     return result.value.fn(...result.value.args).then(newAnswer =>
-      run(reduce, model, ship, newAnswer)
+      run(dispatch, getState, ship, newAnswer)
     );
   case 'Call':
-    return run(reduce, model, result.value.fn(...result.value.args)).then(newAnswer =>
-      run(reduce, model, ship, newAnswer)
+    return run(dispatch, getState, result.value.fn(...result.value.args)).then(newAnswer =>
+      run(dispatch, getState, ship, newAnswer)
     );
   case 'Impure': {
     const newAnswer = result.value.fn(...result.value.args);
-    return run(reduce, model, ship, newAnswer);
+    return run(dispatch, getState, ship, newAnswer);
   }
   case 'All':
     return Promise.all(result.value.ships.map(currentShip =>
-      run(reduce, model, currentShip))
+      run(dispatch, getState, currentShip))
     ).then(newAnswer =>
-      run(reduce, model, ship, newAnswer)
+      run(dispatch, getState, ship, newAnswer)
     );
-  case 'Dispatch': {
-    const newModel = reduce(model, result.value.action);
-    return run(reduce, newModel, ship);
-  }
+  case 'Dispatch':
+    return Promise.resolve(dispatch(result.value.action)).then(() =>
+      run(dispatch, getState, ship)
+    );
   case 'GetState': {
-    const newAnswer = model;
-    return run(reduce, model, ship, newAnswer);
+    const newAnswer = getState();
+    return run(dispatch, getState, ship, newAnswer);
   }
   default:
     return result.value;
   }
+}
+
+type ReduxStore<Action, Model> = {
+  dispatch: (action: Action) => void | Promise<void>,
+  getState: () => Model,
+};
+
+export function middleware<Action, Model>(
+  actionToShip: (action: Action) => t<Action, Model, void>) {
+  // eslint-disable-next-line no-unused-vars
+  return (store: ReduxStore<Action, Model>) => (next: mixed) => (action: Action): Promise<void> => {
+    const ship = actionToShip(action);
+    return run(store.dispatch, store.getState, ship);
+  };
 }
 
 export const wait:
