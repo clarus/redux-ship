@@ -232,7 +232,6 @@ function* mapWithAnswer<Action1, Model1, Action2, Model2, A>(
   mapState: (state2: Model2) => Model1,
   answer?: any
 ): t<Action2, Model2, A> {
-  console.debug('map ship entry', ship);
   const result = ship.next(answer);
   if (result.done) {
     return (result.value: any);
@@ -244,7 +243,6 @@ function* mapWithAnswer<Action1, Model1, Action2, Model2, A>(
   }
   case 'Impure': {
     const newAnswer = yield result.value;
-    console.debug('map ship impure', ship);
     return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
   }
   case 'Call': {
