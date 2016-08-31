@@ -90,127 +90,152 @@ export function middleware<Action, State>(
   };
 }
 
-function* untypedWait(fn: any, ...args: any[]) {
-  const result = yield {
+export function* waitAny<Action, State, A>(fn: (...args: any[]) => Promise<A>, ...args: any[])
+  : t<Action, State, A> {
+  const result: any = yield {
     type: 'Wait',
     args,
-    fn: args.length === 0 ? () => fn : fn,
+    fn,
   };
-  return (result: any);
+  return result;
 }
 
-export const wait:
-  (<Action, State, B>(
-    promise: Promise<B>
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, B>(
-    fn: (arg1: A1) => Promise<B>,
-    arg1: A1
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, B>(
-    fn: (arg1: A1, arg2: A2) => Promise<B>,
-    arg1: A1, arg2: A2
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, A3, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3) => Promise<B>,
-    arg1: A1, arg2: A2, arg3: A3
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, A3, A4, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<B>,
-    arg1: A1, arg2: A2, arg3: A3, arg4: A4
-  ) => t<Action, State, B>) =
-  untypedWait;
+export function wait0<Action, State, A>(promise: Promise<A>): t<Action, State, A> {
+  return waitAny(() => promise);
+}
 
-function* untypedCall(fn: any, ...args: any[]) {
-  const result = yield {
+export const wait1: <Action, State, A1, B>(
+  fn: (arg1: A1) => Promise<B>,
+  arg1: A1
+) => t<Action, State, B> =
+  waitAny;
+
+export const wait2: <Action, State, A1, A2, B>(
+  fn: (arg1: A1, arg2: A2) => Promise<B>,
+  arg1: A1, arg2: A2
+) => t<Action, State, B> =
+  waitAny;
+
+export const wait3: <Action, State, A1, A2, A3, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3) => Promise<B>,
+  arg1: A1, arg2: A2, arg3: A3
+) => t<Action, State, B> =
+  waitAny;
+
+export const wait4: <Action, State, A1, A2, A3, A4, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<B>,
+  arg1: A1, arg2: A2, arg3: A3, arg4: A4
+) => t<Action, State, B> =
+  waitAny;
+
+export function* callAny<Action, State, A>(
+  fn: (...args: any[]) => t<Action, State, A>, ...args: any[]
+): t<Action, State, A> {
+  const result: any = yield {
     type: 'Call',
     args,
-    fn: args.length === 0 ? () => fn : fn,
+    fn,
   };
-  return (result: any);
+  return result;
 }
 
-export const call:
-  (<Action, State, B>(
-    ship: t<Action, State, B>
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, B>(
-    fn: (arg1: A1) => t<Action, State, B>,
-    arg1: A1
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, B>(
-    fn: (arg1: A1, arg2: A2) => t<Action, State, B>,
-    arg1: A1, arg2: A2
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, A3, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3) => t<Action, State, B>,
-    arg1: A1, arg2: A2, arg3: A3
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, A3, A4, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, State, B>,
-    arg1: A1, arg2: A2, arg3: A3, arg4: A4
-  ) => t<Action, State, B>) =
-  untypedCall;
+export function call0<Action, State, A>(ship: t<Action, State, A>): t<Action, State, A> {
+  return callAny(() => ship);
+}
 
-function* untypedImpure(fn: any, ...args: any[]) {
-  const result = yield {
+export const call1: <Action, State, A1, B>(
+  fn: (arg1: A1) => t<Action, State, B>,
+  arg1: A1
+) => t<Action, State, B> =
+  callAny;
+
+export const call2: <Action, State, A1, A2, B>(
+  fn: (arg1: A1, arg2: A2) => t<Action, State, B>,
+  arg1: A1, arg2: A2
+) => t<Action, State, B> =
+  callAny;
+
+export const call3: <Action, State, A1, A2, A3, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3) => t<Action, State, B>,
+  arg1: A1, arg2: A2, arg3: A3
+) => t<Action, State, B> =
+  callAny;
+
+export const call4: <Action, State, A1, A2, A3, A4, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, State, B>,
+  arg1: A1, arg2: A2, arg3: A3, arg4: A4
+) => t<Action, State, B> =
+  callAny;
+
+export function* impureAny<Action, State, A>(fn: (...args: any[]) => A, ...args: any[])
+  : t<Action, State, A> {
+  const result: any = yield {
     type: 'Impure',
     args,
-    fn: args.length === 0 ? () => fn : fn,
+    fn,
   };
-  return (result: any);
+  return result;
 }
 
-export const impure:
-  (<Action, State, B>(
-    value: B
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, B>(
-    fn: (arg1: A1) => B,
-    arg1: A1
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, B>(
-    fn: (arg1: A1, arg2: A2) => B,
-    arg1: A1, arg2: A2
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, A3, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3) => B,
-    arg1: A1, arg2: A2, arg3: A3
-  ) => t<Action, State, B>) &
-  (<Action, State, A1, A2, A3, A4, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => B,
-    arg1: A1, arg2: A2, arg3: A3, arg4: A4
-  ) => t<Action, State, B>) =
-  untypedImpure;
+export function impure0<Action, State, A>(value: A): t<Action, State, A> {
+  return impureAny(() => value);
+}
 
-function* untypedAll(...ships: any[]) {
-  const result = yield {
+export const impure1: <Action, State, A1, B>(
+  fn: (arg1: A1) => B,
+  arg1: A1
+) => t<Action, State, B> =
+  impureAny;
+
+export const impure2: <Action, State, A1, A2, B>(
+  fn: (arg1: A1, arg2: A2) => B,
+  arg1: A1, arg2: A2
+) => t<Action, State, B> =
+  impureAny;
+
+export const impure3: <Action, State, A1, A2, A3, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3) => B,
+  arg1: A1, arg2: A2, arg3: A3
+) => t<Action, State, B> =
+  impureAny;
+
+export const impure4: <Action, State, A1, A2, A3, A4, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => B,
+  arg1: A1, arg2: A2, arg3: A3, arg4: A4
+) => t<Action, State, B> =
+  impureAny;
+
+export function* allAny<Action, State>(...ships: t<Action, State, any>[]): t<Action, State, any[]> {
+  const result: any = yield {
     type: 'All',
     ships,
   };
-  return (result: any);
+  return result;
 }
 
-export const all:
-  (<Action, State, A>(
-    ...ships: t<Action, State, A>[]
-  ) => t<Action, State, A[]>) &
-  (<Action, State, A1, A2>(
-    ship1: t<Action, State, A1>,
-    ship2: t<Action, State, A2>
-  ) => t<Action, State, [A1, A2]>) &
-  (<Action, State, A1, A2, A3>(
-    ship1: t<Action, State, A1>,
-    ship2: t<Action, State, A2>,
-    ship3: t<Action, State, A3>
-  ) => t<Action, State, [A1, A2, A3]>) &
-  (<Action, State, A1, A2, A3, A4>(
-    ship1: t<Action, State, A1>,
-    ship2: t<Action, State, A2>,
-    ship3: t<Action, State, A3>,
-    ship4: t<Action, State, A4>
-  ) => t<Action, State, [A1, A2, A3, A4]>) =
-  untypedAll;
+export const all: <Action, State, A>(...ships: t<Action, State, A>[]) => t<Action, State, A[]> =
+  allAny;
+
+export const all2: <Action, State, A1, A2>(
+  ship1: t<Action, State, A1>,
+  ship2: t<Action, State, A2>
+) => t<Action, State, [A1, A2]> =
+  allAny;
+
+export const all3: <Action, State, A1, A2, A3>(
+  ship1: t<Action, State, A1>,
+  ship2: t<Action, State, A2>,
+  ship3: t<Action, State, A3>
+) => t<Action, State, [A1, A2, A3]> =
+  allAny;
+
+export const all4: <Action, State, A1, A2, A3, A4>(
+  ship1: t<Action, State, A1>,
+  ship2: t<Action, State, A2>,
+  ship3: t<Action, State, A3>,
+  ship4: t<Action, State, A4>
+) => t<Action, State, [A1, A2, A3, A4]> =
+  allAny;
 
 export function* dispatch<Action, State>(action: Action): t<Action, State, void> {
   yield {
@@ -291,6 +316,6 @@ function delayPromise(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function* delay<Action, State>(ms: number): t<Action, State, void> {
-  yield* wait(delayPromise, ms);
+export function delay<Action, State>(ms: number): t<Action, State, void> {
+  return wait1(delayPromise, ms);
 }
