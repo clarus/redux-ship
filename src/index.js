@@ -33,7 +33,7 @@ function run<Action, State, A>(
   : Promise<A> {
   const result = ship.next(answer);
   if (result.done) {
-    return Promise.resolve(result.value);
+    return Promise.resolve((result.value: any));
   }
   switch (result.value.type) {
   case 'Wait':
@@ -266,10 +266,6 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
     const newAnswer = yield result.value;
     return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
   }
-  case 'Impure': {
-    const newAnswer = yield result.value;
-    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
-  }
   case 'Call': {
     const {value} = result;
     const newAnswer = yield {
@@ -277,6 +273,10 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
       args: value.args,
       fn: (...args) => mapWithAnswer(value.fn(args), mapAction, mapState),
     };
+    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+  }
+  case 'Impure': {
+    const newAnswer = yield result.value;
     return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
   }
   case 'All': {
@@ -310,6 +310,147 @@ export function map<Action1, State1, Action2, State2, A>(
   mapState: (state2: State2) => State1
 ): ?t<Action2, State2, A> {
   return ship && mapWithAnswer(ship, mapAction, mapState);
+}
+
+export type Trace<Action, State> = {
+  type: 'Done',
+  result: any,
+} | {
+  type: 'Wait',
+  args: any[],
+  next: Trace<Action, State>,
+  result: any,
+} | {
+  type: 'Call',
+  args: any[],
+  next: Trace<Action, State>,
+  trace: Trace<Action, State>,
+} | {
+  type: 'Impure',
+  args: any[],
+  next: Trace<Action, State>,
+  result: any,
+} | {
+  type: 'All',
+  next: Trace<Action, State>,
+  traces: Trace<Action, State>[],
+} | {
+  type: 'Dispatch',
+  action: Action,
+  next: Trace<Action, State>,
+} | {
+  type: 'GetState',
+  next: Trace<Action, State>,
+  state: State,
+};
+
+export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any)
+  : t<Action, State, {result: A, trace: Trace<Action, State>}> {
+  const result = ship.next(answer);
+  if (result.done) {
+    return {
+      result: (result.value: any),
+      trace: {
+        type: 'Done',
+        result: result.value,
+      },
+    };
+  }
+  switch (result.value.type) {
+  case 'Wait': {
+    const {value} = result;
+    const newAnswer = yield value;
+    const next = yield* trace(ship, newAnswer);
+    return {
+      result: next.result,
+      trace: {
+        type: 'Wait',
+        args: value.args,
+        next: next.trace,
+        result: newAnswer,
+      },
+    };
+  }
+  case 'Call': {
+    const {value} = result;
+    const newAnswer: any = yield {
+      type: 'Call',
+      args: value.args,
+      fn: (...args) => trace(value.fn(args)),
+    };
+    const next = yield* trace(ship, newAnswer.result);
+    return {
+      result: next.result,
+      trace: {
+        type: 'Call',
+        args: value.args,
+        next: next.trace,
+        trace: newAnswer.trace,
+      },
+    };
+  }
+  case 'Impure': {
+    const {value} = result;
+    const newAnswer = yield value;
+    const next = yield* trace(ship, newAnswer);
+    return {
+      result: next.result,
+      trace: {
+        type: 'Impure',
+        args: value.args,
+        next: next.trace,
+        result: newAnswer,
+      },
+    };
+  }
+  case 'All': {
+    const newAnswer: any = yield {
+      type: 'All',
+      ships: result.value.ships.map(trace),
+    };
+    const next = yield* trace(ship, newAnswer.map((currentAnswer) => currentAnswer.result));
+    return {
+      result: next.result,
+      trace: {
+        type: 'All',
+        next: next.trace,
+        traces: newAnswer.map((currentAnswer) => currentAnswer.trace),
+      },
+    };
+  }
+  case 'Dispatch': {
+    const {value} = result;
+    yield {
+      type: 'Dispatch',
+      action: value.action,
+    };
+    const next = yield* trace(ship);
+    return {
+      result: next.result,
+      trace: {
+        type: 'Dispatch',
+        action: value.action,
+        next: next.trace,
+      },
+    };
+  }
+  case 'GetState': {
+    const newAnswer: any = yield {
+      type: 'GetState',
+    };
+    const next = yield* trace(ship, newAnswer);
+    return {
+      result: next.result,
+      trace: {
+        type: 'GetState',
+        next: next.trace,
+        state: newAnswer,
+      },
+    };
+  }
+  default:
+    return result.value;
+  }
 }
 
 function delayPromise(ms: number): Promise<void> {
