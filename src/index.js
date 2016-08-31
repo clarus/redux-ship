@@ -271,7 +271,7 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
     const newAnswer = yield {
       type: 'Call',
       args: value.args,
-      fn: (...args) => mapWithAnswer(value.fn(args), mapAction, mapState),
+      fn: (...args) => mapWithAnswer(value.fn(...args), mapAction, mapState),
     };
     return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
   }
@@ -376,7 +376,7 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
     const newAnswer: any = yield {
       type: 'Call',
       args: value.args,
-      fn: (...args) => trace(value.fn(args)),
+      fn: (...args) => trace(value.fn(...args)),
     };
     const next = yield* trace(ship, newAnswer.result);
     return {
