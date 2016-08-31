@@ -72,13 +72,31 @@ type ReduxStore<Action, Model> = {
   getState: () => Model,
 };
 
+type ReduxMiddleware<Action, Model> =
+  (store: ReduxStore<Action, Model>) =>
+  (next: (action: Action) => any) =>
+  (action: Action) =>
+  any;
+
 export function middleware<Action, Model>(
-  actionToShip: (action: Action) => t<Action, Model, void>) {
-  // eslint-disable-next-line no-unused-vars
-  return (store: ReduxStore<Action, Model>) => (next: mixed) => (action: Action): Promise<void> => {
+  actionToShip: (action: Action) => ?t<Action, Model, void>
+): ReduxMiddleware<Action, Model> {
+  return store => next => action => {
     const ship = actionToShip(action);
-    return run(store.dispatch, store.getState, ship);
+    if (ship) {
+      return run(store.dispatch, store.getState, ship);
+    }
+    return next(action);
   };
+}
+
+function* untypedWait(fn: any, ...args: any[]) {
+  const result = yield {
+    type: 'Wait',
+    args,
+    fn: args.length === 0 ? () => fn : fn,
+  };
+  return (result: any);
 }
 
 export const wait:
@@ -101,14 +119,16 @@ export const wait:
     fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<B>,
     arg1: A1, arg2: A2, arg3: A3, arg4: A4
   ) => t<Action, Model, B>) =
-  function* (fn: any, ...args: any[]) {
-    const result = yield {
-      type: 'Wait',
-      args,
-      fn: args.length === 0 ? () => fn : fn,
-    };
-    return (result: any);
+  untypedWait;
+
+function* untypedCall(fn: any, ...args: any[]) {
+  const result = yield {
+    type: 'Call',
+    args,
+    fn: args.length === 0 ? () => fn : fn,
   };
+  return (result: any);
+}
 
 export const call:
   (<Action, Model, B>(
@@ -130,14 +150,16 @@ export const call:
     fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, Model, B>,
     arg1: A1, arg2: A2, arg3: A3, arg4: A4
   ) => t<Action, Model, B>) =
-  function* (fn: any, ...args: any[]) {
-    const result = yield {
-      type: 'Call',
-      args,
-      fn: args.length === 0 ? () => fn : fn,
-    };
-    return (result: any);
+  untypedCall;
+
+function* untypedImpure(fn: any, ...args: any[]) {
+  const result = yield {
+    type: 'Impure',
+    args,
+    fn: args.length === 0 ? () => fn : fn,
   };
+  return (result: any);
+}
 
 export const impure:
   (<Action, Model, B>(
@@ -159,14 +181,15 @@ export const impure:
     fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => B,
     arg1: A1, arg2: A2, arg3: A3, arg4: A4
   ) => t<Action, Model, B>) =
-  function* (fn: any, ...args: any[]) {
-    const result = yield {
-      type: 'Call',
-      args,
-      fn: args.length === 0 ? () => fn : fn,
-    };
-    return (result: any);
+  untypedImpure;
+
+function* untypedAll(...ships: any[]) {
+  const result = yield {
+    type: 'All',
+    ships,
   };
+  return (result: any);
+}
 
 export const all:
   (<Action, Model, A>(
@@ -187,13 +210,7 @@ export const all:
     ship3: t<Action, Model, A3>,
     ship4: t<Action, Model, A4>
   ) => t<Action, Model, [A1, A2, A3, A4]>) =
-  function* (...ships: any[]) {
-    const result = yield {
-      type: 'All',
-      ships,
-    };
-    return (result: any);
-  };
+  untypedAll;
 
 export function* dispatch<Action, Model>(action: Action): t<Action, Model, void> {
   yield {
@@ -207,4 +224,75 @@ export function* getState<Action, Model>(): t<Action, Model, Model> {
     type: 'GetState',
   };
   return (model: any);
+}
+
+function* mapWithAnswer<Action1, Model1, Action2, Model2, A>(
+  ship: t<Action1, Model1, A>,
+  mapAction: (action1: Action1) => Action2,
+  mapState: (state2: Model2) => Model1,
+  answer?: any
+): t<Action2, Model2, A> {
+  console.debug('map ship entry', ship);
+  const result = ship.next(answer);
+  if (result.done) {
+    return (result.value: any);
+  }
+  switch (result.value.type) {
+  case 'Wait': {
+    const newAnswer = yield result.value;
+    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+  }
+  case 'Impure': {
+    const newAnswer = yield result.value;
+    console.debug('map ship impure', ship);
+    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+  }
+  case 'Call': {
+    const {value} = result;
+    const newAnswer = yield {
+      type: 'Call',
+      args: value.args,
+      fn: (...args) => mapWithAnswer(value.fn(args), mapAction, mapState),
+    };
+    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+  }
+  case 'All': {
+    const newAnswer = yield {
+      type: 'All',
+      ships: result.value.ships.map((currentShip) =>
+        mapWithAnswer(currentShip, mapAction, mapState)),
+    };
+    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+  }
+  case 'Dispatch':
+    yield {
+      type: 'Dispatch',
+      action: mapAction(result.value.action),
+    };
+    return yield* mapWithAnswer(ship, mapAction, mapState);
+  case 'GetState': {
+    const newAnswer: any = yield {
+      type: 'GetState',
+    };
+    return yield* mapWithAnswer(ship, mapAction, mapState, mapState(newAnswer));
+  }
+  default:
+    return result.value;
+  }
+}
+
+export function map<Action1, Model1, Action2, Model2, A>(
+  ship: ?t<Action1, Model1, A>,
+  mapAction: (action1: Action1) => Action2,
+  mapState: (state2: Model2) => Model1
+): ?t<Action2, Model2, A> {
+  return ship && mapWithAnswer(ship, mapAction, mapState);
+}
+
+function delayPromise(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function* delay<Action, Model>(ms: number): t<Action, Model, void> {
+  yield* wait(delayPromise, ms);
 }
