@@ -1,21 +1,21 @@
 // @flow
 /* eslint-disable no-undef */
 
-export type Effect<Action, Model> = {
+export type Effect<Action, State> = {
   type: 'Wait',
   args: any[],
   fn: (...args: any[]) => Promise<any>,
 } | {
   type: 'Call',
   args: any[],
-  fn: (...args: any[]) => Generator<Effect<Action, Model>, any, any>,
+  fn: (...args: any[]) => Generator<Effect<Action, State>, any, any>,
 } | {
   type: 'Impure',
   args: any[],
   fn: (...args: any[]) => any,
 } | {
   type: 'All',
-  ships: Generator<Effect<Action, Model>, any, any>[],
+  ships: Generator<Effect<Action, State>, any, any>[],
 } | {
   type: 'Dispatch',
   action: Action,
@@ -23,12 +23,12 @@ export type Effect<Action, Model> = {
   type: 'GetState',
 };
 
-export type t<Action, Model, A> = Generator<Effect<Action, Model>, A, any>;
+export type t<Action, State, A> = Generator<Effect<Action, State>, A, any>;
 
-function run<Action, Model, A>(
+function run<Action, State, A>(
   dispatch: (action: Action) => void | Promise<void>,
-  getState: () => Model,
-  ship: t<Action, Model, A>,
+  getState: () => State,
+  ship: t<Action, State, A>,
   answer?: any)
   : Promise<A> {
   const result = ship.next(answer);
@@ -67,20 +67,20 @@ function run<Action, Model, A>(
   }
 }
 
-type ReduxStore<Action, Model> = {
+type ReduxStore<Action, State> = {
   dispatch: (action: Action) => void | Promise<void>,
-  getState: () => Model,
+  getState: () => State,
 };
 
-type ReduxMiddleware<Action, Model> =
-  (store: ReduxStore<Action, Model>) =>
+type ReduxMiddleware<Action, State> =
+  (store: ReduxStore<Action, State>) =>
   (next: (action: Action) => any) =>
   (action: Action) =>
   any;
 
-export function middleware<Action, Model>(
-  actionToShip: (action: Action) => ?t<Action, Model, void>
-): ReduxMiddleware<Action, Model> {
+export function middleware<Action, State>(
+  actionToShip: (action: Action) => ?t<Action, State, void>
+): ReduxMiddleware<Action, State> {
   return store => next => action => {
     const ship = actionToShip(action);
     if (ship) {
@@ -100,25 +100,25 @@ function* untypedWait(fn: any, ...args: any[]) {
 }
 
 export const wait:
-  (<Action, Model, B>(
+  (<Action, State, B>(
     promise: Promise<B>
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, B>(
     fn: (arg1: A1) => Promise<B>,
     arg1: A1
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, B>(
     fn: (arg1: A1, arg2: A2) => Promise<B>,
     arg1: A1, arg2: A2
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, A3, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, A3, B>(
     fn: (arg1: A1, arg2: A2, arg3: A3) => Promise<B>,
     arg1: A1, arg2: A2, arg3: A3
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, A3, A4, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, A3, A4, B>(
     fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<B>,
     arg1: A1, arg2: A2, arg3: A3, arg4: A4
-  ) => t<Action, Model, B>) =
+  ) => t<Action, State, B>) =
   untypedWait;
 
 function* untypedCall(fn: any, ...args: any[]) {
@@ -131,25 +131,25 @@ function* untypedCall(fn: any, ...args: any[]) {
 }
 
 export const call:
-  (<Action, Model, B>(
-    ship: t<Action, Model, B>
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, B>(
-    fn: (arg1: A1) => t<Action, Model, B>,
+  (<Action, State, B>(
+    ship: t<Action, State, B>
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, B>(
+    fn: (arg1: A1) => t<Action, State, B>,
     arg1: A1
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, B>(
-    fn: (arg1: A1, arg2: A2) => t<Action, Model, B>,
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, B>(
+    fn: (arg1: A1, arg2: A2) => t<Action, State, B>,
     arg1: A1, arg2: A2
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, A3, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3) => t<Action, Model, B>,
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, A3, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3) => t<Action, State, B>,
     arg1: A1, arg2: A2, arg3: A3
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, A3, A4, B>(
-    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, Model, B>,
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, A3, A4, B>(
+    fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, State, B>,
     arg1: A1, arg2: A2, arg3: A3, arg4: A4
-  ) => t<Action, Model, B>) =
+  ) => t<Action, State, B>) =
   untypedCall;
 
 function* untypedImpure(fn: any, ...args: any[]) {
@@ -162,25 +162,25 @@ function* untypedImpure(fn: any, ...args: any[]) {
 }
 
 export const impure:
-  (<Action, Model, B>(
+  (<Action, State, B>(
     value: B
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, B>(
     fn: (arg1: A1) => B,
     arg1: A1
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, B>(
     fn: (arg1: A1, arg2: A2) => B,
     arg1: A1, arg2: A2
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, A3, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, A3, B>(
     fn: (arg1: A1, arg2: A2, arg3: A3) => B,
     arg1: A1, arg2: A2, arg3: A3
-  ) => t<Action, Model, B>) &
-  (<Action, Model, A1, A2, A3, A4, B>(
+  ) => t<Action, State, B>) &
+  (<Action, State, A1, A2, A3, A4, B>(
     fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => B,
     arg1: A1, arg2: A2, arg3: A3, arg4: A4
-  ) => t<Action, Model, B>) =
+  ) => t<Action, State, B>) =
   untypedImpure;
 
 function* untypedAll(...ships: any[]) {
@@ -192,46 +192,46 @@ function* untypedAll(...ships: any[]) {
 }
 
 export const all:
-  (<Action, Model, A>(
-    ...ships: t<Action, Model, A>[]
-  ) => t<Action, Model, A[]>) &
-  (<Action, Model, A1, A2>(
-    ship1: t<Action, Model, A1>,
-    ship2: t<Action, Model, A2>
-  ) => t<Action, Model, [A1, A2]>) &
-  (<Action, Model, A1, A2, A3>(
-    ship1: t<Action, Model, A1>,
-    ship2: t<Action, Model, A2>,
-    ship3: t<Action, Model, A3>
-  ) => t<Action, Model, [A1, A2, A3]>) &
-  (<Action, Model, A1, A2, A3, A4>(
-    ship1: t<Action, Model, A1>,
-    ship2: t<Action, Model, A2>,
-    ship3: t<Action, Model, A3>,
-    ship4: t<Action, Model, A4>
-  ) => t<Action, Model, [A1, A2, A3, A4]>) =
+  (<Action, State, A>(
+    ...ships: t<Action, State, A>[]
+  ) => t<Action, State, A[]>) &
+  (<Action, State, A1, A2>(
+    ship1: t<Action, State, A1>,
+    ship2: t<Action, State, A2>
+  ) => t<Action, State, [A1, A2]>) &
+  (<Action, State, A1, A2, A3>(
+    ship1: t<Action, State, A1>,
+    ship2: t<Action, State, A2>,
+    ship3: t<Action, State, A3>
+  ) => t<Action, State, [A1, A2, A3]>) &
+  (<Action, State, A1, A2, A3, A4>(
+    ship1: t<Action, State, A1>,
+    ship2: t<Action, State, A2>,
+    ship3: t<Action, State, A3>,
+    ship4: t<Action, State, A4>
+  ) => t<Action, State, [A1, A2, A3, A4]>) =
   untypedAll;
 
-export function* dispatch<Action, Model>(action: Action): t<Action, Model, void> {
+export function* dispatch<Action, State>(action: Action): t<Action, State, void> {
   yield {
     type: 'Dispatch',
     action,
   };
 }
 
-export function* getState<Action, Model>(): t<Action, Model, Model> {
-  const model = yield {
+export function* getState<Action, State>(): t<Action, State, State> {
+  const state: any = yield {
     type: 'GetState',
   };
-  return (model: any);
+  return state;
 }
 
-function* mapWithAnswer<Action1, Model1, Action2, Model2, A>(
-  ship: t<Action1, Model1, A>,
+function* mapWithAnswer<Action1, State1, Action2, State2, A>(
+  ship: t<Action1, State1, A>,
   mapAction: (action1: Action1) => Action2,
-  mapState: (state2: Model2) => Model1,
+  mapState: (state2: State2) => State1,
   answer?: any
-): t<Action2, Model2, A> {
+): t<Action2, State2, A> {
   const result = ship.next(answer);
   if (result.done) {
     return (result.value: any);
@@ -279,11 +279,11 @@ function* mapWithAnswer<Action1, Model1, Action2, Model2, A>(
   }
 }
 
-export function map<Action1, Model1, Action2, Model2, A>(
-  ship: ?t<Action1, Model1, A>,
+export function map<Action1, State1, Action2, State2, A>(
+  ship: ?t<Action1, State1, A>,
   mapAction: (action1: Action1) => Action2,
-  mapState: (state2: Model2) => Model1
-): ?t<Action2, Model2, A> {
+  mapState: (state2: State2) => State1
+): ?t<Action2, State2, A> {
   return ship && mapWithAnswer(ship, mapAction, mapState);
 }
 
@@ -291,6 +291,6 @@ function delayPromise(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function* delay<Action, Model>(ms: number): t<Action, Model, void> {
+export function* delay<Action, State>(ms: number): t<Action, State, void> {
   yield* wait(delayPromise, ms);
 }
