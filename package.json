@@ -20,6 +20,9 @@
     "url": "https://github.com/clarus/redux-ship/issues"
   },
   "homepage": "https://github.com/clarus/redux-ship#readme",
+  "files": [
+    "dist"
+  ],
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.11.4",
