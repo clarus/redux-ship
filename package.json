@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/clarus/redux-ship#readme",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "dependencies": {},
   "devDependencies": {
