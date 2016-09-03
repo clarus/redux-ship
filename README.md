@@ -106,5 +106,10 @@ You may not need Redux Ship. To help your choice, here is an *opinionated* compa
 * **[Elm:](http://elm-lang.org/)** very similar to Redux Ship, as much composable and typable (using Flow). The `Task` and `Cmd` are the equivalent in Elm of the `Ship.t` type to represent side effects. We use the `function*` notation instead of the [`andThen`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Task#andThen) operator to avoid the ["callback hell"](https://medium.com/@wavded/managing-node-js-callback-hell-1fe03ba8baf#.wt1ga0ocv). There seem to be no snapshot mechanisms to test side effects in Elm.
 * **[Choo:](https://github.com/yoshuawuyts/choo)** has a restricted form of composition with the namespaces, but is probably not typable because of it (type checkers cannot understand the `'namespace:action'` convention). The side effects are represented with callbacks, hence subject to the "callback hell" effect and hard to test.
 
-### License
+### Is there a subscription mechanism?
+Elm and Choo provide a [Subscription](http://www.elm-tutorial.org/en/03-subs-cmds/01-subs.html) mechanism to listen to a source of actions. Redux Sagas provides the [Channel](https://yelouafi.github.io/redux-saga/docs/advanced/Channels.html) system.
+
+In contrast, Redux Ship only listens to Redux actions. To subscribe to, for example, a real time API, you need to make Redux subscribe to that API by calling a `store.dispatch` each time a new value is received. See for example [Real time data flow with Redux and Socket.io](http://spraso.com/real-time-data-flow-with-redux-and-socket-io/).
+
+## License
 MIT
