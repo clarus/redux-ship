@@ -294,9 +294,7 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
     };
     return yield* mapWithAnswer(ship, mapAction, mapState);
   case 'GetState': {
-    const newAnswer: any = yield {
-      type: 'GetState',
-    };
+    const newAnswer: any = yield result.value;
     return yield* mapWithAnswer(ship, mapAction, mapState, mapState(newAnswer));
   }
   default:
@@ -420,10 +418,7 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
   }
   case 'Dispatch': {
     const {value} = result;
-    yield {
-      type: 'Dispatch',
-      action: value.action,
-    };
+    yield value;
     const next = yield* trace(ship);
     return {
       result: next.result,
@@ -435,9 +430,7 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
     };
   }
   case 'GetState': {
-    const newAnswer: any = yield {
-      type: 'GetState',
-    };
+    const newAnswer: any = yield result.value;
     const next = yield* trace(ship, newAnswer);
     return {
       result: next.result,
