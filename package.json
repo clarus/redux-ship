@@ -35,8 +35,8 @@
     "babylon": "^6.8.0",
     "eslint": "^3.3.0",
     "eslint-plugin-babel": "^3.3.0",
-    "flow-bin": "^0.30.0",
-    "rollup": "^0.34.10",
+    "flow-bin": "^0.32.0",
+    "rollup": "^0.34.13",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1"
   }
