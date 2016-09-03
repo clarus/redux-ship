@@ -98,13 +98,78 @@ export default Redux.createStore(
 );
 ```
 
+## API
+Import all the functions with:
+```
+import * as Ship from 'redux-ship';
+```
+* `Ship.t<Action, State, A>`
+
+The type of a Redux Ship side effect returning a value of type `A` and using a Redux store with actions of type `Action` and a state of type `State`. A Ship is a generator and is usually defined using the `function*` syntax.
+
+* `Ship.middleware: <Action, State>(actionToShip: (action: Action) => ?Ship.t<Action, State, void>) => ReduxMiddleware<Action, State>`
+
+Creates a Redux Ship middleware for a store with actions of type `Action` and a state of type `State`. The parameter `actionToShip` maps an `action` to either a Ship side effect or `null`. If `actionToShip(action)` is a Ship effect, then `dispatch(action)` returns a promise of type `Promise<void>` terminating when the side effect terminates, so that you can wait for the Ship effect to complete. If `actionToShip(action)` is `null`, then `dispatch(action)` returns the result of the next middleware.
+
+* `Ship.map: <Action1, State1, Action2, State2, A>(ship: ?Ship.t<Action1, State1, A>, mapAction: (action1: Action1) => Action2, mapState: (state2: State2) => State1) => ?Ship.t<Action2, State2, A>`
+
+A function useful to compose nested stores. Lifts a `ship` with access to "small set" of actions `Action1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Action2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `mapState(getState())` and each `dispatch(action1)` by `dispatch(mapAction(action1))`. For convenience, returns `null` if `ship` is `null`.
+
+* `Ship.getState: <Action, State>() => Ship.t<Action, State, State>`
+
+Returns the current state of type `State`.
+
+* `Ship.dispatch: <Action, State>(action: Action) => Ship.t<Action, State, void>`
+
+Dispatches an action of type `Action` and waits for its termination.
+
+* `Ship.wait0: <Action, State, A>(promise: Promise<A>) => t<Action, State, A>`
+
+Returns the result of the promise `promise` of type `Promise<A>`.
+
+* `Ship.wait1: <Action, State, A1, B>(fn: (arg1: A1) => Promise<B>, arg1: A1) => Ship.t<Action, State, B>`
+
+Returns the result of the promise `fn(arg1)` of type `Promise<B>`. Similarly, there are functions `wait2`, ..., `wait4`, the index being the number of parameters of the function `fn`. For example, you can write `Ship.wait2(fn, arg1, arg2)`.
+
+* `Ship.waitAny: <Action, State, A>(fn: (...args: any[]) => Promise<A>, ...args: any[]): Ship.t<Action, State, A>`
+
+Like `wait1` but for a function with a variable number of parameters.
+
+* `Ship.call0: <Action, State, A>(ship: Ship.t<Action, State, A>) => t<Action, State, A>`
+
+Returns the result of the ship `ship` of type `Ship.t<Action, State, A>`.
+
+* `Ship.call1: <Action, State, A1, B>(fn: (arg1: A1) => Ship.t<Action, State, B>, arg1: A1) => Ship.t<Action, State, B>`
+
+Returns the result of the ship `fn(arg1)` of type `Ship.t<Action, State, B>`. Similarly, there are functions `call2`, ..., `call4`, the index being the number of parameters of the function `fn`. For example, you can write `Ship.call2(fn, arg1, arg2)`.
+
+* `Ship.callAny: <Action, State, A>(fn: (...args: any[]) => Ship.t<Action, State, A>, ...args: any[]): Ship.t<Action, State, A>`
+
+Like `call1` but for a function with a variable number of parameters.
+
+* `Ship.impure0: <Action, State, A>(value: A) => t<Action, State, A>`
+
+Returns the value `value` of type `A`.
+
+* `Ship.impure1: <Action, State, A1, B>(fn: (arg1: A1) => B, arg1: A1) => Ship.t<Action, State, B>`
+
+Returns the result of `fn(arg1)` of type `B`. Similarly, there are functions `impure2`, ..., `impure4`, the index being the number of parameters of the function `fn`. For example, you can write `Ship.impure2(fn, arg1, arg2)`.
+
+* `Ship.impureAny: <Action, State, A>(fn: (...args: any[]) => A, ...args: any[]): Ship.t<Action, State, A>`
+
+Like `impure1` but for a function with a variable number of parameters.
+
 ## FAQ
 ### How does Redux Ship compare to X?
-You may not need Redux Ship. To help your choice, here is an *opinionated* comparison of Redux Ship with some alternatives. These libraries were a great source of inspiration, and are probably better suited for you depending on your needs. If you find something wrong, feel free to open an issue!
-* **[Redux Thunk:](https://github.com/gaearon/redux-thunk)** you dispatch promises rather than plain objects to run side effects, thus logging and testing can be complex. The `getState` function of a thunk always gives access to the global Redux state. Same thing for the `dispatch` function, which can dispatch actions to any reducer. In contrast, Redux Ship let you chose to only access the local store or to share some parts with other stores. As a result, composition with Ship is simplified.
-* **[Redux Sagas:](https://github.com/yelouafi/redux-saga)** like in Redux Ship, side effects are represented as plain objects which map to generators in order to simplify the testing process. However, there are no snapshot mechanisms with Sagas so tests must be written by hand. Like in Redux Thunk, composing Sagas is difficult because the `select` / `put` functions only relate to the global state / actions. The Sagas cannot be completly typed, due to the use of the `yield` keyword (instead of `yield*`) and the destructuring of actions with `take` (instead of plain `switch`).
-* **[Elm:](http://elm-lang.org/)** very similar to Redux Ship, as much composable and typable (using Flow). The `Task` and `Cmd` are the equivalent in Elm of the `Ship.t` type to represent side effects. We use the `function*` notation instead of the [`andThen`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Task#andThen) operator to avoid the ["callback hell"](https://medium.com/@wavded/managing-node-js-callback-hell-1fe03ba8baf#.wt1ga0ocv). There seem to be no snapshot mechanisms to test side effects in Elm.
-* **[Choo:](https://github.com/yoshuawuyts/choo)** has a restricted form of composition with the namespaces, but is probably not typable because of it (type checkers cannot understand the `'namespace:action'` convention). The side effects are represented with callbacks, hence subject to the "callback hell" effect and hard to test.
+You may not need Redux Ship. To help your choice, here is an *opinionated* comparison of Redux Ship with some alternatives. These libraries were a great source of inspiration, and are probably better suited for you depending on your needs. If you find a mistake, feel free to open an issue!
+* **[Redux Thunk:](https://github.com/gaearon/redux-thunk)**
+you dispatch promises instead of plain objects to run side effects, thus logging and testing can be complex. The `getState` function of a thunk always gives access to the global Redux state. Similarly, the `dispatch` function can dispatch actions to any reducer. In contrast, Redux Ship let you chose to either only access to the local store or share some data with other stores. As a result, composition with Ship is simplified.
+* **[Redux Sagas:](https://github.com/yelouafi/redux-saga)**
+like in Redux Ship, side effects are represented as plain objects which map to generators in order to simplify the testing process. However, there are no snapshot mechanisms with Sagas so tests must be written by hand. Like in Redux Thunk, composing Sagas is difficult because the `select` / `put` functions only relate to the global state / actions. The Sagas cannot be completly typed, due to the use of the `yield` keyword (instead of `yield*`) and the destructuring of actions with `take` (instead of plain `switch`).
+* **[Elm:](http://elm-lang.org/)**
+very similar to Redux Ship, as much composable and typable (using Flow). The `Task` and `Cmd` are the equivalent in Elm of the `Ship.t` type to represent side effects. We use the `function*` notation instead of the [`andThen`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Task#andThen) operator to avoid the ["callback hell"](https://medium.com/@wavded/managing-node-js-callback-hell-1fe03ba8baf#.wt1ga0ocv). There seem to be no snapshot mechanisms to test side effects in Elm.
+* **[Choo:](https://github.com/yoshuawuyts/choo)**
+has a restricted form of composition with namespaces, but is probably not typable because of it (type checkers cannot understand the `'namespace:action'` convention). The side effects are represented with callbacks, hence subject to the "callback hell" effect and hard to test.
 
 ### Is there a subscription mechanism?
 Elm and Choo provide a [Subscription](http://www.elm-tutorial.org/en/03-subs-cmds/01-subs.html) mechanism to listen to a source of actions. Redux Sagas provides the [Channel](https://yelouafi.github.io/redux-saga/docs/advanced/Channels.html) system.
