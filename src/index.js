@@ -298,7 +298,8 @@ export type Trace<Action, State> = {
   type: 'Call',
   args: any[],
   next: Trace<Action, State>,
-  result: Trace<Action, State>,
+  result: any,
+  trace: ?Trace<Action, State>,
 } | {
   type: 'All',
   next: Trace<Action, State>,
@@ -334,7 +335,10 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
       fn: (...args) => {
         const fnResult: Promise<any> | t<Action, State, any> = value.fn(...args);
         if (fnResult instanceof Promise) {
-          return fnResult;
+          return fnResult.then((fnResultValue) => ({
+            result: fnResultValue,
+            trace: null,
+          }));
         }
         return trace(fnResult);
       },
@@ -346,7 +350,8 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
         type: 'Call',
         args: value.args,
         next: next.trace,
-        result: newAnswer,
+        result: newAnswer.result,
+        trace: newAnswer.trace,
       },
     };
   }
