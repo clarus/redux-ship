@@ -141,7 +141,7 @@ call7(fn, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 #### `all`
 ```
 <Action, State, A>(
-  ships: Ship.tt<Action, State, A>[]
+  ships: Ship.t<Action, State, A>[]
 ) => Ship.t<Action, State, A[]>
 ```
 
