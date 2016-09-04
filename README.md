@@ -60,7 +60,7 @@ function showState(state: State): void {
   console.log('Hi, this is the current state: ', state);
 }
 
-function* slowIncrement(): Shipt.t<Action, State, void> {
+function* slowIncrement(): Ship.t<Action, State, void> {
   const state = yield* Ship.getState();
   yield* Ship.call1(showState, state);
   yield* Ship.delay(1000);
