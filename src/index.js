@@ -81,8 +81,6 @@ export function middleware<Action, State>(
   };
 }
 
-const GeneratorClass = (function*() {})().constructor;
-
 function* callAny<Action, State, A>(
   fn: (...args: any[]) => A | Promise<A> | t<Action, State, A>, ...args: any[]
 ): t<Action, State, A> {
@@ -91,8 +89,9 @@ function* callAny<Action, State, A>(
     args,
     fn: (...args) => {
       const fnResult = fn(...args);
-      if (fnResult instanceof GeneratorClass) {
-        return fnResult;
+      if (typeof fnResult === 'object' && fnResult !== null &&
+        typeof fnResult.next === 'function' && typeof fnResult.throw === 'function') {
+        return (fnResult: any);
       }
       return Promise.resolve(fnResult);
     },
