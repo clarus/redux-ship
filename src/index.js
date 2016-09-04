@@ -2,17 +2,9 @@
 /* eslint-disable no-undef */
 
 export type Effect<Action, State> = {
-  type: 'Wait',
-  args: any[],
-  fn: (...args: any[]) => Promise<any>,
-} | {
   type: 'Call',
   args: any[],
-  fn: (...args: any[]) => Generator<Effect<Action, State>, any, any>,
-} | {
-  type: 'Impure',
-  args: any[],
-  fn: (...args: any[]) => any,
+  fn: (...args: any[]) => Promise<any> | Generator<Effect<Action, State>, any, any>,
 } | {
   type: 'All',
   ships: Generator<Effect<Action, State>, any, any>[],
@@ -36,17 +28,16 @@ function run<Action, State, A>(
     return Promise.resolve((result.value: any));
   }
   switch (result.value.type) {
-  case 'Wait':
-    return result.value.fn(...result.value.args).then(newAnswer =>
+  case 'Call': {
+    const fnResult: Promise<any> | t<Action, State, any> = result.value.fn(...result.value.args);
+    if (fnResult instanceof Promise) {
+      return fnResult.then(newAnswer =>
+        run(dispatch, getState, ship, newAnswer)
+      );
+    }
+    return run(dispatch, getState, fnResult).then(newAnswer =>
       run(dispatch, getState, ship, newAnswer)
     );
-  case 'Call':
-    return run(dispatch, getState, result.value.fn(...result.value.args)).then(newAnswer =>
-      run(dispatch, getState, ship, newAnswer)
-    );
-  case 'Impure': {
-    const newAnswer = result.value.fn(...result.value.args);
-    return run(dispatch, getState, ship, newAnswer);
   }
   case 'All':
     return Promise.all(result.value.ships.map(currentShip =>
@@ -90,122 +81,80 @@ export function middleware<Action, State>(
   };
 }
 
-export function* waitAny<Action, State, A>(fn: (...args: any[]) => Promise<A>, ...args: any[])
-  : t<Action, State, A> {
-  const result: any = yield {
-    type: 'Wait',
-    args,
-    fn,
-  };
-  return result;
-}
+const GeneratorClass = (function*() {})().constructor;
 
-export function wait0<Action, State, A>(promise: Promise<A>): t<Action, State, A> {
-  return waitAny(() => promise);
-}
-
-export const wait1: <Action, State, A1, B>(
-  fn: (arg1: A1) => Promise<B>,
-  arg1: A1
-) => t<Action, State, B> =
-  waitAny;
-
-export const wait2: <Action, State, A1, A2, B>(
-  fn: (arg1: A1, arg2: A2) => Promise<B>,
-  arg1: A1, arg2: A2
-) => t<Action, State, B> =
-  waitAny;
-
-export const wait3: <Action, State, A1, A2, A3, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3) => Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3
-) => t<Action, State, B> =
-  waitAny;
-
-export const wait4: <Action, State, A1, A2, A3, A4, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3, arg4: A4
-) => t<Action, State, B> =
-  waitAny;
-
-export function* callAny<Action, State, A>(
-  fn: (...args: any[]) => t<Action, State, A>, ...args: any[]
+function* callAny<Action, State, A>(
+  fn: (...args: any[]) => A | Promise<A> | t<Action, State, A>, ...args: any[]
 ): t<Action, State, A> {
   const result: any = yield {
     type: 'Call',
     args,
-    fn,
+    fn: (...args) => {
+      const fnResult = fn(...args);
+      if (fnResult instanceof GeneratorClass) {
+        return fnResult;
+      }
+      return Promise.resolve(fnResult);
+    },
   };
   return result;
 }
 
-export function call0<Action, State, A>(ship: t<Action, State, A>): t<Action, State, A> {
-  return callAny(() => ship);
+export function call0<Action, State, A>(value: A | Promise<A> | t<Action, State, A>)
+  : t<Action, State, A> {
+  return callAny(() => value);
 }
 
 export const call1: <Action, State, A1, B>(
-  fn: (arg1: A1) => t<Action, State, B>,
+  fn: (arg1: A1) =>
+    B | Promise<B> | t<Action, State, B>,
   arg1: A1
 ) => t<Action, State, B> =
   callAny;
 
 export const call2: <Action, State, A1, A2, B>(
-  fn: (arg1: A1, arg2: A2) => t<Action, State, B>,
+  fn: (arg1: A1, arg2: A2) =>
+    B | Promise<B> | t<Action, State, B>,
   arg1: A1, arg2: A2
 ) => t<Action, State, B> =
   callAny;
 
 export const call3: <Action, State, A1, A2, A3, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3) => t<Action, State, B>,
+  fn: (arg1: A1, arg2: A2, arg3: A3) =>
+    B | Promise<B> | t<Action, State, B>,
   arg1: A1, arg2: A2, arg3: A3
 ) => t<Action, State, B> =
   callAny;
 
 export const call4: <Action, State, A1, A2, A3, A4, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => t<Action, State, B>,
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) =>
+    B | Promise<B> | t<Action, State, B>,
   arg1: A1, arg2: A2, arg3: A3, arg4: A4
 ) => t<Action, State, B> =
   callAny;
 
-export function* impureAny<Action, State, A>(fn: (...args: any[]) => A, ...args: any[])
-  : t<Action, State, A> {
-  const result: any = yield {
-    type: 'Impure',
-    args,
-    fn,
-  };
-  return result;
-}
-
-export function impure0<Action, State, A>(value: A): t<Action, State, A> {
-  return impureAny(() => value);
-}
-
-export const impure1: <Action, State, A1, B>(
-  fn: (arg1: A1) => B,
-  arg1: A1
+export const call5: <Action, State, A1, A2, A3, A4, A5, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) =>
+    B | Promise<B> | t<Action, State, B>,
+  arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5
 ) => t<Action, State, B> =
-  impureAny;
+  callAny;
 
-export const impure2: <Action, State, A1, A2, B>(
-  fn: (arg1: A1, arg2: A2) => B,
-  arg1: A1, arg2: A2
+export const call6: <Action, State, A1, A2, A3, A4, A5, A6, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) =>
+    B | Promise<B> | t<Action, State, B>,
+  arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6
 ) => t<Action, State, B> =
-  impureAny;
+  callAny;
 
-export const impure3: <Action, State, A1, A2, A3, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3) => B,
-  arg1: A1, arg2: A2, arg3: A3
+export const call7: <Action, State, A1, A2, A3, A4, A5, A6, A7, B>(
+  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) =>
+    B | Promise<B> | t<Action, State, B>,
+  arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7
 ) => t<Action, State, B> =
-  impureAny;
+  callAny;
 
-export const impure4: <Action, State, A1, A2, A3, A4, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => B,
-  arg1: A1, arg2: A2, arg3: A3, arg4: A4
-) => t<Action, State, B> =
-  impureAny;
-
-export function* allAny<Action, State>(...ships: t<Action, State, any>[]): t<Action, State, any[]> {
+function* allAny<Action, State>(...ships: t<Action, State, any>[]): t<Action, State, any[]> {
   const result: any = yield {
     type: 'All',
     ships,
@@ -213,8 +162,9 @@ export function* allAny<Action, State>(...ships: t<Action, State, any>[]): t<Act
   return result;
 }
 
-export const all: <Action, State, A>(...ships: t<Action, State, A>[]) => t<Action, State, A[]> =
-  allAny;
+export function all<Action, State, A>(ships: t<Action, State, A>[]): t<Action, State, A[]> {
+  return allAny(...ships);
+}
 
 export const all2: <Action, State, A1, A2>(
   ship1: t<Action, State, A1>,
@@ -235,6 +185,36 @@ export const all4: <Action, State, A1, A2, A3, A4>(
   ship3: t<Action, State, A3>,
   ship4: t<Action, State, A4>
 ) => t<Action, State, [A1, A2, A3, A4]> =
+  allAny;
+
+export const all5: <Action, State, A1, A2, A3, A4, A5>(
+  ship1: t<Action, State, A1>,
+  ship2: t<Action, State, A2>,
+  ship3: t<Action, State, A3>,
+  ship4: t<Action, State, A4>,
+  ship4: t<Action, State, A5>
+) => t<Action, State, [A1, A2, A3, A4, A5]> =
+  allAny;
+
+export const all6: <Action, State, A1, A2, A3, A4, A5, A6>(
+  ship1: t<Action, State, A1>,
+  ship2: t<Action, State, A2>,
+  ship3: t<Action, State, A3>,
+  ship4: t<Action, State, A4>,
+  ship4: t<Action, State, A5>,
+  ship4: t<Action, State, A6>
+) => t<Action, State, [A1, A2, A3, A4, A5, A6]> =
+  allAny;
+
+export const all7: <Action, State, A1, A2, A3, A4, A5, A6, A7>(
+  ship1: t<Action, State, A1>,
+  ship2: t<Action, State, A2>,
+  ship3: t<Action, State, A3>,
+  ship4: t<Action, State, A4>,
+  ship4: t<Action, State, A5>,
+  ship4: t<Action, State, A6>,
+  ship4: t<Action, State, A7>
+) => t<Action, State, [A1, A2, A3, A4, A5, A6, A7]> =
   allAny;
 
 export function* dispatch<Action, State>(action: Action): t<Action, State, void> {
@@ -271,12 +251,14 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
     const newAnswer = yield {
       type: 'Call',
       args: value.args,
-      fn: (...args) => mapWithAnswer(value.fn(...args), mapAction, mapState),
+      fn: (...args) => {
+        const fnResult: Promise<any> | t<Action1, State1, any> = value.fn(...args);
+        if (fnResult instanceof Promise) {
+          return fnResult;
+        }
+        return mapWithAnswer(fnResult, mapAction, mapState);
+      },
     };
-    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
-  }
-  case 'Impure': {
-    const newAnswer = yield result.value;
     return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
   }
   case 'All': {
@@ -314,20 +296,10 @@ export type Trace<Action, State> = {
   type: 'Done',
   result: any,
 } | {
-  type: 'Wait',
-  args: any[],
-  next: Trace<Action, State>,
-  result: any,
-} | {
   type: 'Call',
   args: any[],
   next: Trace<Action, State>,
-  trace: Trace<Action, State>,
-} | {
-  type: 'Impure',
-  args: any[],
-  next: Trace<Action, State>,
-  result: any,
+  result: Trace<Action, State>,
 } | {
   type: 'All',
   next: Trace<Action, State>,
@@ -355,46 +327,24 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
     };
   }
   switch (result.value.type) {
-  case 'Wait': {
-    const {value} = result;
-    const newAnswer = yield value;
-    const next = yield* trace(ship, newAnswer);
-    return {
-      result: next.result,
-      trace: {
-        type: 'Wait',
-        args: value.args,
-        next: next.trace,
-        result: newAnswer,
-      },
-    };
-  }
   case 'Call': {
     const {value} = result;
     const newAnswer: any = yield {
       type: 'Call',
       args: value.args,
-      fn: (...args) => trace(value.fn(...args)),
+      fn: (...args) => {
+        const fnResult: Promise<any> | t<Action, State, any> = value.fn(...args);
+        if (fnResult instanceof Promise) {
+          return fnResult;
+        }
+        return trace(fnResult);
+      },
     };
     const next = yield* trace(ship, newAnswer.result);
     return {
       result: next.result,
       trace: {
         type: 'Call',
-        args: value.args,
-        next: next.trace,
-        trace: newAnswer.trace,
-      },
-    };
-  }
-  case 'Impure': {
-    const {value} = result;
-    const newAnswer = yield value;
-    const next = yield* trace(ship, newAnswer);
-    return {
-      result: next.result,
-      trace: {
-        type: 'Impure',
         args: value.args,
         next: next.trace,
         result: newAnswer,
@@ -451,5 +401,5 @@ function delayPromise(ms: number): Promise<void> {
 }
 
 export function delay<Action, State>(ms: number): t<Action, State, void> {
-  return wait1(delayPromise, ms);
+  return call1(delayPromise, ms);
 }
