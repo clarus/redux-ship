@@ -43,12 +43,12 @@ function* slowIncrement(): Ship.t<Action, State, void> {
   });
 }
 
-function actionToShip(action: Action): Ship.t<Action, State, void> {
+function* actionToShip(action: Action): Ship.t<Action, State, void> {
   switch (action.type) {
   case 'SlowIncrement':
-    return slowIncrement();
+    return yield* slowIncrement();
   default:
-    return Ship.next(action);
+    return;
   }
 }
 

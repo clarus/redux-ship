@@ -69,7 +69,8 @@ export function middleware<Action, State>(
 ): ReduxMiddleware<Action, State> {
   return store => next => action => {
     const ship = actionToShip(action);
-    return run(next, store.getState, ship);
+    run(next, store.getState, ship);
+    return next(action);
   };
 }
 
