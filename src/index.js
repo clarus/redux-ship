@@ -9,7 +9,7 @@ export type Effect<Action, State> = {
   type: 'All',
   ships: Generator<Effect<Action, State>, any, any>[],
 } | {
-  type: 'Dispatch',
+  type: 'Next',
   action: Action,
 } | {
   type: 'GetState',
@@ -18,7 +18,7 @@ export type Effect<Action, State> = {
 export type t<Action, State, A> = Generator<Effect<Action, State>, A, any>;
 
 function run<Action, State, A>(
-  dispatch: (action: Action) => void | Promise<void>,
+  next: (action: Action) => void | Promise<void>,
   getState: () => State,
   ship: t<Action, State, A>,
   answer?: any)
@@ -32,26 +32,26 @@ function run<Action, State, A>(
     const fnResult: Promise<any> | t<Action, State, any> = result.value.fn(...result.value.args);
     if (fnResult instanceof Promise) {
       return fnResult.then(newAnswer =>
-        run(dispatch, getState, ship, newAnswer)
+        run(next, getState, ship, newAnswer)
       );
     }
-    return run(dispatch, getState, fnResult).then(newAnswer =>
-      run(dispatch, getState, ship, newAnswer)
+    return run(next, getState, fnResult).then(newAnswer =>
+      run(next, getState, ship, newAnswer)
     );
   }
   case 'All':
     return Promise.all(result.value.ships.map(currentShip =>
-      run(dispatch, getState, currentShip))
+      run(next, getState, currentShip))
     ).then(newAnswer =>
-      run(dispatch, getState, ship, newAnswer)
+      run(next, getState, ship, newAnswer)
     );
-  case 'Dispatch':
-    return Promise.resolve(dispatch(result.value.action)).then(() =>
-      run(dispatch, getState, ship)
+  case 'Next':
+    return Promise.resolve(next(result.value.action)).then(() =>
+      run(next, getState, ship)
     );
   case 'GetState': {
     const newAnswer = getState();
-    return run(dispatch, getState, ship, newAnswer);
+    return run(next, getState, ship, newAnswer);
   }
   default:
     return result.value;
@@ -65,19 +65,16 @@ type ReduxStore<Action, State> = {
 
 type ReduxMiddleware<Action, State> =
   (store: ReduxStore<Action, State>) =>
-  (next: (action: Action) => any) =>
+  (next: (action: Action) => void | Promise<void>) =>
   (action: Action) =>
   any;
 
 export function middleware<Action, State>(
-  actionToShip: (action: Action) => ?t<Action, State, void>
+  actionToShip: (action: Action) => t<Action, State, void>
 ): ReduxMiddleware<Action, State> {
   return store => next => action => {
     const ship = actionToShip(action);
-    if (ship) {
-      return run(store.dispatch, store.getState, ship);
-    }
-    return next(action);
+    return run(next, store.getState, ship);
   };
 }
 
@@ -216,9 +213,9 @@ export const all7: <Action, State, A1, A2, A3, A4, A5, A6, A7>(
 ) => t<Action, State, [A1, A2, A3, A4, A5, A6, A7]> =
   allAny;
 
-export function* dispatch<Action, State>(action: Action): t<Action, State, void> {
+export function* next<Action, State>(action: Action): t<Action, State, void> {
   yield {
-    type: 'Dispatch',
+    type: 'Next',
     action,
   };
 }
@@ -268,9 +265,9 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
     };
     return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
   }
-  case 'Dispatch':
+  case 'Next':
     yield {
-      type: 'Dispatch',
+      type: 'Next',
       action: mapAction(result.value.action),
     };
     return yield* mapWithAnswer(ship, mapAction, mapState);
@@ -284,11 +281,11 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
 }
 
 export function map<Action1, State1, Action2, State2, A>(
-  ship: ?t<Action1, State1, A>,
+  ship: t<Action1, State1, A>,
   mapAction: (action1: Action1) => Action2,
   mapState: (state2: State2) => State1
-): ?t<Action2, State2, A> {
-  return ship && mapWithAnswer(ship, mapAction, mapState);
+): t<Action2, State2, A> {
+  return mapWithAnswer(ship, mapAction, mapState);
 }
 
 export type Trace<Action, State> = {
@@ -305,7 +302,7 @@ export type Trace<Action, State> = {
   next: Trace<Action, State>,
   traces: Trace<Action, State>[],
 } | {
-  type: 'Dispatch',
+  type: 'Next',
   action: Action,
   next: Trace<Action, State>,
 } | {
@@ -370,14 +367,14 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
       },
     };
   }
-  case 'Dispatch': {
+  case 'Next': {
     const {value} = result;
     yield value;
     const next = yield* trace(ship);
     return {
       result: next.result,
       trace: {
-        type: 'Dispatch',
+        type: 'Next',
         action: value.action,
         next: next.trace,
       },

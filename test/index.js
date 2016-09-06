@@ -38,17 +38,17 @@ function reduce(state: State, action: Action): State {
 
 function* slowIncrement(): Ship.t<Action, State, void> {
   yield* Ship.delay(1000);
-  yield* Ship.dispatch({
+  yield* Ship.next({
     type: 'Increment',
   });
 }
 
-function actionToShip(action: Action): ?Ship.t<Action, State, void> {
+function actionToShip(action: Action): Ship.t<Action, State, void> {
   switch (action.type) {
   case 'SlowIncrement':
     return slowIncrement();
   default:
-    return null;
+    return Ship.next(action);
   }
 }
 
