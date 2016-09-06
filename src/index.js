@@ -254,13 +254,12 @@ function* mapWithAnswer<Action1, State1, Action2, State2, A>(
   }
 }
 
-export function map<Action1, State1, Action2, State2, A>(
+export const map: <Action1, State1, Action2, State2, A>(
   ship: t<Action1, State1, A>,
   mapAction: (action1: Action1) => Action2,
   mapState: (state2: State2) => State1
-): t<Action2, State2, A> {
-  return mapWithAnswer(ship, mapAction, mapState);
-}
+) => t<Action2, State2, A> =
+  mapWithAnswer;
 
 export type Trace<Action, State> = {
   type: 'Done',
@@ -284,7 +283,7 @@ export type Trace<Action, State> = {
   state: State,
 };
 
-export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any)
+function* traceWithAnswer<Action, State, A>(ship: t<Action, State, A>, answer?: any)
   : t<Action, State, {result: A, trace: Trace<Action, State>}> {
   const result = ship.next(answer);
   if (result.done) {
@@ -300,7 +299,7 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
   case 'Call': {
     const {value} = result;
     const newAnswer: any = yield value;
-    const next = yield* trace(ship, newAnswer);
+    const next = yield* traceWithAnswer(ship, newAnswer);
     return {
       result: next.result,
       trace: {
@@ -314,9 +313,9 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
   case 'All': {
     const newAnswer: any = yield {
       type: 'All',
-      ships: result.value.ships.map(trace),
+      ships: result.value.ships.map(traceWithAnswer),
     };
-    const next = yield* trace(ship, newAnswer.map((currentAnswer) => currentAnswer.result));
+    const next = yield* traceWithAnswer(ship, newAnswer.map((currentAnswer) => currentAnswer.result));
     return {
       result: next.result,
       trace: {
@@ -329,7 +328,7 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
   case 'Next': {
     const {value} = result;
     yield value;
-    const next = yield* trace(ship);
+    const next = yield* traceWithAnswer(ship);
     return {
       result: next.result,
       trace: {
@@ -341,7 +340,7 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
   }
   case 'GetState': {
     const newAnswer: any = yield result.value;
-    const next = yield* trace(ship, newAnswer);
+    const next = yield* traceWithAnswer(ship, newAnswer);
     return {
       result: next.result,
       trace: {
@@ -355,6 +354,11 @@ export function* trace<Action, State, A>(ship: t<Action, State, A>, answer?: any
     return result.value;
   }
 }
+
+export const trace: <Action, State, A>(
+  ship: t<Action, State, A>
+) => t<Action, State, {result: A, trace: Trace<Action, State>}> =
+  traceWithAnswer;
 
 function delayPromise(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
