@@ -17,7 +17,7 @@ export type Effect<Action, State> = {
 
 export type t<Action, State, A> = Generator<Effect<Action, State>, A, any>;
 
-function run<Action, State, A>(
+function runWithAnswer<Action, State, A>(
   next: (action: Action) => void | Promise<void>,
   getState: () => State,
   ship: t<Action, State, A>,
@@ -31,22 +31,22 @@ function run<Action, State, A>(
   case 'Call': {
     const fnResult = result.value.fn(...result.value.args);
     return fnResult.then(newAnswer =>
-      run(next, getState, ship, newAnswer)
+      runWithAnswer(next, getState, ship, newAnswer)
     );
   }
   case 'All':
     return Promise.all(result.value.ships.map(currentShip =>
-      run(next, getState, currentShip))
+      runWithAnswer(next, getState, currentShip))
     ).then(newAnswer =>
-      run(next, getState, ship, newAnswer)
+      runWithAnswer(next, getState, ship, newAnswer)
     );
   case 'Next':
     return Promise.resolve(next(result.value.action)).then(() =>
-      run(next, getState, ship)
+      runWithAnswer(next, getState, ship)
     );
   case 'GetState': {
     const newAnswer = getState();
-    return run(next, getState, ship, newAnswer);
+    return runWithAnswer(next, getState, ship, newAnswer);
   }
   default:
     return result.value;
@@ -69,7 +69,7 @@ export function middleware<Action, State>(
 ): ReduxMiddleware<Action, State> {
   return store => next => action => {
     const ship = actionToShip(action);
-    run(next, store.getState, ship);
+    runWithAnswer(next, store.getState, ship);
     return next(action);
   };
 }
@@ -263,12 +263,12 @@ export const map: <Action1, State1, Action2, State2, A>(
 
 export type Trace<Action, State> = {
   type: 'Done',
-  result: any,
+  result?: any,
 } | {
   type: 'Call',
   args: any[],
   next: Trace<Action, State>,
-  result: any,
+  result?: any,
 } | {
   type: 'All',
   next: Trace<Action, State>,
@@ -359,6 +359,88 @@ export const trace: <Action, State, A>(
   ship: t<Action, State, A>
 ) => t<Action, State, {result: A, trace: Trace<Action, State>}> =
   traceWithAnswer;
+
+function simulationError<Action, State>(actual: string, expected: string): Trace<Action, State> {
+  return {
+    type: 'Done',
+    result: {
+      actual,
+      expected,
+      message: 'Simulation error',
+    },
+  };
+}
+
+function simulateWithAnswer<Action, State, A>(
+  ship: t<Action, State, A>,
+  trace: Trace<Action, State>,
+  answer?: any
+): Trace<Action, State> {
+  const result = ship.next(answer);
+  if (result.done) {
+    return {
+      type: 'Done',
+      result: result.value,
+    };
+  }
+  switch (result.value.type) {
+  case 'Call': {
+    if (trace.type === 'Call') {
+      const newAnswer = trace.result;
+      return {
+        type: 'Call',
+        args: result.value.args,
+        next: simulateWithAnswer(ship, trace.next, newAnswer),
+        result: newAnswer,
+      };
+    }
+    return simulationError(trace.type, 'Call');
+  }
+  case 'All': {
+    if (trace.type === 'All') {
+      const {traces} = trace;
+      const newAnswer = result.value.ships.map((ship, shipIndex) =>
+        simulateWithAnswer(ship, traces[shipIndex])
+      );
+      return {
+        type: 'All',
+        next: simulateWithAnswer(ship, trace.next, newAnswer),
+        traces: newAnswer,
+      };
+    }
+    return simulationError(trace.type, 'All');
+  }
+  case 'Next': {
+    if (trace.type === 'Next') {
+      return {
+        type: 'Next',
+        action: result.value.action,
+        next: simulateWithAnswer(ship, trace.next),
+      };
+    }
+    return simulationError(trace.type, 'Next');
+  }
+  case 'GetState': {
+    if (trace.type === 'GetState') {
+      const newAnswer = trace.state;
+      return {
+        type: 'GetState',
+        next: simulateWithAnswer(ship, trace.next, newAnswer),
+        state: newAnswer,
+      };
+    }
+    return simulationError(trace.type, 'GetState');
+  }
+  default:
+    return result.value;
+  }
+}
+
+export const simulate: <Action, State, A>(
+  ship: t<Action, State, A>,
+  trace: Trace<Action, State>
+) => Trace<Action, State> =
+  simulateWithAnswer;
 
 function delayPromise(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
