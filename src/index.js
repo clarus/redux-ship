@@ -261,6 +261,111 @@ export const map: <Action1, State1, Action2, State2, A>(
 ) => t<Action2, State2, A> =
   mapWithAnswer;
 
+type Event<Action, State> = {
+  type: 'Return',
+  result?: any,
+} | {
+  type: 'Call',
+  args: any[],
+  result?: any,
+} | {
+  type: 'All',
+  snapshots: Event<Action, State>[],
+} | {
+  type: 'Dispatch',
+  action: Action
+} | {
+  type: 'GetState',
+  state: State,
+}
+
+export type Snapshot<Action, State> = Event<Action, State>[];
+
+function* snapshotWithAnswer<Action, State, A>(ship: t<Action, State, A>, answer?: any)
+  : t<Action, State, {result: A, snapshot: Snapshot<Action, State>}> {
+  const result = ship.next(answer);
+  if (result.done) {
+    return {
+      result: (result.value: any),
+      snapshot: [{
+        type: 'Return',
+        result: result.value,
+      }],
+    };
+  }
+  switch (result.value.type) {
+  case 'Call': {
+    const {value} = result;
+    const newAnswer: any = yield value;
+    const next = yield* snapshotWithAnswer(ship, newAnswer);
+    return {
+      result: next.result,
+      snapshot: [
+        {
+          type: 'Call',
+          args: value.args,
+          result: newAnswer,
+        },
+        ...next.snapshot,
+      ],
+    };
+  }
+  case 'All': {
+    const newAnswer: any = yield {
+      type: 'All',
+      ships: result.value.ships.map(snapshotWithAnswer),
+    };
+    const next = yield* snapshotWithAnswer(ship, newAnswer.map((currentAnswer) => currentAnswer.result));
+    return {
+      result: next.result,
+      snapshot: [
+        {
+          type: 'All',
+          snapshots: newAnswer.map((currentAnswer) => currentAnswer.snapshot),
+        },
+        ...next.snapshot,
+      ],
+    };
+  }
+  case 'Next': {
+    const {value} = result;
+    yield value;
+    const next = yield* snapshotWithAnswer(ship);
+    return {
+      result: next.result,
+      snapshot: [
+        {
+          type: 'Dispatch',
+          action: value.action,
+        },
+        ...next.snapshot,
+      ],
+    };
+  }
+  case 'GetState': {
+    const newAnswer: any = yield result.value;
+    const next = yield* snapshotWithAnswer(ship, newAnswer);
+    return {
+      result: next.result,
+      snapshot: [
+        {
+          type: 'GetState',
+          state: newAnswer,
+        },
+        ...next.snapshot,
+      ],
+    };
+  }
+  default:
+    return result.value;
+  }
+}
+
+export const snapshot: <Action, State, A>(
+  ship: t<Action, State, A>
+) => t<Action, State, {result: A, snapshot: Snapshot<Action, State>}> =
+  snapshotWithAnswer;
+
 export type Trace<Action, State> = {
   type: 'Done',
   result?: any,
