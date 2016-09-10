@@ -263,14 +263,14 @@ export const map: <Action1, State1, Action2, State2, A>(
 
 type Event<Action, State> = {
   type: 'Return',
-  result?: any,
+  result: any,
 } | {
   type: 'Call',
   args: any[],
   result?: any,
 } | {
   type: 'All',
-  snapshots: Event<Action, State>[],
+  snapshots: (Event<Action, State>[])[],
 } | {
   type: 'Dispatch',
   action: Action
@@ -287,7 +287,7 @@ function* snapshotWithAnswer<Action, State, A>(ship: t<Action, State, A>, answer
   if (result.done) {
     return {
       result: (result.value: any),
-      snapshot: [{
+      snapshot: result.value === undefined ? [] : [{
         type: 'Return',
         result: result.value,
       }],
