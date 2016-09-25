@@ -2,7 +2,7 @@
 
 // eslint-disable-next-line no-unused-vars
 export type Command<Effect, Action, State> = {
-  type: 'Call',
+  type: 'Effect',
   effect: Effect,
 } | {
   type: 'Dispatch',
@@ -22,15 +22,15 @@ export type Yield<Effect, Action, State> = {
 export type t<Effect, Action, State, A> = Generator<Yield<Effect, Action, State>, A, any>;
 
 function runCommand<Effect, Action, State>(
-  runCall: (effect: Effect) => any,
+  runEffect: (effect: Effect) => any,
   runDispatch: (action: Action) => void | Promise<void>,
   runGetState: () => State,
   command: Command<Effect, Action, State>
 ): Promise<any> {
   return Promise.resolve((() => {
     switch (command.type) {
-    case 'Call':
-      return runCall(command.effect);
+    case 'Effect':
+      return runEffect(command.effect);
     case 'Dispatch':
       return runDispatch(command.action);
     case 'GetState':
@@ -42,7 +42,7 @@ function runCommand<Effect, Action, State>(
 }
 
 function runWithAnswer<Effect, Action, State, A>(
-  runCall: (effect: Effect) => any,
+  runEffect: (effect: Effect) => any,
   runDispatch: (action: Action) => void | Promise<void>,
   runGetState: () => State,
   ship: t<Effect, Action, State, A>,
@@ -54,14 +54,14 @@ function runWithAnswer<Effect, Action, State, A>(
   }
   switch (result.value.type) {
   case 'Command':
-    return runCommand(runCall, runDispatch, runGetState, result.value.command).then((newAnswer) =>
-      runWithAnswer(runCall, runDispatch, runGetState, ship, newAnswer)
+    return runCommand(runEffect, runDispatch, runGetState, result.value.command).then((newAnswer) =>
+      runWithAnswer(runEffect, runDispatch, runGetState, ship, newAnswer)
     );
   case 'All':
     return Promise.all(result.value.ships.map(currentShip =>
-      runWithAnswer(runCall, runDispatch, runGetState, currentShip))
+      runWithAnswer(runEffect, runDispatch, runGetState, currentShip))
     ).then(newAnswer =>
-      runWithAnswer(runCall, runDispatch, runGetState, ship, newAnswer)
+      runWithAnswer(runEffect, runDispatch, runGetState, ship, newAnswer)
     );
   default:
     return result.value.type;
@@ -80,12 +80,12 @@ type ReduxMiddleware<Action, NextAction, State> =
   Promise<void>;
 
 export function middleware<ShipAction, Effect, Action, State>(
-  runCall: (effect: Effect) => any,
+  runEffect: (effect: Effect) => any,
   actionToShip: (shipAction: ShipAction) => t<Effect, Action, State, void>
 ): ReduxMiddleware<ShipAction, Action, State> {
   return store => next => shipAction => {
     const ship = actionToShip(shipAction);
-    return runWithAnswer(runCall, next, store.getState, ship);
+    return runWithAnswer(runEffect, next, store.getState, ship);
   };
 }
 
@@ -93,7 +93,7 @@ export function* call<Effect, Action, State>(effect: Effect): t<Effect, Action, 
   const result: any = yield {
     type: 'Command',
     command: {
-      type: 'Call',
+      type: 'Effect',
       effect,
     },
   };

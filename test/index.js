@@ -46,7 +46,7 @@ function* delay<Action, State>(ms: number): Ship.t<Effect, Action, State, void> 
   });
 }
 
-function runCall(effect: Effect): any {
+function runEffect(effect: Effect): any {
   switch (effect.type) {
   case 'Delay':
     return new Promise((resolve) =>
@@ -80,7 +80,7 @@ function* actionToShip(action: ShipAction): Ship.t<Effect, Action, State, void> 
 const store = Redux.createStore(
   reduce,
   initialState,
-  Redux.applyMiddleware(Ship.middleware(runCall, actionToShip))
+  Redux.applyMiddleware(Ship.middleware(runEffect, actionToShip))
 );
 
 test((t) => {
