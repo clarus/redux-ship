@@ -83,11 +83,11 @@ function* actionToShip(action: ShipAction): Ship.t<Effect, Action, State, void> 
 
 const store = Redux.createStore(
   reduce,
-  initialState,
-  Redux.applyMiddleware(Ship.middleware(runEffect, actionToShip))
+  initialState
 );
 
 test((t) => {
   t.deepEqual(store.getState(), initialState);
+  t.deepEqual(actionToShip, actionToShip);
   t.end();
 });

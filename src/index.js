@@ -68,26 +68,15 @@ function runWithAnswer<Effect, Action, State, A>(
   }
 }
 
-type ReduxStore<Action, State> = {
-  dispatch: (action: Action) => void | Promise<void>,
-  getState: () => State,
-};
-
-type ReduxMiddleware<Action, NextAction, State> =
-  (store: ReduxStore<Action, State>) =>
-  (next: (nextAction: NextAction) => void | Promise<void>) =>
-  (action: Action) =>
-  Promise<void>;
-
-export function middleware<ShipAction, Effect, Action, State>(
+/* eslint-disable no-undef */
+export const run: <Effect, Action, State, A>(
   runEffect: (effect: Effect) => any,
-  actionToShip: (shipAction: ShipAction) => t<Effect, Action, State, void>
-): ReduxMiddleware<ShipAction, Action, State> {
-  return store => next => shipAction => {
-    const ship = actionToShip(shipAction);
-    return runWithAnswer(runEffect, next, store.getState, ship);
-  };
-}
+  runDispatch: (action: Action) => void | Promise<void>,
+  runGetState: () => State,
+  ship: t<Effect, Action, State, A>
+) => Promise<A> =
+  runWithAnswer;
+/* eslint-enable no-undef */
 
 export function* call<Effect, Action, State>(effect: Effect): t<Effect, Action, State, any> {
   const result: any = yield {
