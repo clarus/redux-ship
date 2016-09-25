@@ -36,7 +36,7 @@ function runCommand<Effect, Action, State>(
     case 'GetState':
       return runGetState();
     default:
-      return command.type;
+      return command;
     }
   })());
 }
@@ -64,7 +64,7 @@ function runWithAnswer<Effect, Action, State, A>(
       runWithAnswer(runEffect, runDispatch, runGetState, ship, newAnswer)
     );
   default:
-    return result.value.type;
+    return result.value;
   }
 }
 
@@ -189,54 +189,58 @@ export function* getState<Effect, Action, State>(): t<Effect, Action, State, Sta
   return state;
 }
 
-function* mapWithAnswer<Action1, State1, Effect1, Action2, State2, Effect2, A>(
-  ship: t<Action1, State1, Effect1, A>,
+function* mapCommand<Effect1, Action1, State1, Effect2, Action2, State2>(
+  mapEffect: (effect1: Effect1) => t<Effect2, Action2, State2, any>,
   mapAction: (action1: Action1) => Action2,
   mapState: (state2: State2) => State1,
-  mapEffect: (effect1: Effect1) => Effect2,
+  command: Command<Effect1, Action1, State1>
+): t<Effect2, Action2, State2, any> {
+  switch (command.type) {
+  case 'Effect':
+    return yield* mapEffect(command.effect);
+  case 'Dispatch':
+    return yield* dispatch(mapAction(command.action));
+  case 'GetState':
+    return mapState(yield* getState());
+  default:
+    return command;
+  }
+}
+
+function* mapWithAnswer<Effect1, Action1, State1, Effect2, Action2, State2, A>(
+  mapEffect: (effect1: Effect1) => t<Effect2, Action2, State2, any>,
+  mapAction: (action1: Action1) => Action2,
+  mapState: (state2: State2) => State1,
+  ship: t<Effect1, Action1, State1, A>,
   answer?: any
-): t<Action2, State2, Effect2, A> {
+): t<Effect2, Action2, State2, A> {
   const result = ship.next(answer);
   if (result.done) {
     return (result.value: any);
   }
   switch (result.value.type) {
-  case 'Call': {
-    const newAnswer = yield {
-      type: 'Call',
-      effect: mapEffect(result.value.effect),
-    };
-    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect, newAnswer);
+  case 'Command': {
+    const newAnswer = yield* mapCommand(mapEffect, mapAction, mapState, result.value.command);
+    return yield* mapWithAnswer(mapEffect, mapAction, mapState, ship, newAnswer);
   }
   case 'All': {
-    const newAnswer = yield {
-      type: 'All',
-      mapWithAnswer(currentShip, mapAction, mapState, mapEffect),
-      ships: result.value.ships.map((currentShip) =>
-    };
-    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect, newAnswer);
-  }
-  case 'Next':
-    yield {
-      type: 'Next',
-      action: mapAction(result.value.action),
-    };
-    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect);
-  case 'GetState': {
-    const newAnswer: any = yield result.value;
-    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect, mapState(newAnswer));
+    const newAnswer = yield* allAny(...result.value.ships.map((currenyShip) =>
+      mapWithAnswer(mapEffect, mapAction, mapState, currenyShip)
+    ));
+    return yield* mapWithAnswer(mapEffect, mapAction, mapState, ship, newAnswer);
   }
   default:
     return result.value;
   }
 }
 
-export const map: <Action1, State1, Action2, State2, A>(
-  ship: t<Action1, State1, A>,
+export function map<Effect, Action1, State1, Action2, State2, A>(
   mapAction: (action1: Action1) => Action2,
-  mapState: (state2: State2) => State1
-) => t<Action2, State2, A> =
-  mapWithAnswer;
+  mapState: (state2: State2) => State1,
+  ship: t<Effect, Action1, State1, A>
+): t<Effect, Action2, State2, A> {
+  return mapWithAnswer((effect) => call(effect), mapAction, mapState, ship);
+}
 
 export type Event<Action, State> = {
   type: 'Return',

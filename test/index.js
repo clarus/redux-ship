@@ -12,6 +12,8 @@ const initialState: State = {
 };
 
 type Action = {
+  type: '@@redux/INIT',
+} | {
   type: 'Increment',
 } | {
   type: 'Decrement',
@@ -19,6 +21,8 @@ type Action = {
 
 function reduce(state: State, action: Action): State {
   switch (action.type) {
+  case '@@redux/INIT':
+    return state;
   case 'Increment':
     return {
       ...state,
@@ -30,7 +34,7 @@ function reduce(state: State, action: Action): State {
       counter: state.counter - 1,
     };
   default:
-    return state;
+    return action;
   }
 }
 
@@ -53,7 +57,7 @@ function runEffect(effect: Effect): any {
       setTimeout(resolve, effect.ms)
     );
   default:
-    return effect.type;
+    return effect;
   }
 }
 
