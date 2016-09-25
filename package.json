@@ -7,7 +7,6 @@
     "build": "rollup -c",
     "eslint": "eslint src",
     "flow": "flow",
-    "start": "babel-node src/index.js",
     "test": "BABEL_ENV=test tape -r babel-register -r babel-polyfill test/"
   },
   "repository": {
