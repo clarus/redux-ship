@@ -15,8 +15,6 @@ type Action = {
   type: 'Increment',
 } | {
   type: 'Decrement',
-} | {
-  type: 'SlowIncrement',
 };
 
 function reduce(state: State, action: Action): State {
@@ -36,14 +34,41 @@ function reduce(state: State, action: Action): State {
   }
 }
 
-function* slowIncrement(): Ship.t<Action, State, void> {
-  yield* Ship.delay(1000);
-  yield* Ship.next({
+type Effect = {
+  type: 'Delay',
+  ms: number,
+};
+
+function* delay<Action, State>(ms: number): Ship.t<Effect, Action, State, void> {
+  yield* Ship.call({
+    type: 'Delay',
+    ms,
+  });
+}
+
+function runCall(effect: Effect): any {
+  switch (effect.type) {
+  case 'Delay':
+    return new Promise((resolve) =>
+      setTimeout(resolve, effect.ms)
+    );
+  default:
+    return effect.type;
+  }
+}
+
+type ShipAction = {
+  type: 'SlowIncrement',
+};
+
+function* slowIncrement(): Ship.t<Effect, Action, State, void> {
+  yield* delay(1000);
+  yield* Ship.dispatch({
     type: 'Increment',
   });
 }
 
-function* actionToShip(action: Action): Ship.t<Action, State, void> {
+function* actionToShip(action: ShipAction): Ship.t<Effect, Action, State, void> {
   switch (action.type) {
   case 'SlowIncrement':
     return yield* slowIncrement();
@@ -55,7 +80,7 @@ function* actionToShip(action: Action): Ship.t<Action, State, void> {
 const store = Redux.createStore(
   reduce,
   initialState,
-  Redux.applyMiddleware(Ship.middleware(actionToShip))
+  Redux.applyMiddleware(Ship.middleware(runCall, actionToShip))
 );
 
 test((t) => {

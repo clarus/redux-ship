@@ -1,55 +1,70 @@
 // @flow
-/* eslint-disable no-undef */
 
-export type Effect<Action, State> = {
+// eslint-disable-next-line no-unused-vars
+export type Command<Effect, Action, State> = {
   type: 'Call',
-  args: any[],
-  fn: (...args: any[]) => Promise<any>,
+  effect: Effect,
 } | {
-  type: 'All',
-  ships: Generator<Effect<Action, State>, any, any>[],
-} | {
-  type: 'Next',
+  type: 'Dispatch',
   action: Action,
 } | {
   type: 'GetState',
 };
 
-export type t<Action, State, A> = Generator<Effect<Action, State>, A, any>;
+export type Yield<Effect, Action, State> = {
+  type: 'Command',
+  command: Command<Effect, Action, State>,
+} | {
+  type: 'All',
+  ships: Generator<Yield<Effect, Action, State>, any, any>[],
+};
 
-function runWithAnswer<Action, State, A>(
-  next: (action: Action) => void | Promise<void>,
-  getState: () => State,
-  ship: t<Action, State, A>,
-  answer?: any)
-  : Promise<A> {
+export type t<Effect, Action, State, A> = Generator<Yield<Effect, Action, State>, A, any>;
+
+function runCommand<Effect, Action, State>(
+  runCall: (effect: Effect) => any,
+  runDispatch: (action: Action) => void | Promise<void>,
+  runGetState: () => State,
+  command: Command<Effect, Action, State>
+): Promise<any> {
+  return Promise.resolve((() => {
+    switch (command.type) {
+    case 'Call':
+      return runCall(command.effect);
+    case 'Dispatch':
+      return runDispatch(command.action);
+    case 'GetState':
+      return runGetState();
+    default:
+      return command.type;
+    }
+  })());
+}
+
+function runWithAnswer<Effect, Action, State, A>(
+  runCall: (effect: Effect) => any,
+  runDispatch: (action: Action) => void | Promise<void>,
+  runGetState: () => State,
+  ship: t<Effect, Action, State, A>,
+  answer?: any
+): Promise<A> {
   const result = ship.next(answer);
   if (result.done) {
     return Promise.resolve((result.value: any));
   }
   switch (result.value.type) {
-  case 'Call': {
-    const fnResult = result.value.fn(...result.value.args);
-    return fnResult.then(newAnswer =>
-      runWithAnswer(next, getState, ship, newAnswer)
+  case 'Command':
+    return runCommand(runCall, runDispatch, runGetState, result.value.command).then((newAnswer) =>
+      runWithAnswer(runCall, runDispatch, runGetState, ship, newAnswer)
     );
-  }
   case 'All':
     return Promise.all(result.value.ships.map(currentShip =>
-      runWithAnswer(next, getState, currentShip))
+      runWithAnswer(runCall, runDispatch, runGetState, currentShip))
     ).then(newAnswer =>
-      runWithAnswer(next, getState, ship, newAnswer)
+      runWithAnswer(runCall, runDispatch, runGetState, ship, newAnswer)
     );
-  case 'Next':
-    return Promise.resolve(next(result.value.action)).then(() =>
-      runWithAnswer(next, getState, ship)
-    );
-  case 'GetState': {
-    const newAnswer = getState();
-    return runWithAnswer(next, getState, ship, newAnswer);
-  }
   default:
-    return result.value;
+    return result.value.type;
   }
 }
 
@@ -58,88 +73,36 @@ type ReduxStore<Action, State> = {
   getState: () => State,
 };
 
-type ReduxMiddleware<Action, State> =
+type ReduxMiddleware<Action, NextAction, State> =
   (store: ReduxStore<Action, State>) =>
-  (next: (action: Action) => void | Promise<void>) =>
+  (next: (nextAction: NextAction) => void | Promise<void>) =>
   (action: Action) =>
-  any;
+  Promise<void>;
 
-export function middleware<Action, State>(
-  actionToShip: (action: Action) => t<Action, State, void>
-): ReduxMiddleware<Action, State> {
-  return store => next => action => {
-    const ship = actionToShip(action);
-    runWithAnswer(next, store.getState, ship);
-    return next(action);
+export function middleware<ShipAction, Effect, Action, State>(
+  runCall: (effect: Effect) => any,
+  actionToShip: (shipAction: ShipAction) => t<Effect, Action, State, void>
+): ReduxMiddleware<ShipAction, Action, State> {
+  return store => next => shipAction => {
+    const ship = actionToShip(shipAction);
+    return runWithAnswer(runCall, next, store.getState, ship);
   };
 }
 
-function* callAny<Action, State, A>(
-  fn: (...args: any[]) => A | Promise<A>, ...args: any[]
-): t<Action, State, A> {
+export function* call<Effect, Action, State>(effect: Effect): t<Effect, Action, State, any> {
   const result: any = yield {
-    type: 'Call',
-    args,
-    fn: (...args) => Promise.resolve(fn(...args)),
+    type: 'Command',
+    command: {
+      type: 'Call',
+      effect,
+    },
   };
   return result;
 }
 
-export function call0<Action, State, A>(value: A | Promise<A>)
-  : t<Action, State, A> {
-  return callAny(() => value);
-}
-
-export const call1: <Action, State, A1, B>(
-  fn: (arg1: A1) =>
-    B | Promise<B>,
-  arg1: A1
-) => t<Action, State, B> =
-  callAny;
-
-export const call2: <Action, State, A1, A2, B>(
-  fn: (arg1: A1, arg2: A2) =>
-    B | Promise<B>,
-  arg1: A1, arg2: A2
-) => t<Action, State, B> =
-  callAny;
-
-export const call3: <Action, State, A1, A2, A3, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3) =>
-    B | Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3
-) => t<Action, State, B> =
-  callAny;
-
-export const call4: <Action, State, A1, A2, A3, A4, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) =>
-    B | Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3, arg4: A4
-) => t<Action, State, B> =
-  callAny;
-
-export const call5: <Action, State, A1, A2, A3, A4, A5, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) =>
-    B | Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5
-) => t<Action, State, B> =
-  callAny;
-
-export const call6: <Action, State, A1, A2, A3, A4, A5, A6, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) =>
-    B | Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6
-) => t<Action, State, B> =
-  callAny;
-
-export const call7: <Action, State, A1, A2, A3, A4, A5, A6, A7, B>(
-  fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) =>
-    B | Promise<B>,
-  arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7
-) => t<Action, State, B> =
-  callAny;
-
-function* allAny<Action, State>(...ships: t<Action, State, any>[]): t<Action, State, any[]> {
+function* allAny<Effect, Action, State>(
+  ...ships: t<Effect, Action, State, any>[]
+): t<Effect, Action, State, any[]> {
   const result: any = yield {
     type: 'All',
     ships,
@@ -147,107 +110,121 @@ function* allAny<Action, State>(...ships: t<Action, State, any>[]): t<Action, St
   return result;
 }
 
-export function all<Action, State, A>(ships: t<Action, State, A>[]): t<Action, State, A[]> {
+export function all<Effect, Action, State, A>(
+  ships: t<Effect, Action, State, A>[]
+): t<Effect, Action, State, A[]> {
   return allAny(...ships);
 }
 
-export const all2: <Action, State, A1, A2>(
-  ship1: t<Action, State, A1>,
-  ship2: t<Action, State, A2>
-) => t<Action, State, [A1, A2]> =
+/* eslint-disable no-undef */
+export const all2: <Effect, Action, State, A1, A2>(
+  ship1: t<Effect, Action, State, A1>,
+  ship2: t<Effect, Action, State, A2>
+) => t<Effect, Action, State, [A1, A2]> =
   allAny;
 
-export const all3: <Action, State, A1, A2, A3>(
-  ship1: t<Action, State, A1>,
-  ship2: t<Action, State, A2>,
-  ship3: t<Action, State, A3>
-) => t<Action, State, [A1, A2, A3]> =
+export const all3: <Effect, Action, State, A1, A2, A3>(
+  ship1: t<Effect, Action, State, A1>,
+  ship2: t<Effect, Action, State, A2>,
+  ship3: t<Effect, Action, State, A3>
+) => t<Effect, Action, State, [A1, A2, A3]> =
   allAny;
 
-export const all4: <Action, State, A1, A2, A3, A4>(
-  ship1: t<Action, State, A1>,
-  ship2: t<Action, State, A2>,
-  ship3: t<Action, State, A3>,
-  ship4: t<Action, State, A4>
-) => t<Action, State, [A1, A2, A3, A4]> =
+export const all4: <Effect, Action, State, A1, A2, A3, A4>(
+  ship1: t<Effect, Action, State, A1>,
+  ship2: t<Effect, Action, State, A2>,
+  ship3: t<Effect, Action, State, A3>,
+  ship4: t<Effect, Action, State, A4>
+) => t<Effect, Action, State, [A1, A2, A3, A4]> =
   allAny;
 
-export const all5: <Action, State, A1, A2, A3, A4, A5>(
-  ship1: t<Action, State, A1>,
-  ship2: t<Action, State, A2>,
-  ship3: t<Action, State, A3>,
-  ship4: t<Action, State, A4>,
-  ship4: t<Action, State, A5>
-) => t<Action, State, [A1, A2, A3, A4, A5]> =
+export const all5: <Effect, Action, State, A1, A2, A3, A4, A5>(
+  ship1: t<Effect, Action, State, A1>,
+  ship2: t<Effect, Action, State, A2>,
+  ship3: t<Effect, Action, State, A3>,
+  ship4: t<Effect, Action, State, A4>,
+  ship4: t<Effect, Action, State, A5>
+) => t<Effect, Action, State, [A1, A2, A3, A4, A5]> =
   allAny;
 
-export const all6: <Action, State, A1, A2, A3, A4, A5, A6>(
-  ship1: t<Action, State, A1>,
-  ship2: t<Action, State, A2>,
-  ship3: t<Action, State, A3>,
-  ship4: t<Action, State, A4>,
-  ship4: t<Action, State, A5>,
-  ship4: t<Action, State, A6>
-) => t<Action, State, [A1, A2, A3, A4, A5, A6]> =
+export const all6: <Effect, Action, State, A1, A2, A3, A4, A5, A6>(
+  ship1: t<Effect, Action, State, A1>,
+  ship2: t<Effect, Action, State, A2>,
+  ship3: t<Effect, Action, State, A3>,
+  ship4: t<Effect, Action, State, A4>,
+  ship4: t<Effect, Action, State, A5>,
+  ship4: t<Effect, Action, State, A6>
+) => t<Effect, Action, State, [A1, A2, A3, A4, A5, A6]> =
   allAny;
 
-export const all7: <Action, State, A1, A2, A3, A4, A5, A6, A7>(
-  ship1: t<Action, State, A1>,
-  ship2: t<Action, State, A2>,
-  ship3: t<Action, State, A3>,
-  ship4: t<Action, State, A4>,
-  ship4: t<Action, State, A5>,
-  ship4: t<Action, State, A6>,
-  ship4: t<Action, State, A7>
-) => t<Action, State, [A1, A2, A3, A4, A5, A6, A7]> =
+export const all7: <Effect, Action, State, A1, A2, A3, A4, A5, A6, A7>(
+  ship1: t<Effect, Action, State, A1>,
+  ship2: t<Effect, Action, State, A2>,
+  ship3: t<Effect, Action, State, A3>,
+  ship4: t<Effect, Action, State, A4>,
+  ship4: t<Effect, Action, State, A5>,
+  ship4: t<Effect, Action, State, A6>,
+  ship4: t<Effect, Action, State, A7>
+) => t<Effect, Action, State, [A1, A2, A3, A4, A5, A6, A7]> =
   allAny;
+/* eslint-enable no-undef */
 
-export function* next<Action, State>(action: Action): t<Action, State, void> {
+export function* dispatch<Effect, Action, State>(action: Action): t<Effect, Action, State, void> {
   yield {
-    type: 'Next',
-    action,
+    type: 'Command',
+    command: {
+      type: 'Dispatch',
+      action,
+    },
   };
 }
 
-export function* getState<Action, State>(): t<Action, State, State> {
+export function* getState<Effect, Action, State>(): t<Effect, Action, State, State> {
   const state: any = yield {
-    type: 'GetState',
+    type: 'Command',
+    command: {
+      type: 'GetState',
+    },
   };
   return state;
 }
 
-function* mapWithAnswer<Action1, State1, Action2, State2, A>(
-  ship: t<Action1, State1, A>,
+function* mapWithAnswer<Action1, State1, Effect1, Action2, State2, Effect2, A>(
+  ship: t<Action1, State1, Effect1, A>,
   mapAction: (action1: Action1) => Action2,
   mapState: (state2: State2) => State1,
+  mapEffect: (effect1: Effect1) => Effect2,
   answer?: any
-): t<Action2, State2, A> {
+): t<Action2, State2, Effect2, A> {
   const result = ship.next(answer);
   if (result.done) {
     return (result.value: any);
   }
   switch (result.value.type) {
   case 'Call': {
-    const newAnswer = yield result.value;
-    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+    const newAnswer = yield {
+      type: 'Call',
+      effect: mapEffect(result.value.effect),
+    };
+    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect, newAnswer);
   }
   case 'All': {
     const newAnswer = yield {
       type: 'All',
+      mapWithAnswer(currentShip, mapAction, mapState, mapEffect),
       ships: result.value.ships.map((currentShip) =>
-        mapWithAnswer(currentShip, mapAction, mapState)),
     };
-    return yield* mapWithAnswer(ship, mapAction, mapState, newAnswer);
+    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect, newAnswer);
   }
   case 'Next':
     yield {
       type: 'Next',
       action: mapAction(result.value.action),
     };
-    return yield* mapWithAnswer(ship, mapAction, mapState);
+    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect);
   case 'GetState': {
     const newAnswer: any = yield result.value;
-    return yield* mapWithAnswer(ship, mapAction, mapState, mapState(newAnswer));
+    return yield* mapWithAnswer(ship, mapAction, mapState, mapEffect, mapState(newAnswer));
   }
   default:
     return result.value;
@@ -261,7 +238,7 @@ export const map: <Action1, State1, Action2, State2, A>(
 ) => t<Action2, State2, A> =
   mapWithAnswer;
 
-type Event<Action, State> = {
+export type Event<Action, State> = {
   type: 'Return',
   result: any,
 } | {
@@ -546,11 +523,3 @@ export const simulate: <Action, State, A>(
   trace: Trace<Action, State>
 ) => Trace<Action, State> =
   simulateWithAnswer;
-
-function delayPromise(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export function delay<Action, State>(ms: number): t<Action, State, void> {
-  return call1(delayPromise, ms);
-}
