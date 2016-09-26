@@ -88,6 +88,6 @@ const store = Redux.createStore(
 
 test((t) => {
   t.deepEqual(store.getState(), initialState);
-  t.deepEqual(actionToShip, actionToShip);
+  t.notDeepEqual(runEffect, actionToShip);
   t.end();
 });
