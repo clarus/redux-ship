@@ -1,0 +1,18 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #222;
+  padding: 30px;
+  color: white;
+}
+
+.App-content {
+  font-size: large;
+  margin: 20px;
+}
+
+.App-content ul {
+  /*list-style-type: none;*/
+}
