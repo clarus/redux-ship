@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "flow-bin": "^0.33.0",
     "react-scripts": "0.6.1"
   },
   "dependencies": {
+    "babel-polyfill": "^6.16.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
   },
