@@ -31,7 +31,7 @@ class App extends Component<void, Props, void> {
       <div className="App">
         <div className="App-header">
           <h1>Redux Ship</h1>
-          <h2>Basic example</h2>
+          <h2>Many example</h2>
         </div>
         <div className="App-content">
           <h3>First</h3>

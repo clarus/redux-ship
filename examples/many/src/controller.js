@@ -14,7 +14,7 @@ export type Action = {
 
 export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.State, void> {
   switch (action.type) {
-  case 'First': {
+  case 'First':
     return yield* Ship.map(
       (action) => ({
         type: 'First',
@@ -23,8 +23,7 @@ export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.S
       (state) => state.first,
       LukeController.control(action.action)
     );
-  }
-  case 'Second': {
+  case 'Second':
     return yield* Ship.map(
       (action) => ({
         type: 'Second',
@@ -33,7 +32,6 @@ export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.S
       (state) => state.second,
       LukeController.control(action.action)
     );
-  }
   default:
     return;
   }
