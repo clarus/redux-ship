@@ -25,22 +25,22 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "babel-cli": "^6.11.4",
-    "babel-core": "^6.9.1",
-    "babel-eslint": "^6.1.2",
+    "babel-cli": "^6.16.0",
+    "babel-core": "^6.17.0",
+    "babel-eslint": "^7.0.0",
     "babel-plugin-syntax-flow": "^6.13.0",
     "babel-plugin-transform-flow-strip-types": "^6.14.0",
-    "babel-polyfill": "^6.13.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-2": "^6.13.0",
-    "babylon": "^6.11.2",
-    "eslint": "^3.6.0",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-stage-2": "^6.17.0",
+    "babylon": "^6.11.4",
+    "eslint": "^3.7.0",
     "eslint-plugin-babel": "^3.3.0",
-    "flow-bin": "^0.32.0",
+    "flow-bin": "^0.33.0",
     "redux": "^3.6.0",
-    "rollup": "^0.36.0",
+    "rollup": "^0.36.1",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1",
-    "tape": "^4.6.0"
+    "tape": "^4.6.2"
   }
 }
