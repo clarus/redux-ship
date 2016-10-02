@@ -10,6 +10,7 @@
     "babel-polyfill": "^6.16.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
+    "redux-logger": "^2.6.1",
     "redux-ship": "0.0.6"
   },
   "scripts": {
