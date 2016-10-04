@@ -3,6 +3,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Ship from 'redux-ship';
+import shipLogger from 'redux-ship-logger';
 import App from './App';
 import './index.css';
 import store from './store';
@@ -10,11 +11,7 @@ import * as Controller from './controller';
 import * as Effect from './effect';
 
 function* controlWithLog(action: Controller.Action) {
-  const {snapshot} = yield* Ship.snapshot(Controller.control(action));
-  console.group('ship');
-  console.log('action', action);
-  console.log('snapshot', snapshot);
-  console.groupEnd();
+  yield* shipLogger(action, Controller.control(action));
 }
 
 function dispatch(action: Controller.Action): void {
