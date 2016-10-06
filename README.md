@@ -17,9 +17,10 @@ npm install --save redux-ship
 You may also need to install [Flow](https://flowtype.org/) if you want to get type checking.
 
 ### The Gist
-Get the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code in `example/basic`):
+This Gist gets the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code is in `example/basic`).
+
+The controller in Redux Ship:
 ```
-// Controller
 export type Action = {
   type: 'Load',
 };
@@ -46,8 +47,8 @@ export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.S
 }
 ```
 
+The model in Redux:
 ```
-// Model
 export type State = {
   isLoading: bool,
   fullName: ?string,
@@ -84,8 +85,8 @@ export function reduce(state: State, action: Action): State {
 }
 ```
 
+The view in [React](https://facebook.github.io/react/):
 ```
-// View
 type Props = {
   dispatch: (action: Controller.Action) => void,
   state: Model.State,
@@ -113,6 +114,32 @@ export default class App extends Component<void, Props, void> {
       </div>
     );
   }
+}
+```
+
+The effects (declared once for the whole program):
+```
+export type t = {
+  type: 'HttpRequest',
+  url: string,
+};
+
+export async function run(effect: t): Promise<any> {
+  switch (effect.type) {
+  case 'HttpRequest': {
+    const response = await fetch(effect.url);
+    return await response.text();
+  }
+  default:
+    return;
+  }
+}
+
+export function httpRequest<Action, State>(url: string): Ship.t<t, Action, State, string> {
+  return Ship.call({
+    type: 'HttpRequest',
+    url,
+  });
 }
 ```
 
