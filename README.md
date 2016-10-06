@@ -1,11 +1,11 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/rocket-48.png) Redux Ship
-> Composable, typable and testable Redux middleware
+> Composable, testable and typable side effects for Redux
 
-Redux Ship is a [Redux](https://github.com/reactjs/redux) [middleware](http://redux.js.org/docs/advanced/Middleware.html) for side effects which focuses on:
+Redux Ship is a side effects handler for [Redux](https://github.com/reactjs/redux) [middleware](http://redux.js.org/docs/advanced/Middleware.html) which focuses on:
 
-* **composition:** you can duplicate and reuse sub-stores, as you would do with [React](https://facebook.github.io/react/) components;
-* **typing:** you can type check your code with 100% coverage in [Flow](https://flowtype.org/);
-* **testing:** you can run unit tests of your side effects, by taking snapshots of their execution traces.
+* **composition:** you can reuse and compose sub-stores, as you would do with [React](https://facebook.github.io/react/) components;
+* **testing:** you can run unit tests of your side effects, by taking snapshots of their live execution traces;
+* **typing:** you can type check your code with 100% coverage in [Flow](https://flowtype.org/).
 
 ## Getting started
 ### Install
@@ -17,85 +17,103 @@ npm install --save redux-ship
 You may also need to install [Flow](https://flowtype.org/) if you want to get type checking.
 
 ### The Gist
-A counter, with a `SlowIncrement` action:
+Get the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code in `example/basic`):
 ```
-// @flow
-// counter.js
-import * as Ship from 'redux-ship';
+// Controller
+export type Action = {
+  type: 'Load',
+};
 
+export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.State, void> {
+  switch (action.type) {
+  case 'Load': {
+    yield* Ship.dispatch({
+      type: 'LoadStart',
+    });
+    const result = yield* Effect.httpRequest('http://swapi.co/api/people/1/');
+    const fullName: ?string = JSON.parse(result).name;
+    if (fullName) {
+      yield* Ship.dispatch({
+        type: 'LoadSuccess',
+        fullName,
+      });
+    }
+    return;
+  }
+  default:
+    return;
+  }
+}
+```
+
+```
+// Model
 export type State = {
-  counter: number,
+  isLoading: bool,
+  fullName: ?string,
 };
 
 export const initialState: State = {
-  counter: 0,
+  isLoading: false,
+  fullName: null,
 };
 
 export type Action = {
-  type: 'Increment',
+  type: 'LoadStart',
 } | {
-  type: 'Decrement',
-} | {
-  type: 'SlowIncrement',
+  type: 'LoadSuccess',
+  fullName: string,
 };
 
 export function reduce(state: State, action: Action): State {
   switch (action.type) {
-    case 'Increment':
-      return {
-        ...state,
-        counter: state.counter + 1,
-      };
-    case 'Decrement':
-      return {
-        ...state,
-        counter: state.counter - 1,
-      };
-    default:
-      return state;
-  }
-}
-
-function showState(state: State): void {
-  console.log('Hi, this is the current state: ', state);
-}
-
-function* slowIncrement(): Ship.t<Action, State, void> {
-  const state = yield* Ship.getState();
-  yield* Ship.call1(showState, state);
-  yield* Ship.delay(1000);
-  yield* Ship.dispatch({
-    type: 'Increment',
-  });
-}
-
-export function actionToShip(action: Action): ?Ship.t<Action, State, void> {
-  switch (action.type) {
-    case 'SlowIncrement':
-      return slowIncrement();
-    default:
-      return null;
+  case 'LoadStart':
+    return {
+      ...state,
+      isLoading: true,
+    };
+  case 'LoadSuccess':
+    return {
+      ...state,
+      isLoading: false,
+      fullName: action.fullName,
+    };
+  default:
+    return state;
   }
 }
 ```
 
-Instanciate your Redux store with:
 ```
-// @flow
-// store.js
-import * as Redux from 'redux';
-import * as Ship from 'redux-ship';
-import * as Counter from './counter';
+// View
+type Props = {
+  dispatch: (action: Controller.Action) => void,
+  state: Model.State,
+};
 
-const middlewares = [
-  Ship.middleware(Counter.actionToShip),
-];
+export default class App extends Component<void, Props, void> {
+  handleClick: () => void = () => {
+    this.props.dispatch({
+      type: 'Load',
+    });
+  };
 
-export default Redux.createStore(
-  Counter.reduce,
-  Counter.initialState,
-  Redux.applyMiddleware(...middlewares),
-);
+  render() {
+    return (
+      <div className="App-content">
+        <button
+          disabled={this.props.state.isLoading}
+          onClick={this.handleClick}
+        >
+          {this.props.state.isLoading ? 'Loading' : 'Get Luke\'s full name'}
+        </button>
+        <p>
+          {this.props.state.fullName}
+        </p>
+      </div>
+    );
+  }
+}
 ```
 
 ## API
