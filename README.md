@@ -149,45 +149,45 @@ Import all the functions with:
 import * as Ship from 'redux-ship';
 ```
 
-#### `Ship.t<Action, State, A>`
+#### `Ship.t<Effect, Action, State, A>`
 
-The type of a Redux Ship side effect returning a value of type `A` and using a Redux store with actions of type `Action` and a state of type `State`. A Ship is a generator and can be defined using the `function*` syntax.
-
-#### `getState`
-```
-<Action, State>() => Ship.t<Action, State, State>
-```
-
-Returns the current state of type `State`.
+The type of a Redux Ship side effect returning a value of type `A` and using some side effects of type `Effect`, a Redux store with actions of type `Action` and a state of type `State`. A Ship is a generator and can be defined using the `function*` syntax.
 
 #### `dispatch`
 ```
-<Action, State>(action: Action) => Ship.t<Action, State, void>
+<Effect, Action, State>(action: Action): Ship.t<Effect, Action, State, void>
 ```
 
 Dispatches an action of type `Action` and waits for its termination.
 
-#### `call1`
+#### `getState`
 ```
-<Action, State, A1, B>(
-  fn: (arg1: A1) => B | Promise<B> | Ship.t<Action, State, B>,
-  arg1: A1
-) => Ship.t<Action, State, B>
+<Effect, Action, State>() => Ship.t<Effect, Action, State, State>
 ```
 
-The expression `call1(fn, arg1)` returns the result of `fn(arg1)`. During testing, you can check for both the value of `arg1` and `fn(arg1)`. Similarly, there are the functions:
+Returns the current state of type `State`.
+
+#### `call`
 ```
-call2(fn, arg1, arg2)
-call3(fn, arg1, arg2, arg3)
-...
-call7(fn, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+<Effect, Action, State>(effect: Effect): Ship.t<Effect, Action, State, any>
+```
+
+Calls the effect `effect`. The type of the result is `any` because it depends on the value of the effect. Thus, to prevent type errors, we recommend to wrap your calls with one wrapper per kind of effect. For example, if the effects `HttpRequest` always return a `string`:
+
+```
+export function httpRequest<Action, State>(url: string): Ship.t<t, Action, State, string> {
+  return Ship.call({
+    type: 'HttpRequest',
+    url,
+  });
+}
 ```
 
 #### `all`
 ```
-<Action, State, A>(
-  ships: Ship.t<Action, State, A>[]
-) => Ship.t<Action, State, A[]>
+<Effect, Action, State, A>(
+  ships: Ship.t<Effect, Action, State, A>[]
+) => Ship.t<Effect, Action, State, A[]>
 ```
 
 Returns the array of results of the `ships` by running them in parallel. If you have a fixed number of tasks with different types of result to run in parallel, you can use:
@@ -200,23 +200,31 @@ all7(ship1, ship2, ship3, ship4, ship5, ship6, ship7)
 
 #### `map`
 ```
-<Action1, State1, Action2, State2, A>(
-  ship: ?Ship.t<Action1, State1, A>,
-  mapAction: (action1: Action1) => Action2,
-  mapState: (state2: State2) => State1
-) => ?Ship.t<Action2, State2, A>
+<Effect, Action1, State1, Action2, State2, A>(
+  liftAction: (action1: Action1) => Action2,
+  liftState: (state2: State2) => State1,
+  ship: Ship.t<Effect, Action1, State1, A>
+): Ship.t<Effect, Action2, State2, A>
 ```
 
-A function useful to compose nested stores. Lifts a `ship` with access to "small set" of actions `Action1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Action2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `mapState(getState())` and each `dispatch(action1)` by `dispatch(mapAction(action1))`. For convenience, returns `null` if `ship` is `null`.
+A function useful to compose nested stores. Lifts a `ship` with access to "small set" of actions `Action1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Action2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `liftState(getState())` and each `dispatch(action1)` by `dispatch(liftAction(action1))`.
 
-#### `middleware`
+#### `run`
 ```
-<Action, State>(
-  actionToShip: (action: Action) => ?Ship.t<Action, State, void>
-) => ReduxMiddleware<Action, State>
+<Effect, Action, State, A>(
+  runEffect: (effect: Effect) => any,
+  runDispatch: (action: Action) => void | Promise<void>,
+  runGetState: () => State,
+  ship: Ship.t<Effect, Action, State, A>
+) => Promise<A>
 ```
 
-Creates a Redux Ship middleware for a store with actions of type `Action` and a state of type `State`. The parameter `actionToShip` maps an `action` to either a Ship side effect or `null`. If `actionToShip(action)` is a Ship effect, then `dispatch(action)` returns a promise of type `Promise<void>` terminating when the side effect terminates, so that you can wait for the Ship effect to complete. If `actionToShip(action)` is `null`, then `dispatch(action)` returns the result of the next middleware.
+Run a ship by evaluating each `call`, `dispatch` and `getState` with `runEffect`, `runDispatch` and `runGetState` respectively. To connect Redux Ship to a Redux `store`, you can do:
+
+```
+run(runEffect, store.dispatch, store.getState, ship);
+```
+
 
 ## FAQ
 ### How does Redux Ship compare to X?
