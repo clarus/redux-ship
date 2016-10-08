@@ -350,20 +350,21 @@ export const snapshot: <Effect, Action, State, A>(
   snapshotWithAnswer;
 /* eslint-enable no-undef */
 
-export type Simulation<Effect, Action, State, A> = {
-  result: ?{value: A},
-  snapshot: Snapshot<Effect, Action, State>,
-};
+function snapshotItemError<Effect, Action, State>(
+  error: mixed
+): SnapshotItem<Effect, Action, State> {
+  return ({error}: any);
+}
 
 function simulateCommand<Effect, Action, State>(
   command: Command<Effect, Action, State>,
   snapshotItem: SnapshotItem<Effect, Action, State>
-): ?{result: any, snapshotItem: SnapshotItem<Effect, Action, State>} {
+): {result: ?{value: any}, snapshotItem: SnapshotItem<Effect, Action, State>} {
   switch (command.type) {
   case 'Effect':
     if (snapshotItem.type === 'Effect') {
       return {
-        result: snapshotItem.result,
+        result: {value: snapshotItem.result},
         snapshotItem: snapshotItem.result ? {
           type: 'Effect',
           effect: command.effect,
@@ -374,36 +375,43 @@ function simulateCommand<Effect, Action, State>(
         },
       };
     }
-    return null;
+    break;
   case 'Dispatch':
     if (snapshotItem.type === 'Dispatch') {
       return {
-        result: undefined,
+        result: {value: undefined},
         snapshotItem: {
           type: 'Dispatch',
           action: command.action,
         },
       };
     }
-    return null;
+    break;
   case 'GetState':
     if (snapshotItem.type === 'GetState') {
       return {
-        result: snapshotItem.state,
+        result: {value: snapshotItem.state},
         snapshotItem,
       };
     }
-    return null;
+    break;
   default:
     return command;
   }
+  return {
+    result: null,
+    snapshotItem: snapshotItemError({
+      expected: snapshotItem.type,
+      got: command,
+    }),
+  };
 }
 
 function simulateWithAnswer<Effect, Action, State, A>(
   ship: t<Effect, Action, State, A>,
   snapshot: Snapshot<Effect, Action, State>,
   answer?: any
-): Simulation<Effect, Action, State, A> {
+): {result: ?{value: A}, snapshot: Snapshot<Effect, Action, State>} {
   const result = ship.next(answer);
   if (result.done) {
     return {
@@ -418,14 +426,17 @@ function simulateWithAnswer<Effect, Action, State, A>(
   if (snapshotItem === undefined) {
     return {
       result: null,
-      snapshot: [],
+      snapshot: [snapshotItemError({
+        expected: 'terminated',
+        got: result.value,
+      })],
     };
   }
   switch (result.value.type) {
   case 'Command': {
     const newAnswer = simulateCommand(result.value.command, snapshotItem);
-    if (newAnswer) {
-      const next = simulateWithAnswer(ship, nextSnapshot, newAnswer.result);
+    if (newAnswer.result) {
+      const next = simulateWithAnswer(ship, nextSnapshot, newAnswer.result.value);
       return {
         result: next.result,
         snapshot: [
@@ -436,7 +447,7 @@ function simulateWithAnswer<Effect, Action, State, A>(
     }
     return {
       result: null,
-      snapshot: [],
+      snapshot: [newAnswer.snapshotItem],
     };
   }
   case 'All': {
@@ -447,7 +458,7 @@ function simulateWithAnswer<Effect, Action, State, A>(
           const currentAnswer = simulateWithAnswer(currentShip, currentSnapshot);
           if (currentAnswer.result) {
             return {
-              results: accumulator.results ? [...accumulator.results, currentAnswer.result] : null,
+              results: accumulator.results && [...accumulator.results, currentAnswer.result.value],
               snapshots: [...accumulator.snapshots, currentAnswer.snapshot],
             };
           }
@@ -456,7 +467,10 @@ function simulateWithAnswer<Effect, Action, State, A>(
             snapshots: [...accumulator.snapshots, currentAnswer.snapshot],
           };
         }
-        return accumulator;
+        return {
+          results: null,
+          snapshots: accumulator.snapshots,
+        };
       }, {
         results: [],
         snapshots: [],
@@ -484,7 +498,10 @@ function simulateWithAnswer<Effect, Action, State, A>(
     }
     return {
       result: null,
-      snapshot: [],
+      snapshot: [snapshotItemError({
+        expected: snapshotItem.type,
+        got: result.value,
+      })],
     };
   }
   default:
@@ -492,10 +509,9 @@ function simulateWithAnswer<Effect, Action, State, A>(
   }
 }
 
-/* eslint-disable no-undef */
-export const simulate: <Effect, Action, State, A>(
+export function simulate<Effect, Action, State, A>(
   ship: t<Effect, Action, State, A>,
   snapshot: Snapshot<Effect, Action, State>
-) => Simulation<Effect, Action, State, A> =
-  simulateWithAnswer;
-/* eslint-enable no-undef */
+): Snapshot<Effect, Action, State> {
+  return simulateWithAnswer(ship, snapshot).snapshot;
+}
