@@ -145,16 +145,23 @@ export function httpRequest<Action, State>(url: string): Ship<Effect, Action, St
 
 ## API
 * [`Ship<Effect, Action, State, A>`](#shipeffect-action-state-a)
+* [`Snapshot<Effect, Action, State>`](#snapshoteffect-action-state)
 * [`all`](#all)
 * [`call`](#call)
 * [`dispatch`](#dispatch)
 * [`getState`](#getState)
 * [`map`](#map)
 * [`run`](#run)
+* [`simulate`](#simulate)
+* [`snap`](#snap)
 
 #### `Ship<Effect, Action, State, A>`
 
-The type of a Redux Ship side effect returning a value of type `A` and using some side effects of type `Effect`, a Redux store with actions of type `Action` and a state of type `State`. A Ship is a generator and can be defined using the `function*` syntax.
+The type of a ship returning a value of type `A` and using some side effects of type `Effect`, a Redux store with actions of type `Action` and a state of type `State`. A ship is a generator and can be defined using the `function*` syntax.
+
+#### `Snapshot<Effect, Action, State>`
+
+The type of the snapshot of an execution of a ship. A snapshot includes the side effects ran by a ship, as well as their execution order (sequential or concurrent).
 
 #### `all`
 ```
@@ -228,12 +235,33 @@ Run a ship by evaluating each `call`, `dispatch` and `getState` with `runEffect`
 run(runEffect, store.dispatch, store.getState, ship);
 ```
 
+#### `simulate`
+```
+<Effect, Action, State, A>(
+  ship: Ship<Effect, Action, State, A>,
+  snapshot: Snapshot<Effect, Action, State>
+): Snapshot<Effect, Action, State>
+```
+
+Simulates a `ship` in the context of a `snapshot` and returns the snapshot of the simulation. A simulation is a purely functional (with no side effects) execution of a ship. Since there are many ways to execute a ship, we need a snapshot a previous live execution of the ship (with side effects). For example, if the ship runs an API request, the snapshot is used to give an answer to the API request. The result of `simulate` should be equal to `snapshot`, unless your ship was changed since its snapshot was taken.
+
+#### `snap`
+```
+<Effect, Action, State, A>(
+  ship: Ship<Effect, Action, State, A>
+) => Ship<Effect, Action, State, {
+  result: A,
+  snapshot: Snapshot<Effect, Action, State>
+}>
+```
+
+Returns a ship taking the snapshot and returning the result of `ship`.
 
 ## FAQ
 ### How does Redux Ship compare to X?
 You may not need Redux Ship. To help your choice, here is an *opinionated* comparison of Redux Ship with some alternatives. These libraries were a great source of inspiration, and are probably better suited for you depending on your needs. If you find a mistake, feel free to open an issue!
 * **[Redux Thunk:](https://github.com/gaearon/redux-thunk)**
-you dispatch promises instead of plain objects to run side effects, thus logging and testing can be complex. The `getState` function of a thunk always gives access to the global Redux state. Similarly, the `dispatch` function can dispatch actions to any reducer. In contrast, Redux Ship let you chose to either only access to the local store or share some data with other stores. As a result, composition with Ship is simplified.
+you dispatch promises instead of plain objects to run side effects, thus logging and testing can be complex. The `getState` function of a thunk always gives access to the global Redux state. Similarly, the `dispatch` function can dispatch actions to any reducer. In contrast, Redux Ship let you chose to either only access to the local store or share some data with other stores. As a result, composition with Redux Ship is simplified.
 * **[Redux Sagas:](https://github.com/yelouafi/redux-saga)**
 like in Redux Ship, side effects are represented as plain objects which map to generators in order to simplify the testing process. However, there are no snapshot mechanisms with Sagas so tests must be written by hand. Like in Redux Thunk, composing Sagas is difficult because the `select` / `put` functions only relate to the global state / actions. The Sagas cannot be completly typed, due to the use of the `yield` keyword (instead of `yield*`) and the destructuring of actions with `take` (instead of plain `switch`).
 * **[Elm:](http://elm-lang.org/)**
