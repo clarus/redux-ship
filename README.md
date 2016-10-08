@@ -25,16 +25,16 @@ export type Action = {
   type: 'Load',
 };
 
-export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.State, void> {
+export function* control(action: Action): Ship<Effect.Effect, Model.Action, Model.State, void> {
   switch (action.type) {
   case 'Load': {
-    yield* Ship.dispatch({
+    yield* dispatch({
       type: 'LoadStart',
     });
     const result = yield* Effect.httpRequest('http://swapi.co/api/people/1/');
     const fullName: ?string = JSON.parse(result).name;
     if (fullName) {
-      yield* Ship.dispatch({
+      yield* dispatch({
         type: 'LoadSuccess',
         fullName,
       });
@@ -119,12 +119,12 @@ export default class App extends Component<void, Props, void> {
 
 The effects (declared once for the whole program):
 ```
-export type t = {
+export type Effect = {
   type: 'HttpRequest',
   url: string,
 };
 
-export async function run(effect: t): Promise<any> {
+export async function run(effect: Effect): Promise<any> {
   switch (effect.type) {
   case 'HttpRequest': {
     const response = await fetch(effect.url);
@@ -135,8 +135,8 @@ export async function run(effect: t): Promise<any> {
   }
 }
 
-export function httpRequest<Action, State>(url: string): Ship.t<t, Action, State, string> {
-  return Ship.call({
+export function httpRequest<Action, State>(url: string): Ship<Effect, Action, State, string> {
+  return call({
     type: 'HttpRequest',
     url,
   });
