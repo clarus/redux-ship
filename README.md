@@ -7,6 +7,10 @@ Redux Ship is a side effects handler for [Redux](https://github.com/reactjs/redu
 * **testing:** you can run unit tests of your side effects, by taking snapshots of their live execution traces;
 * **typing:** you can type check your code with (almost) full coverage in [Flow](https://flowtype.org/).
 
+Redux Ship with [redux-ship-logger](https://github.com/clarus/redux-ship-logger):
+
+<img src='https://raw.githubusercontent.com/clarus/redux-ship-logger/master/logger.png' alt='Screenshot' width='700px'>
+
 ## Getting started
 ### Install
 Run:
