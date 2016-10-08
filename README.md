@@ -262,13 +262,14 @@ Simulates a `ship` in the context of a `snapshot` and returns the snapshot of th
 Returns a ship taking the snapshot and returning the result of `ship`.
 
 ## How does Redux Ship compare to X?
-You might not need Redux Ship. Here is an *opinionated* comparison of Redux Ship with some alternatives.
-* **[Redux Thunk:](https://github.com/gaearon/redux-thunk)**
-you dispatch promises instead of plain objects to run side effects, thus logging and testing can be complex. The `getState` function of a thunk always gives access to the global Redux state. Similarly, the `dispatch` function can dispatch actions to any reducer. In contrast, Redux Ship let you chose to either only access to the local store or share some data with other stores. As a result, composition with Redux Ship is simplified.
-* **[Redux Sagas:](https://github.com/yelouafi/redux-saga)**
-like in Redux Ship, side effects are represented as plain objects which map to generators in order to simplify the testing process. However, there are no snapshot mechanisms with Sagas so tests must be written by hand. Like in Redux Thunk, composing Sagas is difficult because the `select` / `put` functions only relate to the global state / actions. The Sagas cannot be completly typed, due to the use of the `yield` keyword (instead of `yield*`) and the destructuring of actions with `take` (instead of plain `switch`).
-* **[Elm:](http://elm-lang.org/)**
-very similar to Redux Ship, as much composable and typable (using Flow). The `Task` and `Cmd` are the equivalent in Elm of the `Ship.t` type to represent side effects. We use the `function*` notation instead of the [`andThen`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Task#andThen) operator to avoid the ["callback hell"](https://medium.com/@wavded/managing-node-js-callback-hell-1fe03ba8baf#.wt1ga0ocv). There seem to be no snapshot mechanisms to test side effects in Elm.
+You might not need Redux Ship, especially for small projects. Here is an *opinionated* comparison of Redux Ship with some alternatives.
+
+| | [Redux Thunk](https://github.com/gaearon/redux-thunk) | [Redux Sagas](https://github.com/yelouafi/redux-saga) | [Elm](http://elm-lang.org/) | Redux Ship |
+|:---:|:---:|:---:|:---:|:---:|
+| composition | - | - | ✔ | ✔ |
+| testing | - | ✔ | - | ✔ |
+| snapshots | - | - | - | ✔ |
+| typing | ✔ | ~ | ✔ | ✔ |
 
 ## License
 MIT
