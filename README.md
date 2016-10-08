@@ -267,9 +267,14 @@ You might not need Redux Ship, especially for small projects. Here is an *opinio
 | | [Redux Thunk](https://github.com/gaearon/redux-thunk) | [Redux Sagas](https://github.com/yelouafi/redux-saga) | [Elm](http://elm-lang.org/) | Redux Ship |
 |:---:|:---:|:---:|:---:|:---:|
 | composition | - | - | ✔ | ✔ |
-| testing | - | ✔ | - | ✔ |
+| testing | ~ | ✔ | - | ✔ |
 | snapshots | - | - | - | ✔ |
 | typing | ✔ | ~ | ✔ | ✔ |
+
+* **composition:** the key to compose sub-parts of an application is the [`map`](#map) function. In Elm, the equivalent is the [`Cmd.map`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Platform-Cmd#map) primitive;
+* **testing:** we can test side effects with Redux Sagas and Redux Ship since both are generators. Using mocking, we can also test Thunks actions but with less control. We do not know how to test side effects in Elm;
+* **snapshots:** the ability to take snapshots of executions of side effects is specific to Redux Ship;
+* **typing:** there are type declarations for Redux Sagas, but in a typical instruction like `const state = yield select(selector);` you cannot get the type of `answer`. This limitation is due to the use of the `yield` keyword. In contrast, in Redux Ship, we only use the `yield*` keyword to get typing.
 
 ## License
 MIT
