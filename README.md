@@ -144,13 +144,13 @@ export function httpRequest<Action, State>(url: string): Ship<Effect, Action, St
 ```
 
 ## API
-* [Ship<Effect, Action, State, A>](#shipeffect-action-state-a)
-* [all](#all)
-* [call](#call)
-* [dispatch](#dispatch)
-* [getState](#getState)
-* [map](#map)
-* [run](#run)
+* [`Ship<Effect, Action, State, A>`](#shipeffect-action-state-a)
+* [`all`](#all)
+* [`call`](#call)
+* [`dispatch`](#dispatch)
+* [`getState`](#getState)
+* [`map`](#map)
+* [`run`](#run)
 
 #### `Ship<Effect, Action, State, A>`
 
