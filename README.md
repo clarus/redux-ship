@@ -17,7 +17,7 @@ npm install --save redux-ship
 You can optionally install [Flow](https://flowtype.org/) to get type checking.
 
 ### The Gist
-This Gist gets the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code is in [`example/basic`](tree/master/examples/basic)). In this example, we follow the [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern.
+This Gist gets the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code is in [`example/basic`](https://github.com/clarus/redux-ship/tree/master/examples/basic)). In this example, we follow the [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern.
 
 The controller is in Redux Ship:
 ```
