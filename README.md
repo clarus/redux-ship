@@ -5,7 +5,7 @@ Redux Ship is a side effects handler for [Redux](https://github.com/reactjs/redu
 
 * **composition:** you can reuse and compose sub-stores, as you would do with [React](https://facebook.github.io/react/) components;
 * **testing:** you can run unit tests of your side effects, by taking snapshots of their live execution traces;
-* **typing:** you can type check your code with 100% coverage in [Flow](https://flowtype.org/).
+* **typing:** you can type check your code with (almost) full coverage in [Flow](https://flowtype.org/).
 
 ## Getting started
 ### Install
@@ -14,12 +14,12 @@ Run:
 npm install --save redux-ship
 ```
 
-You may also need to install [Flow](https://flowtype.org/) if you want to get type checking.
+You can optionally install [Flow](https://flowtype.org/) to get type checking.
 
 ### The Gist
-This Gist gets the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code is in `example/basic`).
+This Gist gets the full name of Luke using the [Star Wars API](https://swapi.co/) (the full code is in [`example/basic`](tree/master/examples/basic)). In this example, we follow the [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern.
 
-The controller in Redux Ship:
+The controller is in Redux Ship:
 ```
 export type Action = {
   type: 'Load',
@@ -47,7 +47,7 @@ export function* control(action: Action): Ship<Effect.Effect, Model.Action, Mode
 }
 ```
 
-The model in Redux:
+The model is in Redux:
 ```
 export type State = {
   isLoading: bool,
@@ -85,7 +85,7 @@ export function reduce(state: State, action: Action): State {
 }
 ```
 
-The view in [React](https://facebook.github.io/react/):
+The view is in [React](https://facebook.github.io/react/):
 ```
 type Props = {
   dispatch: (action: Controller.Action) => void,
@@ -117,7 +117,7 @@ export default class App extends Component<void, Props, void> {
 }
 ```
 
-The effects (declared once for the whole program):
+The definition of the side effects (you should keep this part minimal):
 ```
 export type Effect = {
   type: 'HttpRequest',
@@ -257,22 +257,14 @@ Simulates a `ship` in the context of a `snapshot` and returns the snapshot of th
 
 Returns a ship taking the snapshot and returning the result of `ship`.
 
-## FAQ
-### How does Redux Ship compare to X?
-You may not need Redux Ship. To help your choice, here is an *opinionated* comparison of Redux Ship with some alternatives. These libraries were a great source of inspiration, and are probably better suited for you depending on your needs. If you find a mistake, feel free to open an issue!
+## How does Redux Ship compare to X?
+You might not need Redux Ship. Here is an *opinionated* comparison of Redux Ship with some alternatives.
 * **[Redux Thunk:](https://github.com/gaearon/redux-thunk)**
 you dispatch promises instead of plain objects to run side effects, thus logging and testing can be complex. The `getState` function of a thunk always gives access to the global Redux state. Similarly, the `dispatch` function can dispatch actions to any reducer. In contrast, Redux Ship let you chose to either only access to the local store or share some data with other stores. As a result, composition with Redux Ship is simplified.
 * **[Redux Sagas:](https://github.com/yelouafi/redux-saga)**
 like in Redux Ship, side effects are represented as plain objects which map to generators in order to simplify the testing process. However, there are no snapshot mechanisms with Sagas so tests must be written by hand. Like in Redux Thunk, composing Sagas is difficult because the `select` / `put` functions only relate to the global state / actions. The Sagas cannot be completly typed, due to the use of the `yield` keyword (instead of `yield*`) and the destructuring of actions with `take` (instead of plain `switch`).
 * **[Elm:](http://elm-lang.org/)**
 very similar to Redux Ship, as much composable and typable (using Flow). The `Task` and `Cmd` are the equivalent in Elm of the `Ship.t` type to represent side effects. We use the `function*` notation instead of the [`andThen`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Task#andThen) operator to avoid the ["callback hell"](https://medium.com/@wavded/managing-node-js-callback-hell-1fe03ba8baf#.wt1ga0ocv). There seem to be no snapshot mechanisms to test side effects in Elm.
-* **[Choo:](https://github.com/yoshuawuyts/choo)**
-has a restricted form of composition with namespaces, but is probably not typable because of it (type checkers cannot understand the `'namespace:action'` convention). The side effects are represented with callbacks, hence subject to the "callback hell" effect and hard to test.
-
-### Is there a subscription mechanism?
-Elm and Choo provide a [Subscription](http://www.elm-tutorial.org/en/03-subs-cmds/01-subs.html) mechanism to listen to a source of actions. Redux Sagas provides the [Channel](https://yelouafi.github.io/redux-saga/docs/advanced/Channels.html) system.
-
-In contrast, Redux Ship only listens to Redux actions. To subscribe to, for example, a real time API, you need to make Redux subscribe to that API by calling a `store.dispatch` each time a new value is received. See for example [Real time data flow with Redux and Socket.io](http://spraso.com/real-time-data-flow-with-redux-and-socket-io/).
 
 ## License
 MIT
