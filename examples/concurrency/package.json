@@ -11,7 +11,7 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "redux-logger": "^2.7.0",
-    "redux-ship": "0.0.7",
+    "redux-ship": "0.0.8",
     "redux-ship-logger": "0.0.2"
   },
   "scripts": {
