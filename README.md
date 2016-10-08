@@ -144,50 +144,23 @@ export function httpRequest<Action, State>(url: string): Ship<Effect, Action, St
 ```
 
 ## API
-Import all the functions with:
-```
-import * as Ship from 'redux-ship';
-```
+* [Ship<Effect, Action, State, A>](#shipeffect-action-state-a)
+* [all](#all)
+* [call](#call)
+* [dispatch](#dispatch)
+* [getState](#getState)
+* [map](#map)
+* [run](#run)
 
-#### `Ship.t<Effect, Action, State, A>`
+#### `Ship<Effect, Action, State, A>`
 
 The type of a Redux Ship side effect returning a value of type `A` and using some side effects of type `Effect`, a Redux store with actions of type `Action` and a state of type `State`. A Ship is a generator and can be defined using the `function*` syntax.
-
-#### `dispatch`
-```
-<Effect, Action, State>(action: Action): Ship.t<Effect, Action, State, void>
-```
-
-Dispatches an action of type `Action` and waits for its termination.
-
-#### `getState`
-```
-<Effect, Action, State>() => Ship.t<Effect, Action, State, State>
-```
-
-Returns the current state of type `State`.
-
-#### `call`
-```
-<Effect, Action, State>(effect: Effect): Ship.t<Effect, Action, State, any>
-```
-
-Calls the effect `effect`. The type of the result is `any` because it depends on the value of the effect. Thus, to prevent type errors, we recommend to wrap your calls with one wrapper per kind of effect. For example, if the effects `HttpRequest` always return a `string`:
-
-```
-export function httpRequest<Action, State>(url: string): Ship.t<t, Action, State, string> {
-  return Ship.call({
-    type: 'HttpRequest',
-    url,
-  });
-}
-```
 
 #### `all`
 ```
 <Effect, Action, State, A>(
-  ships: Ship.t<Effect, Action, State, A>[]
-) => Ship.t<Effect, Action, State, A[]>
+  ships: Ship<Effect, Action, State, A>[]
+) => Ship<Effect, Action, State, A[]>
 ```
 
 Returns the array of results of the `ships` by running them in parallel. If you have a fixed number of tasks with different types of result to run in parallel, you can use:
@@ -198,13 +171,43 @@ all3(ship1, ship2, ship3)
 all7(ship1, ship2, ship3, ship4, ship5, ship6, ship7)
 ```
 
+#### `call`
+```
+<Effect, Action, State>(effect: Effect): Ship<Effect, Action, State, any>
+```
+
+Calls the effect `effect`. The type of the result is `any` because it depends on the value of the effect. Thus, to prevent type errors, we recommend to wrap your calls with one wrapper per kind of effect. For example, if the effects `HttpRequest` always return a `string`:
+
+```
+export function httpRequest<Action, State>(url: string): Ship<t, Action, State, string> {
+  return Ship.call({
+    type: 'HttpRequest',
+    url,
+  });
+}
+```
+
+#### `dispatch`
+```
+<Effect, Action, State>(action: Action): Ship<Effect, Action, State, void>
+```
+
+Dispatches an action of type `Action` and waits for its termination.
+
+#### `getState`
+```
+<Effect, Action, State>() => Ship<Effect, Action, State, State>
+```
+
+Returns the current state of type `State`.
+
 #### `map`
 ```
 <Effect, Action1, State1, Action2, State2, A>(
   liftAction: (action1: Action1) => Action2,
   liftState: (state2: State2) => State1,
-  ship: Ship.t<Effect, Action1, State1, A>
-): Ship.t<Effect, Action2, State2, A>
+  ship: Ship<Effect, Action1, State1, A>
+): Ship<Effect, Action2, State2, A>
 ```
 
 A function useful to compose nested stores. Lifts a `ship` with access to "small set" of actions `Action1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Action2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `liftState(getState())` and each `dispatch(action1)` by `dispatch(liftAction(action1))`.
@@ -215,7 +218,7 @@ A function useful to compose nested stores. Lifts a `ship` with access to "small
   runEffect: (effect: Effect) => any,
   runDispatch: (action: Action) => void | Promise<void>,
   runGetState: () => State,
-  ship: Ship.t<Effect, Action, State, A>
+  ship: Ship<Effect, Action, State, A>
 ) => Promise<A>
 ```
 
