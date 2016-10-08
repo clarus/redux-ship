@@ -4,5 +4,6 @@
 [include]
 
 [libs]
+decls
 
 [options]
