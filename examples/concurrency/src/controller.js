@@ -23,7 +23,7 @@ function* load() {
   });
 }
 
-export function* control(action: Action): Ship.t<Effect.t, Model.Action, Model.State, void> {
+export function* control(action: Action): Ship.Ship<Effect.t, Model.Action, Model.State, void> {
   switch (action.type) {
   case 'Load': {
     return yield* load();

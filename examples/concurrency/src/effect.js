@@ -17,7 +17,7 @@ export async function run(effect: t): Promise<any> {
   }
 }
 
-export function httpRequest<Action, State>(url: string): Ship.t<t, Action, State, string> {
+export function httpRequest<Action, State>(url: string): Ship.Ship<t, Action, State, string> {
   return Ship.call({
     type: 'HttpRequest',
     url,

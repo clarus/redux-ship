@@ -1,12 +1,13 @@
 // @flow
-import * as Ship from 'redux-ship';
+import type {Ship} from 'redux-ship';
+import {call} from 'redux-ship';
 
-export type t = {
+export type Effect = {
   type: 'HttpRequest',
   url: string,
 };
 
-export async function run(effect: t): Promise<any> {
+export async function run(effect: Effect): Promise<any> {
   switch (effect.type) {
   case 'HttpRequest': {
     const response = await fetch(effect.url);
@@ -17,8 +18,8 @@ export async function run(effect: t): Promise<any> {
   }
 }
 
-export function httpRequest<Action, State>(url: string): Ship.t<t, Action, State, string> {
-  return Ship.call({
+export function httpRequest<Action, State>(url: string): Ship<Effect, Action, State, string> {
+  return call({
     type: 'HttpRequest',
     url,
   });

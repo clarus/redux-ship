@@ -1,5 +1,5 @@
 // @flow
-import type {Command, t} from './ship';
+import type {Command, Ship} from './ship';
 import type {Snapshot, SnapshotItem} from './snap';
 
 function snapshotItemError<Effect, Action, State>(
@@ -60,7 +60,7 @@ function simulateCommand<Effect, Action, State>(
 }
 
 function simulateWithAnswer<Effect, Action, State, A>(
-  ship: t<Effect, Action, State, A>,
+  ship: Ship<Effect, Action, State, A>,
   snapshot: Snapshot<Effect, Action, State>,
   answer?: any
 ): {result: ?{value: A}, snapshot: Snapshot<Effect, Action, State>} {
@@ -162,7 +162,7 @@ function simulateWithAnswer<Effect, Action, State, A>(
 }
 
 export function simulate<Effect, Action, State, A>(
-  ship: t<Effect, Action, State, A>,
+  ship: Ship<Effect, Action, State, A>,
   snapshot: Snapshot<Effect, Action, State>
 ): Snapshot<Effect, Action, State> {
   return simulateWithAnswer(ship, snapshot).snapshot;

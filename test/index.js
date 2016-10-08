@@ -43,7 +43,7 @@ type Effect = {
   ms: number,
 };
 
-function* delay<Action, State>(ms: number): Ship.t<Effect, Action, State, void> {
+function* delay<Action, State>(ms: number): Ship.Ship<Effect, Action, State, void> {
   yield* Ship.call({
     type: 'Delay',
     ms,
@@ -65,14 +65,14 @@ type ShipAction = {
   type: 'SlowIncrement',
 };
 
-function* slowIncrement(): Ship.t<Effect, Action, State, void> {
+function* slowIncrement(): Ship.Ship<Effect, Action, State, void> {
   yield* delay(1000);
   yield* Ship.dispatch({
     type: 'Increment',
   });
 }
 
-function* actionToShip(action: ShipAction): Ship.t<Effect, Action, State, void> {
+function* actionToShip(action: ShipAction): Ship.Ship<Effect, Action, State, void> {
   switch (action.type) {
   case 'SlowIncrement':
     return yield* slowIncrement();

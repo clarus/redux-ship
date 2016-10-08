@@ -1,13 +1,13 @@
 // @flow
-import type {Command, t} from './ship';
+import type {Command, Ship} from './ship';
 import {allAny, call, dispatch, getState} from './ship';
 
 function* mapCommand<Effect1, Action1, State1, Effect2, Action2, State2>(
-  liftEffect: (effect1: Effect1) => t<Effect2, Action2, State2, any>,
+  liftEffect: (effect1: Effect1) => Ship<Effect2, Action2, State2, any>,
   liftAction: (action1: Action1) => Action2,
   liftState: (state2: State2) => State1,
   command: Command<Effect1, Action1, State1>
-): t<Effect2, Action2, State2, any> {
+): Ship<Effect2, Action2, State2, any> {
   switch (command.type) {
   case 'Effect':
     return yield* liftEffect(command.effect);
@@ -21,12 +21,12 @@ function* mapCommand<Effect1, Action1, State1, Effect2, Action2, State2>(
 }
 
 function* mapWithAnswer<Effect1, Action1, State1, Effect2, Action2, State2, A>(
-  liftEffect: (effect1: Effect1) => t<Effect2, Action2, State2, any>,
+  liftEffect: (effect1: Effect1) => Ship<Effect2, Action2, State2, any>,
   liftAction: (action1: Action1) => Action2,
   liftState: (state2: State2) => State1,
-  ship: t<Effect1, Action1, State1, A>,
+  ship: Ship<Effect1, Action1, State1, A>,
   answer?: any
-): t<Effect2, Action2, State2, A> {
+): Ship<Effect2, Action2, State2, A> {
   const result = ship.next(answer);
   if (result.done) {
     return (result.value: any);
@@ -50,7 +50,7 @@ function* mapWithAnswer<Effect1, Action1, State1, Effect2, Action2, State2, A>(
 export function map<Effect, Action1, State1, Action2, State2, A>(
   liftAction: (action1: Action1) => Action2,
   liftState: (state2: State2) => State1,
-  ship: t<Effect, Action1, State1, A>
-): t<Effect, Action2, State2, A> {
+  ship: Ship<Effect, Action1, State1, A>
+): Ship<Effect, Action2, State2, A> {
   return mapWithAnswer((effect) => call(effect), liftAction, liftState, ship);
 }

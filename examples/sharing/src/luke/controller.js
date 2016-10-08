@@ -21,7 +21,7 @@ export type ModelState = {
   total: ModelTotal.State,
 };
 
-export function* control(action: Action): Ship.t<Effect.t, ModelAction, ModelState, void> {
+export function* control(action: Action): Ship.Ship<Effect.t, ModelAction, ModelState, void> {
   switch (action.type) {
   case 'Load': {
     yield* Ship.dispatch({

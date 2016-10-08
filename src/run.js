@@ -1,5 +1,5 @@
 // @flow
-import type {Command, t} from './ship';
+import type {Command, Ship} from './ship';
 
 function runCommand<Effect, Action, State>(
   runEffect: (effect: Effect) => any,
@@ -25,7 +25,7 @@ function runWithAnswer<Effect, Action, State, A>(
   runEffect: (effect: Effect) => any,
   runDispatch: (action: Action) => void | Promise<void>,
   runGetState: () => State,
-  ship: t<Effect, Action, State, A>,
+  ship: Ship<Effect, Action, State, A>,
   answer?: any
 ): Promise<A> {
   const result = ship.next(answer);
@@ -53,7 +53,7 @@ export const run: <Effect, Action, State, A>(
   runEffect: (effect: Effect) => any,
   runDispatch: (action: Action) => void | Promise<void>,
   runGetState: () => State,
-  ship: t<Effect, Action, State, A>
+  ship: Ship<Effect, Action, State, A>
 ) => Promise<A> =
   runWithAnswer;
 /* eslint-enable no-undef */
