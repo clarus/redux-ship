@@ -349,3 +349,153 @@ export const snapshot: <Effect, Action, State, A>(
 ) => t<Effect, Action, State, {result: A, snapshot: Snapshot<Effect, Action, State>}> =
   snapshotWithAnswer;
 /* eslint-enable no-undef */
+
+export type Simulation<Effect, Action, State, A> = {
+  result: ?{value: A},
+  snapshot: Snapshot<Effect, Action, State>,
+};
+
+function simulateCommand<Effect, Action, State>(
+  command: Command<Effect, Action, State>,
+  snapshotItem: SnapshotItem<Effect, Action, State>
+): ?{result: any, snapshotItem: SnapshotItem<Effect, Action, State>} {
+  switch (command.type) {
+  case 'Effect':
+    if (snapshotItem.type === 'Effect') {
+      return {
+        result: snapshotItem.result,
+        snapshotItem: snapshotItem.result ? {
+          type: 'Effect',
+          effect: command.effect,
+          result: snapshotItem.result,
+        } : {
+          type: 'Effect',
+          effect: command.effect,
+        },
+      };
+    }
+    return null;
+  case 'Dispatch':
+    if (snapshotItem.type === 'Dispatch') {
+      return {
+        result: undefined,
+        snapshotItem: {
+          type: 'Dispatch',
+          action: command.action,
+        },
+      };
+    }
+    return null;
+  case 'GetState':
+    if (snapshotItem.type === 'GetState') {
+      return {
+        result: snapshotItem.state,
+        snapshotItem,
+      };
+    }
+    return null;
+  default:
+    return command;
+  }
+}
+
+function simulateWithAnswer<Effect, Action, State, A>(
+  ship: t<Effect, Action, State, A>,
+  snapshot: Snapshot<Effect, Action, State>,
+  answer?: any
+): Simulation<Effect, Action, State, A> {
+  const result = ship.next(answer);
+  if (result.done) {
+    return {
+      result: {value: (result.value: any)},
+      snapshot: result.value === undefined ? [] : [{
+        type: 'Return',
+        result: result.value,
+      }],
+    };
+  }
+  const [snapshotItem, ...nextSnapshot] = snapshot;
+  if (snapshotItem === undefined) {
+    return {
+      result: null,
+      snapshot: [],
+    };
+  }
+  switch (result.value.type) {
+  case 'Command': {
+    const newAnswer = simulateCommand(result.value.command, snapshotItem);
+    if (newAnswer) {
+      const next = simulateWithAnswer(ship, nextSnapshot, newAnswer.result);
+      return {
+        result: next.result,
+        snapshot: [
+          newAnswer.snapshotItem,
+          ...next.snapshot
+        ],
+      };
+    }
+    return {
+      result: null,
+      snapshot: [],
+    };
+  }
+  case 'All': {
+    if (snapshotItem.type === 'All') {
+      const newAnswers = result.value.ships.reduce((accumulator, currentShip, shipIndex) => {
+        const currentSnapshot = snapshotItem.snapshots[shipIndex];
+        if (currentSnapshot) {
+          const currentAnswer = simulateWithAnswer(currentShip, currentSnapshot);
+          if (currentAnswer.result) {
+            return {
+              results: accumulator.results ? [...accumulator.results, currentAnswer.result] : null,
+              snapshots: [...accumulator.snapshots, currentAnswer.snapshot],
+            };
+          }
+          return {
+            results: null,
+            snapshots: [...accumulator.snapshots, currentAnswer.snapshot],
+          };
+        }
+        return accumulator;
+      }, {
+        results: [],
+        snapshots: [],
+      });
+      if (newAnswers.results) {
+        const next = simulateWithAnswer(ship, nextSnapshot, newAnswers.results);
+        return {
+          result: next.result,
+          snapshot: [
+            {
+              type: 'All',
+              snapshots: newAnswers.snapshots,
+            },
+            ...next.snapshot,
+          ],
+        };
+      }
+      return {
+        result: null,
+        snapshot: [{
+          type: 'All',
+          snapshots: newAnswers.snapshots,
+        }],
+      };
+    }
+    return {
+      result: null,
+      snapshot: [],
+    };
+  }
+  default:
+    return result.value;
+  }
+}
+
+/* eslint-disable no-undef */
+export const simulate: <Effect, Action, State, A>(
+  ship: t<Effect, Action, State, A>,
+  snapshot: Snapshot<Effect, Action, State>
+) => Simulation<Effect, Action, State, A> =
+  simulateWithAnswer;
+/* eslint-enable no-undef */
