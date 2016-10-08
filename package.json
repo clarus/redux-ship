@@ -1,6 +1,6 @@
 {
   "name": "redux-ship",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Redux middleware",
   "main": "dist/index.js",
   "scripts": {
