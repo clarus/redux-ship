@@ -4,9 +4,9 @@
   "description": "Redux middleware",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup -c",
     "eslint": "eslint src",
-    "flow": "flow"
+    "flow": "flow",
+    "prepublish": "rollup -c"
   },
   "repository": {
     "type": "git",
