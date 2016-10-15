@@ -1,18 +1,18 @@
 // @flow
 import type {Command, Ship} from './ship';
-import {allAny, call, dispatch, getState} from './ship';
+import {allAny, call, commit, getState} from './ship';
 
-function* mapCommand<Effect1, Action1, State1, Effect2, Action2, State2>(
-  liftEffect: (effect1: Effect1) => Ship<Effect2, Action2, State2, any>,
-  liftAction: (action1: Action1) => Action2,
+function* mapCommand<Effect1, Commit1, State1, Effect2, Commit2, State2>(
+  liftEffect: (effect1: Effect1) => Ship<Effect2, Commit2, State2, any>,
+  liftCommit: (commit1: Commit1) => Commit2,
   liftState: (state2: State2) => State1,
-  command: Command<Effect1, Action1, State1>
-): Ship<Effect2, Action2, State2, any> {
+  command: Command<Effect1, Commit1, State1>
+): Ship<Effect2, Commit2, State2, any> {
   switch (command.type) {
   case 'Effect':
     return yield* liftEffect(command.effect);
-  case 'Dispatch':
-    return yield* dispatch(liftAction(command.action));
+  case 'Commit':
+    return yield* commit(liftCommit(command.commit));
   case 'GetState':
     return liftState(yield* getState());
   default:
@@ -20,37 +20,37 @@ function* mapCommand<Effect1, Action1, State1, Effect2, Action2, State2>(
   }
 }
 
-function* mapWithAnswer<Effect1, Action1, State1, Effect2, Action2, State2, A>(
-  liftEffect: (effect1: Effect1) => Ship<Effect2, Action2, State2, any>,
-  liftAction: (action1: Action1) => Action2,
+function* mapWithAnswer<Effect1, Commit1, State1, Effect2, Commit2, State2, A>(
+  liftEffect: (effect1: Effect1) => Ship<Effect2, Commit2, State2, any>,
+  liftCommit: (commit1: Commit1) => Commit2,
   liftState: (state2: State2) => State1,
-  ship: Ship<Effect1, Action1, State1, A>,
+  ship: Ship<Effect1, Commit1, State1, A>,
   answer?: any
-): Ship<Effect2, Action2, State2, A> {
+): Ship<Effect2, Commit2, State2, A> {
   const result = ship.next(answer);
   if (result.done) {
     return (result.value: any);
   }
   switch (result.value.type) {
   case 'Command': {
-    const newAnswer = yield* mapCommand(liftEffect, liftAction, liftState, result.value.command);
-    return yield* mapWithAnswer(liftEffect, liftAction, liftState, ship, newAnswer);
+    const newAnswer = yield* mapCommand(liftEffect, liftCommit, liftState, result.value.command);
+    return yield* mapWithAnswer(liftEffect, liftCommit, liftState, ship, newAnswer);
   }
   case 'All': {
     const newAnswer = yield* allAny(...result.value.ships.map((currenyShip) =>
-      mapWithAnswer(liftEffect, liftAction, liftState, currenyShip)
+      mapWithAnswer(liftEffect, liftCommit, liftState, currenyShip)
     ));
-    return yield* mapWithAnswer(liftEffect, liftAction, liftState, ship, newAnswer);
+    return yield* mapWithAnswer(liftEffect, liftCommit, liftState, ship, newAnswer);
   }
   default:
     return result.value;
   }
 }
 
-export function map<Effect, Action1, State1, Action2, State2, A>(
-  liftAction: (action1: Action1) => Action2,
+export function map<Effect, Commit1, State1, Commit2, State2, A>(
+  liftCommit: (commit1: Commit1) => Commit2,
   liftState: (state2: State2) => State1,
-  ship: Ship<Effect, Action1, State1, A>
-): Ship<Effect, Action2, State2, A> {
-  return mapWithAnswer((effect) => call(effect), liftAction, liftState, ship);
+  ship: Ship<Effect, Commit1, State1, A>
+): Ship<Effect, Commit2, State2, A> {
+  return mapWithAnswer((effect) => call(effect), liftCommit, liftState, ship);
 }

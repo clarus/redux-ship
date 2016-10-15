@@ -2,16 +2,16 @@
 import type {Command, Ship} from './ship';
 import type {Snapshot, SnapshotItem} from './snap';
 
-function snapshotItemError<Effect, Action, State>(
+function snapshotItemError<Effect, Commit, State>(
   error: mixed
-): SnapshotItem<Effect, Action, State> {
+): SnapshotItem<Effect, Commit, State> {
   return ({error}: any);
 }
 
-function simulateCommand<Effect, Action, State>(
-  command: Command<Effect, Action, State>,
-  snapshotItem: SnapshotItem<Effect, Action, State>
-): {result: ?{value: any}, snapshotItem: SnapshotItem<Effect, Action, State>} {
+function simulateCommand<Effect, Commit, State>(
+  command: Command<Effect, Commit, State>,
+  snapshotItem: SnapshotItem<Effect, Commit, State>
+): {result: ?{value: any}, snapshotItem: SnapshotItem<Effect, Commit, State>} {
   switch (command.type) {
   case 'Effect':
     if (snapshotItem.type === 'Effect') {
@@ -28,13 +28,13 @@ function simulateCommand<Effect, Action, State>(
       };
     }
     break;
-  case 'Dispatch':
-    if (snapshotItem.type === 'Dispatch') {
+  case 'Commit':
+    if (snapshotItem.type === 'Commit') {
       return {
         result: {value: undefined},
         snapshotItem: {
-          type: 'Dispatch',
-          action: command.action,
+          type: 'Commit',
+          commit: command.commit,
         },
       };
     }
@@ -59,11 +59,11 @@ function simulateCommand<Effect, Action, State>(
   };
 }
 
-function simulateWithAnswer<Effect, Action, State, A>(
-  ship: Ship<Effect, Action, State, A>,
-  snapshot: Snapshot<Effect, Action, State>,
+function simulateWithAnswer<Effect, Commit, State, A>(
+  ship: Ship<Effect, Commit, State, A>,
+  snapshot: Snapshot<Effect, Commit, State>,
   answer?: any
-): {result: ?{value: A}, snapshot: Snapshot<Effect, Action, State>} {
+): {result: ?{value: A}, snapshot: Snapshot<Effect, Commit, State>} {
   const result = ship.next(answer);
   if (result.done) {
     return {
@@ -161,9 +161,9 @@ function simulateWithAnswer<Effect, Action, State, A>(
   }
 }
 
-export function simulate<Effect, Action, State, A>(
-  ship: Ship<Effect, Action, State, A>,
-  snapshot: Snapshot<Effect, Action, State>
-): Snapshot<Effect, Action, State> {
+export function simulate<Effect, Commit, State, A>(
+  ship: Ship<Effect, Commit, State, A>,
+  snapshot: Snapshot<Effect, Commit, State>
+): Snapshot<Effect, Commit, State> {
   return simulateWithAnswer(ship, snapshot).snapshot;
 }

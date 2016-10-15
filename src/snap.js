@@ -1,8 +1,8 @@
 // @flow
 import type {Command, Ship} from './ship';
-import {allAny, call, dispatch, getState} from './ship';
+import {allAny, call, commit, getState} from './ship';
 
-export type SnapshotItem<Effect, Action, State> = {
+export type SnapshotItem<Effect, Commit, State> = {
   type: 'Return',
   result: any,
 } | {
@@ -10,21 +10,21 @@ export type SnapshotItem<Effect, Action, State> = {
   effect: Effect,
   result?: any,
 } | {
-  type: 'Dispatch',
-  action: Action
+  type: 'Commit',
+  commit: Commit
 } | {
   type: 'GetState',
   state: State,
 } | {
   type: 'All',
-  snapshots: (SnapshotItem<Effect, Action, State>[])[],
+  snapshots: (SnapshotItem<Effect, Commit, State>[])[],
 }
 
-export type Snapshot<Effect, Action, State> = SnapshotItem<Effect, Action, State>[];
+export type Snapshot<Effect, Commit, State> = SnapshotItem<Effect, Commit, State>[];
 
-function* snapCommand<Effect, Action, State>(
-  command: Command<Effect, Action, State>
-): Ship<Effect, Action, State, {result: any, snapshotItem: SnapshotItem<Effect, Action, State>}> {
+function* snapCommand<Effect, Commit, State>(
+  command: Command<Effect, Commit, State>
+): Ship<Effect, Commit, State, {result: any, snapshotItem: SnapshotItem<Effect, Commit, State>}> {
   switch (command.type) {
   case 'Effect': {
     const result = yield* call(command.effect);
@@ -40,13 +40,13 @@ function* snapCommand<Effect, Action, State>(
       },
     };
   }
-  case 'Dispatch': {
-    yield* dispatch(command.action);
+  case 'Commit': {
+    yield* commit(command.commit);
     return {
       result: undefined,
       snapshotItem: {
-        type: 'Dispatch',
-        action: command.action,
+        type: 'Commit',
+        commit: command.commit,
       },
     };
   }
@@ -65,10 +65,10 @@ function* snapCommand<Effect, Action, State>(
   }
 }
 
-function* snapWithAnswer<Effect, Action, State, A>(
-  ship: Ship<Effect, Action, State, A>,
+function* snapWithAnswer<Effect, Commit, State, A>(
+  ship: Ship<Effect, Commit, State, A>,
   answer?: any
-): Ship<Effect, Action, State, {result: A, snapshot: Snapshot<Effect, Action, State>}> {
+): Ship<Effect, Commit, State, {result: A, snapshot: Snapshot<Effect, Commit, State>}> {
   const result = ship.next(answer);
   if (result.done) {
     return {
@@ -115,8 +115,8 @@ function* snapWithAnswer<Effect, Action, State, A>(
 }
 
 /* eslint-disable no-undef */
-export const snap: <Effect, Action, State, A>(
-  ship: Ship<Effect, Action, State, A>
-) => Ship<Effect, Action, State, {result: A, snapshot: Snapshot<Effect, Action, State>}> =
+export const snap: <Effect, Commit, State, A>(
+  ship: Ship<Effect, Commit, State, A>
+) => Ship<Effect, Commit, State, {result: A, snapshot: Snapshot<Effect, Commit, State>}> =
   snapWithAnswer;
 /* eslint-enable no-undef */
