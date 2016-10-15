@@ -1,12 +1,4 @@
 {
-  "env": {
-    "test": {
-      "presets": [
-        "es2015",
-        "stage-2"
-      ]
-    }
-  },
   "plugins": [
     "syntax-flow",
     "transform-flow-strip-types"
