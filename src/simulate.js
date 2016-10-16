@@ -2,16 +2,16 @@
 import type {Command, Ship} from './ship';
 import type {Snapshot, SnapshotItem} from './snap';
 
-function snapshotItemError<Effect, Commit, State>(
+function snapshotItemError<Effect, Commit>(
   error: mixed
-): SnapshotItem<Effect, Commit, State> {
+): SnapshotItem<Effect, Commit> {
   return ({error}: any);
 }
 
 function simulateCommand<Effect, Commit, State>(
   command: Command<Effect, Commit, State>,
-  snapshotItem: SnapshotItem<Effect, Commit, State>
-): {result: ?{value: any}, snapshotItem: SnapshotItem<Effect, Commit, State>} {
+  snapshotItem: SnapshotItem<Effect, Commit>
+): {result: ?{value: any}, snapshotItem: SnapshotItem<Effect, Commit>} {
   switch (command.type) {
   case 'Effect':
     if (snapshotItem.type === 'Effect') {
@@ -61,9 +61,9 @@ function simulateCommand<Effect, Commit, State>(
 
 function simulateWithAnswer<Effect, Commit, State, A>(
   ship: Ship<Effect, Commit, State, A>,
-  snapshot: Snapshot<Effect, Commit, State>,
+  snapshot: Snapshot<Effect, Commit>,
   answer?: any
-): {result: ?{value: A}, snapshot: Snapshot<Effect, Commit, State>} {
+): {result: ?{value: A}, snapshot: Snapshot<Effect, Commit>} {
   const result = ship.next(answer);
   if (result.done) {
     return {
@@ -163,7 +163,7 @@ function simulateWithAnswer<Effect, Commit, State, A>(
 
 export function simulate<Effect, Commit, State, A>(
   ship: Ship<Effect, Commit, State, A>,
-  snapshot: Snapshot<Effect, Commit, State>
-): Snapshot<Effect, Commit, State> {
+  snapshot: Snapshot<Effect, Commit>
+): Snapshot<Effect, Commit> {
   return simulateWithAnswer(ship, snapshot).snapshot;
 }

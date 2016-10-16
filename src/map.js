@@ -13,8 +13,10 @@ function* mapCommand<Effect1, Commit1, State1, Effect2, Commit2, State2>(
     return yield* liftEffect(command.effect);
   case 'Commit':
     return yield* commit(liftCommit(command.commit));
-  case 'GetState':
-    return liftState(yield* getState());
+  case 'GetState': {
+    const {selector} = command;
+    return yield* getState(state => selector(liftState(state)));
+  }
   default:
     return command;
   }

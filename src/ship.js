@@ -1,6 +1,5 @@
 // @flow
 
-// eslint-disable-next-line no-unused-vars
 export type Command<Effect, Commit, State> = {
   type: 'Effect',
   effect: Effect,
@@ -9,6 +8,7 @@ export type Command<Effect, Commit, State> = {
   commit: Commit,
 } | {
   type: 'GetState',
+  selector: (state: State) => any,
 };
 
 export type Yield<Effect, Commit, State> = {
@@ -46,11 +46,14 @@ export function* commit<Effect, Commit, State>(
   };
 }
 
-export function* getState<Effect, Commit, State>(): Ship<Effect, Commit, State, State> {
+export function* getState<Effect, Commit, State, A>(
+  selector: (state: State) => A
+): Ship<Effect, Commit, State, State> {
   const state: any = yield {
     type: 'Command',
     command: {
       type: 'GetState',
+      selector,
     },
   };
   return state;

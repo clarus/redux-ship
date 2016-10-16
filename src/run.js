@@ -14,7 +14,7 @@ function runCommand<Effect, Commit, State>(
     case 'Commit':
       return runCommit(command.commit);
     case 'GetState':
-      return runGetState();
+      return command.selector(runGetState());
     default:
       return command;
     }
