@@ -35,49 +35,49 @@ You might not need Redux Ship, especially for small projects. Here is an *opinio
 * **typing:** Elm has excellent typing. We can add typing to Redux Thunk with Flow. There are type declarations for Redux Sagas, but in a typical instruction like `const state = yield select(selector);` we cannot get the type of `answer`. This limitation is due to the use of the `yield` keyword in the generators. In contrast, in Redux Ship, we only use the `yield*` keyword to get full typing.
 
 ## API
-* [`Ship<Effect, Action, State, A>`](#shipeffect-action-state-a)
-* [`Snapshot<Effect, Action, State>`](#snapshoteffect-action-state)
+* [`Ship<Effect, Commit, State, A>`](#shipeffect-commit-state-a)
+* [`Snapshot<Effect, Commit>`](#snapshoteffect-commit)
 * [`all`](#all)
 * [`call`](#call)
-* [`dispatch`](#dispatch)
+* [`commit`](#commit)
 * [`getState`](#getState)
 * [`map`](#map)
 * [`run`](#run)
 * [`simulate`](#simulate)
 * [`snap`](#snap)
 
-#### `Ship<Effect, Action, State, A>`
+### `Ship<Effect, Commit, State, A>`
 
-The type of a ship returning a value of type `A` and using some side effects of type `Effect`, a Redux store with actions of type `Action` and a state of type `State`. A ship is a generator and can be defined using the `function*` syntax.
+The type of a ship returning a value of type `A` and using some side effects of type `Effect`, a Redux store with commits of type `Commit` and a state of type `State`. A ship is a generator and can be defined using the `function*` syntax.
 
-#### `Snapshot<Effect, Action, State>`
+### `Snapshot<Effect, Commit>`
 
 The type of the snapshot of an execution of a ship. A snapshot includes the side effects ran by a ship, as well as their execution order (sequential or concurrent).
 
-#### `all`
-```
-<Effect, Action, State, A>(
-  ships: Ship<Effect, Action, State, A>[]
-) => Ship<Effect, Action, State, A[]>
+### `all`
+```js
+<Effect, Commit, State, A>(
+  ships: Ship<Effect, Commit, State, A>[]
+) => Ship<Effect, Commit, State, A[]>
 ```
 
 Returns the array of results of the `ships` by running them in parallel. If you have a fixed number of tasks with different types of result to run in parallel, you can use:
-```
+```js
 all2(ship1, ship2)
 all3(ship1, ship2, ship3)
 ...
 all7(ship1, ship2, ship3, ship4, ship5, ship6, ship7)
 ```
 
-#### `call`
-```
-<Effect, Action, State>(effect: Effect): Ship<Effect, Action, State, any>
+### `call`
+```js
+<Effect, Commit, State>(effect: Effect): Ship<Effect, Commit, State, any>
 ```
 
 Calls the effect `effect`. The type of the result is `any` because it depends on the value of the effect. Thus, to prevent type errors, we recommend to wrap your calls with one wrapper per kind of effect. For example, if the effects `HttpRequest` always return a `string`:
 
-```
-export function httpRequest<Action, State>(url: string): Ship<t, Action, State, string> {
+```js
+export function httpRequest<Commit, State>(url: string): Ship<t, Commit, State, string> {
   return Ship.call({
     type: 'HttpRequest',
     url,
@@ -85,64 +85,64 @@ export function httpRequest<Action, State>(url: string): Ship<t, Action, State, 
 }
 ```
 
-#### `dispatch`
-```
-<Effect, Action, State>(action: Action): Ship<Effect, Action, State, void>
+### `commit`
+```js
+<Effect, Commit, State>(commit: Commit): Ship<Effect, Commit, State, void>
 ```
 
-Dispatches an action of type `Action` and waits for its termination.
+Commits a commit of type `Commit` and waits for its termination.
 
-#### `getState`
-```
-<Effect, Action, State>() => Ship<Effect, Action, State, State>
+### `getState`
+```js
+<Effect, Commit, State>() => Ship<Effect, Commit, State, State>
 ```
 
 Returns the current state of type `State`.
 
-#### `map`
-```
-<Effect, Action1, State1, Action2, State2, A>(
-  liftAction: (action1: Action1) => Action2,
+### `map`
+```js
+<Effect, Commit1, State1, Commit2, State2, A>(
+  liftCommit: (commit: Commit1) => Commit2,
   liftState: (state2: State2) => State1,
-  ship: Ship<Effect, Action1, State1, A>
-): Ship<Effect, Action2, State2, A>
+  ship: Ship<Effect, Commit1, State1, A>
+): Ship<Effect, Commit2, State2, A>
 ```
 
-A function useful to compose nested stores. Lifts a `ship` with access to "small set" of actions `Action1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Action2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `liftState(getState())` and each `dispatch(action1)` by `dispatch(liftAction(action1))`.
+A function useful to compose nested stores. Lifts a `ship` with access to "small set" of commits `Commit1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Commit2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `liftState(getState())` and each `commit(commit1)` by `commit(liftCommit(commit1))`.
 
-#### `run`
-```
-<Effect, Action, State, A>(
+### `run`
+```js
+<Effect, Commit, State, A>(
   runEffect: (effect: Effect) => any,
-  runDispatch: (action: Action) => void | Promise<void>,
+  runCommit: (commit: Commit) => void | Promise<void>,
   runGetState: () => State,
-  ship: Ship<Effect, Action, State, A>
+  ship: Ship<Effect, Commit, State, A>
 ) => Promise<A>
 ```
 
-Run a ship by evaluating each `call`, `dispatch` and `getState` with `runEffect`, `runDispatch` and `runGetState` respectively. To connect Redux Ship to a Redux `store`, you can do:
+Run a ship by evaluating each `call`, `commit` and `getState` with `runEffect`, `runCommit` and `runGetState` respectively. To connect Redux Ship to a Redux `store`, you can do:
 
-```
+```js
 run(runEffect, store.dispatch, store.getState, ship);
 ```
 
-#### `simulate`
-```
-<Effect, Action, State, A>(
-  ship: Ship<Effect, Action, State, A>,
-  snapshot: Snapshot<Effect, Action, State>
-): Snapshot<Effect, Action, State>
+### `simulate`
+```js
+<Effect, Commit, State, A>(
+  ship: Ship<Effect, Commit, State, A>,
+  snapshot: Snapshot<Effect, Commit, State>
+): Snapshot<Effect, Commit, State>
 ```
 
 Simulates a `ship` in the context of a `snapshot` and returns the snapshot of the simulation. A simulation is a purely functional (with no side effects) execution of a ship. Since there are many ways to execute a ship, we need a snapshot a previous live execution of the ship (with side effects). For example, if the ship runs an API request, the snapshot is used to give an answer to the API request. The result of `simulate` should be equal to `snapshot`, unless your ship was changed since its snapshot was taken.
 
-#### `snap`
-```
-<Effect, Action, State, A>(
-  ship: Ship<Effect, Action, State, A>
-) => Ship<Effect, Action, State, {
+### `snap`
+```js
+<Effect, Commit, State, A>(
+  ship: Ship<Effect, Commit, State, A>
+) => Ship<Effect, Commit, State, {
   result: A,
-  snapshot: Snapshot<Effect, Action, State>
+  snapshot: Snapshot<Effect, Commit, State>
 }>
 ```
 
