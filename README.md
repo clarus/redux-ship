@@ -19,6 +19,9 @@ npm install --save redux-ship
 
 You can optionally install [Flow](https://flowtype.org/) to get type checking and [redux-ship-logger](https://github.com/clarus/redux-ship-logger) to get logging.
 
+## Architecture
+<img src='https://raw.githubusercontent.com/clarus/redux-ship/master/architecture.svg' alt='Architecture' width='500px'>
+
 ## How does Redux Ship compare to X?
 You might not need Redux Ship, especially for small projects. Here is an *opinionated* comparison of Redux Ship with some alternatives.
 
