@@ -1,9 +1,9 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/rocket-48.png) Redux Ship
-> Composable, testable and typable side effects for Redux
+> Scalable, testable and typable side effects for Redux
 
 Redux Ship is a side effects handler for [Redux](https://github.com/reactjs/redux) [middleware](http://redux.js.org/docs/advanced/Middleware.html) which focuses on:
 
-* **composition:** you can reuse and compose sub-stores, as you would do with [React](https://facebook.github.io/react/) components;
+* **scalability:** you can reuse and compose sub-stores even with sharing, thanks to the *commit* and *patch* mechanism;
 * **testing:** you can run unit tests of your side effects, by taking snapshots of their live execution traces;
 * **typing:** you can type check your code with (almost) full coverage in [Flow](https://flowtype.org/).
 
