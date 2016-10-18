@@ -19,6 +19,21 @@ npm install --save redux-ship
 
 You can optionally install [Flow](https://flowtype.org/) to get type checking and [redux-ship-logger](https://github.com/clarus/redux-ship-logger) to get logging.
 
+## How does Redux Ship compare to X?
+You might not need Redux Ship, especially for small projects. Here is an *opinionated* comparison of Redux Ship with some alternatives.
+
+| | [Redux Thunk](https://github.com/gaearon/redux-thunk) | [Redux Sagas](https://github.com/yelouafi/redux-saga) | [Elm](http://elm-lang.org/) | Redux Ship |
+|:---:|:---:|:---:|:---:|:---:|
+| scalability | ~ | ~ | ~ | ✔ |
+| testing | ~ | ✔ | ~ | ✔ |
+| snapshots | - | - | - | ✔ |
+| typing | ✔ | ~ | ✔ | ✔ |
+
+* **scalability:** we can easily compose components with a shared global state in Redux Thunk or Redux Sagas. The Elm architecture is more suited for components with independent local states. Thanks to the [`map`](#map) primitive and the commit / patch mechanism, Redux Ship offers a built-in solution to compose component with both a shared and a local state.
+* **testing:** we can test side effects with Redux Sagas and Redux Ship since both are generators. Using mocking, we can also test Thunks actions but with less control. In Elm, we can use [elm-testable](http://package.elm-lang.org/packages/avh4/elm-testable/latest), but this requires to rewrite everything using `Testable.Cmd` instead of the standard `Cmd`.
+* **snapshots:** the ability to take snapshots of the execution of side effects is specific to Redux Ship. We believe this is a key feature to make tests of side effects simple and reproducible.
+* **typing:** Elm has excellent typing. We can add typing to Redux Thunk with Flow. There are type declarations for Redux Sagas, but in a typical instruction like `const state = yield select(selector);` we cannot get the type of `answer`. This limitation is due to the use of the `yield` keyword in the generators. In contrast, in Redux Ship, we only use the `yield*` keyword to get full typing.
+
 ## API
 * [`Ship<Effect, Action, State, A>`](#shipeffect-action-state-a)
 * [`Snapshot<Effect, Action, State>`](#snapshoteffect-action-state)
@@ -132,21 +147,6 @@ Simulates a `ship` in the context of a `snapshot` and returns the snapshot of th
 ```
 
 Returns a ship taking the snapshot and returning the result of `ship`.
-
-## How does Redux Ship compare to X?
-You might not need Redux Ship, especially for small projects. Here is an *opinionated* comparison of Redux Ship with some alternatives.
-
-| | [Redux Thunk](https://github.com/gaearon/redux-thunk) | [Redux Sagas](https://github.com/yelouafi/redux-saga) | [Elm](http://elm-lang.org/) | Redux Ship |
-|:---:|:---:|:---:|:---:|:---:|
-| composition | - | - | ✔ | ✔ |
-| testing | ~ | ✔ | - | ✔ |
-| snapshots | - | - | - | ✔ |
-| typing | ✔ | ~ | ✔ | ✔ |
-
-* **composition:** the key to compose sub-parts of an application is the [`map`](#map) function. In Elm, the equivalent is the [`Cmd.map`](http://package.elm-lang.org/packages/elm-lang/core/4.0.5/Platform-Cmd#map) primitive;
-* **testing:** we can test side effects with Redux Sagas and Redux Ship since both are generators. Using mocking, we can also test Thunks actions but with less control. We do not know how to test side effects in Elm;
-* **snapshots:** the ability to take snapshots of executions of side effects is specific to Redux Ship;
-* **typing:** there are type declarations for Redux Sagas, but in a typical instruction like `const state = yield select(selector);` you cannot get the type of `answer`. This limitation is due to the use of the `yield` keyword. In contrast, in Redux Ship, we only use the `yield*` keyword to get typing.
 
 ## License
 MIT
