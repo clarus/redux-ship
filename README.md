@@ -33,7 +33,7 @@ The current state of the component / application, handled by Redux. We modify th
 The HTML displayed by the component / application, handled by React. Updates automatically when the model changes. We only have dumb components (without logics). The view dispatches serializable *actions* to the controller in response to user events.
 
 ### Controller
-Manages side effects like interactions with the server. Written with Redux Ship. The controller handles an action by calling some side effects and by emitting some serializable *commits* to the model. A commit may be formed of one or several patches if it is destined to one or several models. Think commits in Git which can have several patches on different files. A Ship controller is implemented as a generator and each execution is serializable as a *snapshot*s.
+Manages side effects like interactions with the server. Written with Redux Ship. The controller handles an action by calling some side effects and by emitting some serializable *commits* to the model. A commit may be formed of one or several patches if it is destined to one or several models. Think commits in Git which can have several patches on different files. A Ship controller is implemented as a generator and each execution is serializable as a *snapshot*.
 
 ## How does Redux Ship compare to X?
 You might not need Redux Ship, especially for small projects. Here is an *opinionated* comparison of Redux Ship with some alternatives.
