@@ -103,17 +103,21 @@ export function httpRequest<Commit, State>(url: string): Ship<t, Commit, State, 
 
 ### `commit`
 ```js
-<Effect, Commit, State>(commit: Commit): Ship<Effect, Commit, State, void>
+<Effect, Commit, State>(
+  commit: Commit
+): Ship<Effect, Commit, State, void>
 ```
 
 Commits a commit of type `Commit` and waits for its termination.
 
 ### `getState`
 ```js
-<Effect, Commit, State>() => Ship<Effect, Commit, State, State>
+<Effect, Commit, State, A>(
+  selector: (state: State) => A
+): Ship<Effect, Commit, State, State>
 ```
 
-Returns the current state of type `State`.
+Returns a part of the current state by applying a selector.
 
 ### `map`
 ```js
@@ -124,7 +128,7 @@ Returns the current state of type `State`.
 ): Ship<Effect, Commit2, State2, A>
 ```
 
-A function useful to compose nested stores. Lifts a `ship` with access to "small set" of commits `Commit1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Commit2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `liftState(getState())` and each `commit(commit1)` by `commit(liftCommit(commit1))`.
+A function useful to compose nested stores. Lifts a `ship` with access to "small set" of commits `Commit1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Commit2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `getState(state => selector(liftState(state)))` and each `commit(commit1)` by `commit(liftCommit(commit1))`.
 
 ### `run`
 ```js
