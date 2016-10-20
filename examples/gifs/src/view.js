@@ -14,8 +14,8 @@ type Props = {
 };
 
 export default class Index extends PureComponent<void, Props, void> {
-  handleDispatchRandomGif = (action: RandomGifController.Action): void => {
-    this.props.dispatch({type: 'RandomGif', action});
+  handleDispatchRandomGif = (action: RandomGifController.Action, tag: string): void => {
+    this.props.dispatch({type: 'RandomGif', action, tag});
   };
 
   render() {
@@ -29,13 +29,16 @@ export default class Index extends PureComponent<void, Props, void> {
         <Counter
           state={this.props.state.counter}
         />
-        <h1>Simple</h1>
+        <h1>Gifs</h1>
         <div className="Index-randomGif">
-          <RandomGif
-            dispatch={this.handleDispatchRandomGif}
-            state={this.props.state.randomGif}
-            tag="dogs"
-          />
+          {Object.keys(this.props.state.randomGifs).map(tag =>
+            <RandomGif
+              dispatch={action => this.handleDispatchRandomGif(action, tag)}
+              key={tag}
+              state={this.props.state.randomGifs[tag]}
+              tag={tag}
+            />
+          )}
         </div>
       </div>
     );
