@@ -1,6 +1,7 @@
 {
   "name": "gifs",
   "version": "0.1.0",
+  "homepage": "http://clarus.github.io/redux-ship/examples/gifs",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.6.1"
