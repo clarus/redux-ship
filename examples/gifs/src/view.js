@@ -37,10 +37,6 @@ export default class Index extends PureComponent<void, Props, void> {
             tag="dogs"
           />
         </div>
-        <div className="Index-footer">
-          <hr />
-          <p>Built with <a href="https://github.com/clarus/redux-ship">Redux Ship</a> © Guillaume Claret</p>
-        </div>
       </div>
     );
   }
