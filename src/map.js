@@ -5,7 +5,7 @@ import {allAny, call, commit, getState} from './ship';
 function* mapCommand<Effect1, Commit1, State1, Effect2, Commit2, State2>(
   liftEffect: (effect1: Effect1) => Ship<Effect2, Commit2, State2, any>,
   liftCommit: (commit1: Commit1) => Commit2,
-  liftState: (state2: State2) => State1,
+  extractState: (state2: State2) => State1,
   command: Command<Effect1, Commit1, State1>
 ): Ship<Effect2, Commit2, State2, any> {
   switch (command.type) {
@@ -15,7 +15,7 @@ function* mapCommand<Effect1, Commit1, State1, Effect2, Commit2, State2>(
     return yield* commit(liftCommit(command.commit));
   case 'GetState': {
     const {selector} = command;
-    return yield* getState(state => selector(liftState(state)));
+    return yield* getState(state => selector(extractState(state)));
   }
   default:
     return command;
@@ -25,7 +25,7 @@ function* mapCommand<Effect1, Commit1, State1, Effect2, Commit2, State2>(
 function* mapWithAnswer<Effect1, Commit1, State1, Effect2, Commit2, State2, A>(
   liftEffect: (effect1: Effect1) => Ship<Effect2, Commit2, State2, any>,
   liftCommit: (commit1: Commit1) => Commit2,
-  liftState: (state2: State2) => State1,
+  extractState: (state2: State2) => State1,
   ship: Ship<Effect1, Commit1, State1, A>,
   answer?: any
 ): Ship<Effect2, Commit2, State2, A> {
@@ -35,14 +35,14 @@ function* mapWithAnswer<Effect1, Commit1, State1, Effect2, Commit2, State2, A>(
   }
   switch (result.value.type) {
   case 'Command': {
-    const newAnswer = yield* mapCommand(liftEffect, liftCommit, liftState, result.value.command);
-    return yield* mapWithAnswer(liftEffect, liftCommit, liftState, ship, newAnswer);
+    const newAnswer = yield* mapCommand(liftEffect, liftCommit, extractState, result.value.command);
+    return yield* mapWithAnswer(liftEffect, liftCommit, extractState, ship, newAnswer);
   }
   case 'All': {
     const newAnswer = yield* allAny(...result.value.ships.map((currenyShip) =>
-      mapWithAnswer(liftEffect, liftCommit, liftState, currenyShip)
+      mapWithAnswer(liftEffect, liftCommit, extractState, currenyShip)
     ));
-    return yield* mapWithAnswer(liftEffect, liftCommit, liftState, ship, newAnswer);
+    return yield* mapWithAnswer(liftEffect, liftCommit, extractState, ship, newAnswer);
   }
   default:
     return result.value;
@@ -51,8 +51,8 @@ function* mapWithAnswer<Effect1, Commit1, State1, Effect2, Commit2, State2, A>(
 
 export function map<Effect, Commit1, State1, Commit2, State2, A>(
   liftCommit: (commit1: Commit1) => Commit2,
-  liftState: (state2: State2) => State1,
+  extractState: (state2: State2) => State1,
   ship: Ship<Effect, Commit1, State1, A>
 ): Ship<Effect, Commit2, State2, A> {
-  return mapWithAnswer((effect) => call(effect), liftCommit, liftState, ship);
+  return mapWithAnswer((effect) => call(effect), liftCommit, extractState, ship);
 }
