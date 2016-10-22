@@ -25,6 +25,9 @@ export default class Index extends PureComponent<void, Props, void> {
           <img src={logo} className="Index-logo" alt="logo" />
           <h2>Redux Ship</h2>
         </div>
+        <p>
+          Open the console to see the logs. Sources are <a href="https://github.com/clarus/redux-ship/tree/master/examples/gifs">on GitHub</a>.
+        </p>
         <h1>Counter</h1>
         <Counter
           state={this.props.state.counter}
