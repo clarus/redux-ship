@@ -48,7 +48,7 @@ export function* commit<Effect, Commit, State>(
 
 export function* getState<Effect, Commit, State, A>(
   selector: (state: State) => A
-): Ship<Effect, Commit, State, State> {
+): Ship<Effect, Commit, State, A> {
   const state: any = yield {
     type: 'Command',
     command: {
