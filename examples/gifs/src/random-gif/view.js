@@ -20,14 +20,29 @@ export default class RandomGif extends PureComponent<void, Props, void> {
   };
 
   renderGif() {
-    const src = this.props.state.gifUrl && !this.props.state.isLoading ?
-      this.props.state.gifUrl :
-      logo;
+    if (this.props.state.isLoading) {
+      return (
+        <img
+          alt="waiting logo"
+          className="RandomGif-picture RandomGif-picture-loading"
+          src={logo}
+        />
+      );
+    }
+    if (this.props.state.gifUrl) {
+      return (
+        <img
+          alt="random gif"
+          className="RandomGif-picture"
+          src={this.props.state.gifUrl}
+        />
+      );
+    }
     return (
       <img
-        alt="waiting logo"
+        alt="no gifs"
         className="RandomGif-picture"
-        src={src}
+        src={logo}
       />
     );
   }
