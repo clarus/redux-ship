@@ -1,0 +1,44 @@
+exports[`test default 1`] = `
+<div
+  className="RandomGif">
+  <img
+    alt="no gifs"
+    className="RandomGif-picture"
+    src="test-file-stub" />
+  <button
+    disabled={false}
+    onClick={[Function anonymous]}>
+    New cat
+  </button>
+</div>
+`;
+
+exports[`test loaded 1`] = `
+<div
+  className="RandomGif">
+  <img
+    alt="random gif"
+    className="RandomGif-picture"
+    src="https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif" />
+  <button
+    disabled={false}
+    onClick={[Function anonymous]}>
+    New cat
+  </button>
+</div>
+`;
+
+exports[`test loading 1`] = `
+<div
+  className="RandomGif">
+  <img
+    alt="waiting logo"
+    className="RandomGif-picture RandomGif-picture-loading"
+    src="test-file-stub" />
+  <button
+    disabled={true}
+    onClick={[Function anonymous]}>
+    Loading...
+  </button>
+</div>
+`;

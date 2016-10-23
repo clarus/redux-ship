@@ -1,0 +1,57 @@
+exports[`test load 1`] = `
+Array [
+  Object {
+    "commit": Object {
+      "type": "LoadStart"
+    },
+    "type": "Commit"
+  },
+  Object {
+    "effect": Object {
+      "type": "HttpRequest",
+      "url": "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cats"
+    },
+    "result": "{\"data\":{\"image_url\":\"https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif\"}}",
+    "type": "Effect"
+  },
+  Object {
+    "commit": Object {
+      "gifUrl": "https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif",
+      "type": "LoadSuccess"
+    },
+    "type": "Commit"
+  }
+]
+`;
+
+exports[`test loadStart 1`] = `
+Object {
+  "randomGif": Object {
+    "type": "LoadStart"
+  }
+}
+`;
+
+exports[`test loadSuccessIncrementByOne 1`] = `
+Object {
+  "counter": Object {
+    "type": "IncrementByOne"
+  },
+  "randomGif": Object {
+    "gifUrl": "https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif",
+    "type": "LoadSuccess"
+  }
+}
+`;
+
+exports[`test loadSuccessIncrementByTwo 1`] = `
+Object {
+  "counter": Object {
+    "type": "IncrementByTwo"
+  },
+  "randomGif": Object {
+    "gifUrl": "https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif",
+    "type": "LoadSuccess"
+  }
+}
+`;
