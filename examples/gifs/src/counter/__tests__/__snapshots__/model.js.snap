@@ -1,0 +1,11 @@
+exports[`test IncrementByOne 1`] = `
+Object {
+  "count": 1
+}
+`;
+
+exports[`test IncrementByTwo 1`] = `
+Object {
+  "count": 2
+}
+`;
