@@ -153,7 +153,7 @@ all7(ship1, ship2, ship3, ship4, ship5, ship6, ship7)
 ```
 
 #### Example
-Concurrently get three random gifs:
+To concurrently get three random gifs:
 ```js
 const gifUrls = yield* Ship.all(['cat', 'minion', 'dog'].map(function* (tag) {
   const result = yield* Effect.httpRequest(
@@ -198,7 +198,7 @@ Commits a commit of type `Commit` and waits for its termination.
 * `commit` the commit to apply
 
 #### Example
-Register the result of a successful HTTP request:
+To commit the result of a successful HTTP request:
 ```js
 yield* Ship.commit({
   type: 'LoadSuccess',
@@ -218,7 +218,7 @@ Returns a part of the current state by applying a selector.
 * `selector` a selector to extract the useful part of the current state
 
 #### Example
-Get the current gif in the store:
+To get the current gif in the store:
 ```js
 const currentGif = yield* Ship.getState(state => state.randomGif.gifUrl);
 ```
@@ -239,7 +239,7 @@ A function useful to compose nested components. Lifts a `ship` with access to "s
 * `ship` the ship to map
 
 #### Example
-Lifts a controller to retrieve one random gif to a controller to retreive two random gifs:
+To lift a controller to retrieve one random gif to a controller to retreive two random gifs:
 ```js
 return yield* Ship.map(
   commit => ({type: 'First', commit}),
