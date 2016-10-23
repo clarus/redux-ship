@@ -1,0 +1,86 @@
+exports[`test default 1`] = `
+<div
+  className="Index">
+  <div
+    className="Index-header">
+    <img
+      alt="logo"
+      className="Index-logo"
+      src="test-file-stub" />
+    <h2>
+      Redux Ship
+    </h2>
+  </div>
+  <p>
+    Open the console to see the logs. Sources are 
+    <a
+      href="https://github.com/clarus/redux-ship/tree/master/examples/gifs">
+      on GitHub
+    </a>
+    .
+  </p>
+  <h1>
+    Counter
+  </h1>
+  <div>
+    <p>
+      Count: 
+      0
+    </p>
+  </div>
+  <h1>
+    Gifs
+  </h1>
+  <div
+    className="Index-randomGif">
+    <div
+      className="RandomGif">
+      <img
+        alt="no gifs"
+        className="RandomGif-picture"
+        src="test-file-stub" />
+      <button
+        disabled={false}
+        onClick={[Function anonymous]}>
+        New cat
+      </button>
+    </div>
+    <div
+      className="RandomGif">
+      <img
+        alt="no gifs"
+        className="RandomGif-picture"
+        src="test-file-stub" />
+      <button
+        disabled={false}
+        onClick={[Function anonymous]}>
+        New minion
+      </button>
+    </div>
+    <div
+      className="RandomGif">
+      <img
+        alt="no gifs"
+        className="RandomGif-picture"
+        src="test-file-stub" />
+      <button
+        disabled={false}
+        onClick={[Function anonymous]}>
+        New dog
+      </button>
+    </div>
+    <div
+      className="RandomGif">
+      <img
+        alt="no gifs"
+        className="RandomGif-picture"
+        src="test-file-stub" />
+      <button
+        disabled={false}
+        onClick={[Function anonymous]}>
+        New gify
+      </button>
+    </div>
+  </div>
+</div>
+`;
