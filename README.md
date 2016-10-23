@@ -175,7 +175,7 @@ Calls the serialized effect `effect`. The type of the result is `any` because it
 * `effect` the effect to call
 
 #### Example
-To prevent type errors, we recommend to wrap your calls to `call` with one wrapper per kind of effect. For example, if the effect `HttpRequest` always returns a `string`:
+To prevent type errors, we recommend to wrap your calls to `call` with one wrapper per kind of effect. For example, if you have an effect `HttpRequest` which always returns a `string`:
 
 ```js
 export function httpRequest<Commit, State>(url: string): Ship<*, Commit, State, string> {
@@ -273,7 +273,24 @@ To connect Redux Ship to a Redux `store`, you can do:
 ```js
 Ship.run(runEffect, store.dispatch, store.getState, ship);
 ```
-where `runEffect` is your function to evaluate the side effects.
+where `runEffect` is your function to evaluate your side effects:
+```js
+export type Effect = {
+  type: 'HttpRequest',
+  url: string,
+};
+
+export async function run(effect: Effect): Promise<any> {
+  switch (effect.type) {
+  case 'HttpRequest': {
+    const response = await fetch(effect.url);
+    return await response.text();
+  }
+  default:
+    return;
+  }
+}
+```
 
 ### `simulate`
 ```js
