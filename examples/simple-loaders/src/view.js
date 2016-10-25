@@ -28,7 +28,7 @@ export default class Index extends PureComponent<void, Props, void> {
       <div className="Index">
         <div className="Index-header">
           <img src={logo} className="Index-logo" alt="logo" />
-          <h2>R2D2</h2>
+          <h2>R2-D2</h2>
         </div>
         <p>Open the console to see the logs.</p>
         <h1>Eye</h1>
