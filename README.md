@@ -239,7 +239,7 @@ A function useful to compose nested components. Lifts a `ship` with access to "s
 * `ship` the ship to map
 
 #### Example
-To lift a controller to retrieve one random gif to a controller to retreive two random gifs:
+To lift a controller to retrieve one random gif to a controller to retrieve two random gifs:
 ```js
 return yield* Ship.map(
   commit => ({type: 'First', commit}),
