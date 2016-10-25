@@ -1,5 +1,5 @@
 {
-  "name": "simple-loaders",
+  "name": "http-request",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
