@@ -58,7 +58,7 @@ You might not need Redux Ship, especially for small projects. Here is an **opini
 * [`all`](#all)
 * [`call`](#call)
 * [`commit`](#commit)
-* [`getState`](#getState)
+* [`getState`](#getstate)
 * [`map`](#map)
 * [`run`](#run)
 * [`simulate`](#simulate)
