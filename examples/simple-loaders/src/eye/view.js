@@ -16,7 +16,7 @@ export default class Eye extends PureComponent<void, Props, void> {
   render() {
     return (
       <div>
-        <p>{this.props.state.color || 'unknown yet'}</p>
+        {this.props.state.color && <p>{this.props.state.color}</p>}
         <button disabled={this.props.state.isLoading} onClick={this.handleClickLoad}>
           {this.props.state.isLoading ? 'Loading...' : 'Get color'}
         </button>

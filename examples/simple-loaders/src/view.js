@@ -4,6 +4,8 @@ import logo from './logo.svg';
 import './view.css';
 import * as EyeController from './eye/controller';
 import Eye from './eye/view';
+import * as MoviesController from './movies/controller';
+import Movies from './movies/view';
 import * as Controller from './controller';
 import * as Model from './model';
 
@@ -15,6 +17,10 @@ type Props = {
 export default class Index extends PureComponent<void, Props, void> {
   handleDispatchEye = (action: EyeController.Action): void => {
     this.props.dispatch({type: 'Eye', action});
+  };
+
+  handleDispatchMovies = (action: MoviesController.Action): void => {
+    this.props.dispatch({type: 'Movies', action});
   };
 
   render() {
@@ -29,6 +35,11 @@ export default class Index extends PureComponent<void, Props, void> {
         <Eye
           dispatch={this.handleDispatchEye}
           state={this.props.state.eye}
+        />
+        <h1>Movies</h1>
+        <Movies
+          dispatch={this.handleDispatchMovies}
+          state={this.props.state.movies}
         />
       </div>
     );
