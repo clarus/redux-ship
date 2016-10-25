@@ -38,7 +38,7 @@ The HTML displayed by the component / application, handled by React. Updates aut
 Manages side effects like interactions with the server. Written with Redux Ship. The controller handles an action by calling some side effects and by emitting some serializable *commits* to the model. A commit may be formed of one or several patches if it is destined to one or several models. Think commits in Git which can have several patches on different files. A Ship controller is implemented as a generator and each execution is serializable as a *snapshot*.
 
 ## How does Redux Ship compare to X?
-You might not need Redux Ship, especially for small projects. Here is an **opinionated** comparison of Redux Ship with some alternatives.
+You might not need Redux Ship, especially for small projects. Here is an **quick** and **opinionated** comparison of Redux Ship with some alternatives which were sources of inspiration. These alternatives are of course very good and have their own strengths. More detailed comparison with examples to come.
 
 | | [Redux Thunk](https://github.com/gaearon/redux-thunk) | [Redux Sagas](https://github.com/yelouafi/redux-saga) | [Elm](http://elm-lang.org/) | Redux Ship |
 |:---:|:---:|:---:|:---:|:---:|
