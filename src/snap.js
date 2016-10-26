@@ -3,9 +3,6 @@ import type {Command, Ship} from './ship';
 import {allAny} from './ship';
 
 export type SnapshotItem<Effect, Commit> = {
-  type: 'Return',
-  result: any,
-} | {
   type: 'Effect',
   effect: Effect,
   result?: any,
@@ -74,10 +71,7 @@ function* snapWithAnswer<Effect, Commit, State, A>(
   if (result.done) {
     return {
       result: (result.value: any),
-      snapshot: result.value === undefined ? [] : [{
-        type: 'Return',
-        result: result.value,
-      }],
+      snapshot: [],
     };
   }
   switch (result.value.type) {

@@ -68,10 +68,7 @@ function simulateWithAnswer<Effect, Commit, State, A>(
   if (result.done) {
     return {
       result: {value: (result.value: any)},
-      snapshot: result.value === undefined ? [] : [{
-        type: 'Return',
-        result: result.value,
-      }],
+      snapshot: [],
     };
   }
   const [snapshotItem, ...nextSnapshot] = snapshot;
