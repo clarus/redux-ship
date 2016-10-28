@@ -9,4 +9,9 @@ npm install
 npm start
 ```
 
+Test with:
+```
+npm test
+```
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
