@@ -20,7 +20,7 @@ const states = [{
 }];
 
 test('view', () => {
-  states.map(state => {
+  states.forEach(state => {
     const tree = renderer.create(<Eye dispatch={dispatch} state={state} />).toJSON();
     expect(tree).toMatchSnapshot();
   });
