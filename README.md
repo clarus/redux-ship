@@ -3,9 +3,15 @@
 
 Redux Ship is a side effects handler for [Redux](https://github.com/reactjs/redux) which focuses on:
 
-* **scalability:** you can reuse and compose sub-stores even with sharing, thanks to the *commit* and *patch* mechanism;
+* **scalability:** you can reuse and compose sub-stores, thanks to the [map](#map) primitive;
 * **testing:** you can run unit tests of your side effects, by taking snapshots of their live execution traces;
 * **typing:** you can type check your code with (almost) full coverage in [Flow](https://flowtype.org/).
+
+Inspired by:
+
+* [Elm](http://elm-lang.org/) for the composition mechanism and type checking;
+* [Redux Saga](https://github.com/yelouafi/redux-saga) for the use of generators to test side-effects;
+* [Jest](https://facebook.github.io/jest/) for the idea of [snapshot testing](http://facebook.github.io/jest/docs/tutorial-react.html#snapshot-testing).
 
 See a [demo with reusable components and shared state](http://clarus.github.io/redux-ship/examples/gifs/).
 
