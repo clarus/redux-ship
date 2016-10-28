@@ -29,6 +29,7 @@ You can optionally install [Flow](https://flowtype.org/) to get type checking an
 
 ## Documentation
 * [Architecture](https://clarus.github.io/redux-ship/docs/architecture.html)
+* [Tutorial](https://clarus.github.io/redux-ship/docs/tutorial.html)
 * [API Reference](https://clarus.github.io/redux-ship/docs/api.html)
 
 ## License
