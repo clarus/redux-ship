@@ -43,21 +43,6 @@ The HTML displayed by the component / application, handled by React. Updates aut
 ### Controller
 Manages side effects like interactions with the server. Written with Redux Ship. The controller handles an action by calling some side effects and by emitting some serializable *commits* to the model. A commit may be formed of one or several patches if it is destined to one or several models. Think commits in Git which can have several patches on different files. A Ship controller is implemented as a generator and each execution is serializable as a *snapshot*.
 
-## How does Redux Ship compare to X?
-You might not need Redux Ship, especially for small projects. Here is an **quick** and **opinionated** comparison of Redux Ship with some alternatives which were sources of inspiration. These alternatives are of course very good and have their own strengths. More detailed comparison with examples to come.
-
-| | [Redux Thunk](https://github.com/gaearon/redux-thunk) | [Redux Sagas](https://github.com/yelouafi/redux-saga) | [Elm](http://elm-lang.org/) | Redux Ship |
-|:---:|:---:|:---:|:---:|:---:|
-| scalability | ~ | ~ | ~ | ✔ |
-| testing | ~ | ✔ | ~ | ✔ |
-| snapshots | - | ? | - | ✔ |
-| typing | ✔ | ~ | ✔ | ✔ |
-
-* **scalability:** we can easily compose components with a shared global state in Redux Thunk or Redux Sagas. The Elm architecture is more suited for components with independent local states. With the [`map`](#map) primitive and the commit / patch mechanism, Redux Ship aims to offer a built-in solution to compose components with both a local and a shared state.
-* **testing:** we can test side effects with Redux Sagas and Redux Ship since both are generators. Using mocking, we can also test Thunks actions but with less control. In Elm, we can use [elm-testable](http://package.elm-lang.org/packages/avh4/elm-testable/latest), but this requires to rewrite everything using `Testable.Cmd` instead of the standard `Cmd`.
-* **snapshots:** as explained in this [tweet](https://twitter.com/gaelduplessix/status/790576808257318912), we can take snapshots of Redux Sagas but I do not know how to do it automatically if there are server responses. Redux Ship provides the [`snap`](#snap) primitive to take the snapshot of a live execution, and [`simulate`](#simulate) to check it afterwards.
-* **typing:** Elm has excellent typing. We can add typing to Redux Thunk with Flow. There are type declarations for Redux Sagas, but in a typical instruction like `const state = yield select(selector);` we cannot get the type of `answer`. This limitation is due to the use of the `yield` keyword in the generators. In contrast, in Redux Ship, we only use the `yield*` keyword to get full typing.
-
 ## API
 * [`Ship<Effect, Commit, State, A>`](#shipeffect-commit-state-a)
 * [`Snapshot<Effect, Commit>`](#snapshoteffect-commit)
