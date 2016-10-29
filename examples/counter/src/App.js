@@ -1,21 +1,34 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+// @flow
+import React, { PureComponent } from 'react';
 import './App.css';
+import * as Controller from './controller';
+import * as Model from './model';
 
-class App extends Component {
+type Props = {
+  dispatch: (action: Controller.Action) => void,
+  state: Model.State,
+};
+
+export default class App extends PureComponent<void, Props, void> {
+  handleClickIncrement = (): void => {
+    this.props.dispatch({type: 'ClickIncrement'});
+  };
+
+  handleClickDecrement = (): void => {
+    this.props.dispatch({type: 'ClickDecrement'});
+  };
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <p>{this.props.state}</p>
+        <button onClick={this.handleClickIncrement}>
+          +1
+        </button>
+        <button onClick={this.handleClickDecrement}>
+          -1
+        </button>
       </div>
     );
   }
 }
-
-export default App;
