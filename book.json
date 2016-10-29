@@ -4,5 +4,6 @@
     "github": {
       "url": "https://github.com/clarus/redux-ship"
     }
-  }
+  },
+  "title": "Redux Ship"
 }
