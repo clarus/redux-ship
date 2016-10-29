@@ -4,6 +4,11 @@
   "description": "Scalable, testable and typable side effects for Redux",
   "main": "dist/index.js",
   "scripts": {
+    "docs:build": "npm run docs:prepare && gitbook build -g clarus/redux-ship",
+    "docs:clean": "rimraf _book",
+    "docs:prepare": "gitbook install",
+    "docs:publish": "npm run docs:clean && npm run docs:build && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push git@github.com:clarus/redux-ship gh-pages --force",
+    "docs:watch": "npm run docs:prepare && gitbook serve",
     "eslint": "eslint src",
     "flow": "flow",
     "prepublish": "rollup -c"
@@ -36,6 +41,7 @@
     "eslint-plugin-babel": "^3.3.0",
     "flow-bin": "^0.33.0",
     "gitbook-cli": "^2.3.0",
+    "rimraf": "^2.5.4",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-uglify": "^1.0.1"
