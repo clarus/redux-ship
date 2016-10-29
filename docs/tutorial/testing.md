@@ -1,9 +1,7 @@
-# Tutorial
+# Testing
+**work in progresss**
 
-For now the tutorial is the [examples folder](https://github.com/clarus/redux-ship/tree/master/examples).
-
-## Testing
-To see how to test side effects with Redux Ship, you can look at the [`examples/http-request/src/eye/__tests__/controller.js`](https://github.com/clarus/redux-ship/blob/master/examples/http-request/src/eye/__tests__/controller.js) file:
+For now, you can look at the [`http-request`](https://github.com/clarus/redux-ship/tree/master/examples/http-request) example. In the file `src/eye/__tests__/controller.js`:
 ```js
 // @flow
 import 'babel-polyfill';
@@ -37,28 +35,4 @@ test('controller with generated snapshot', async () => {
   const snapshot = await Ship.run(runEffect, store.dispatch, store.getState, ship);
   expect(snapshot).toMatchSnapshot();
 });
-
-```
-
-## Composition
-We compose two controllers in [`examples/http-request/src/controller.js`](https://github.com/clarus/redux-ship/blob/master/examples/http-request/src/controller.js):
-```js
-export function* control(action: Action): Ship.Ship<*, Commit, State, void> {
-  switch (action.type) {
-  case 'Eye':
-    return yield* Ship.map(
-      commit => ({type: 'Eye', commit}),
-      state => state.eye,
-      EyeController.control(action.action)
-    );
-  case 'Movies':
-    return yield* Ship.map(
-      commit => ({type: 'Movies', commit}),
-      state => state.movies,
-      MoviesController.control(action.action)
-    );
-  default:
-    return;
-  }
-}
 ```
