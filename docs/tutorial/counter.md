@@ -187,3 +187,25 @@ We define the function `dispatch` with `Ship.run`:
 Ship.run(() => {}, store.dispatch, store.getState, logControl(Controller.control)(action));
 ```
 This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. We call `logControl` to add logging to the controller.
+
+## Inspect the logs
+When we look at our browser's console we see something like:
+
+<img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/counter-logs.png' alt='Logs' width='600px'>
+
+We have an action `{type: 'Increment'}` which takes us from the state `0` to the state `1`. This action is logged by [redux-logger](https://github.com/evgenyrodionov/redux-logger). We also have a line:
+```
+control @ 19:35:41.214 ClickIncrement
+```
+which is the log of our controller as given by [redux-ship-logger](https://github.com/clarus/redux-ship-logger). We see the snapshot of our controller:
+```js
+[
+  {
+    type: 'Commit',
+    commit: {type: 'Increment'}
+  }
+]
+```
+which is an array of one element, the commit of `{type: 'Increment'}`, describing all what the controller has done. Nothing fancy there, but the snapshots of our controllers will become increasingly useful as we design more complex controllers.
+
+Let us move to the [HTTP Request](http-request.html) section to see how to make asynchronous actions.
