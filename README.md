@@ -24,6 +24,10 @@ Run:
 ```
 npm install --save redux-ship
 ```
+or
+```
+yarn add redux-ship
+```
 
 You can optionally install [Flow](https://flowtype.org/) to get type checking and [redux-ship-logger](https://github.com/clarus/redux-ship-logger) to get logging.
 
