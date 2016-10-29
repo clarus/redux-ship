@@ -1,7 +1,7 @@
 {
   "name": "redux-ship",
   "version": "0.0.14",
-  "description": "Redux middleware",
+  "description": "Scalable, testable and typable side effects for Redux",
   "main": "dist/index.js",
   "scripts": {
     "eslint": "eslint src",

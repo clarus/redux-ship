@@ -246,7 +246,9 @@ export async function run(effect: Effect): Promise<any> {
 ): Snapshot<Effect, Commit, State>
 ```
 
-Simulates a `ship` in the context of a `snapshot` and returns the snapshot of the simulation. A simulation is a purely functional (with no side effects) execution of a ship. Since there are many ways to execute a ship, we need a snapshot a previous live execution of the ship (with side effects). For example, if the ship runs an API request, the snapshot is used to give an answer to the API request. The result of `simulate` should be equal to `snapshot`, unless your ship was changed since its snapshot was taken.
+Simulates a `ship` in the context of a `snapshot` and returns the snapshot of the simulation. A simulation is a purely functional (with no side effects) execution of a ship. Useful for regression testing.
+
+To simulate a ship, we need a snapshot of a previous live execution because there are many ways to execute a ship. For example, if the ship starts an API request, we do not know which API answer to provide. In this case, we use the snapshot which already contains an API answer. Since the simulation always gives the same API answers as in the snapshot, the `ship` should behave the same as when its the snapshot was taken. In particular, the result of `simulate` should be equal to `snapshot`, unless `ship` had a regression since its snapshot was taken.
 
 * `ship` the ship to simulate
 * `snapshot` a snapshot of a previous execution of the ship
