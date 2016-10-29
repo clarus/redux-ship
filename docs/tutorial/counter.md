@@ -1,7 +1,7 @@
 # Counter
 We start by the simple example of a counter. A counter does not have asynchronous actions so Redux Ship is not necessary here, but it helps to get started.
 
-<img src='https://raw.githubusercontent.com/clarus/redux-ship/docs/tutorial/counter.png' alt='Screenshot' width='200px'>
+<img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/counter.png' alt='Screenshot' width='150px'>
 
 ## Create a React application
 Use [`create-react-app`](https://github.com/facebookincubator/create-react-app#getting-started) to create a `counter` application:
