@@ -1,5 +1,5 @@
 # Composition
-**work in progresss**
+**work in progress**
 
 For now, you can look at the [`http-request`](https://github.com/clarus/redux-ship/tree/master/examples/http-request) example. The key part is the use of the [`Ship.map`](https://clarus.github.io/redux-ship/docs/api.html) primitive:
 ```js

@@ -144,7 +144,7 @@ yield* Ship.commit({type: 'Foo'}); // error
 as this would result in a Flow type error since `{type: 'Foo'}` is not of type `Model.Patch`.
 
 ## Wrapping everything up
-We instanciate a Redux store in `store.js`:
+We instantiate a Redux store in `store.js`:
 ```js
 // @flow
 import {applyMiddleware, createStore} from 'redux';

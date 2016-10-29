@@ -1,5 +1,5 @@
 # HTTP Request
-**work in progresss**
+**work in progress**
 
 For now, you can look at the [`http-request`](https://github.com/clarus/redux-ship/tree/master/examples/http-request) example. The key parts are the definition of effects in `effect.js`:
 ```js
