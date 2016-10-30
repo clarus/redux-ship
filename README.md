@@ -17,7 +17,7 @@ See a [demo with reusable components and shared state](http://clarus.github.io/r
 
 Redux Ship with [redux-ship-logger](https://github.com/clarus/redux-ship-logger):
 
-<img src='https://raw.githubusercontent.com/clarus/redux-ship-logger/master/logger.png' alt='Screenshot' width='700px'>
+<img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/logger.png' alt='Screenshot' width='700px'>
 
 ## Install
 Run:
