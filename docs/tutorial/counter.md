@@ -131,7 +131,7 @@ We call:
 ```js
 yield* Ship.commit({type: 'Increment'});
 ```
-to commit a patch to the Redux state. All functions in Redux Ship are called with `yield*`, you should never encounter a `yield`.
+to commit a patch to the Redux state. All functions in Redux Ship are called with `yield*`, you should never encounter a `yield`. We avoid the `yield` operator because it is a difficult to type in Flow, and instead call proxy functions with `yield*`.
 
 The return type of `control` is:
 ```js
@@ -151,7 +151,11 @@ import {applyMiddleware, createStore} from 'redux';
 import createLogger from 'redux-logger';
 import * as Model from './model';
 
-export default createStore(Model.reduce, Model.initialState, applyMiddleware(createLogger()));
+export default createStore(
+  Model.reduce,
+  Model.initialState,
+  applyMiddleware(createLogger())
+);
 ```
 and bootstrap the application in `index.js`:
 ```js
@@ -188,7 +192,7 @@ Ship.run(() => {}, store.dispatch, store.getState, logControl(Controller.control
 ```
 This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. We call `logControl` to add logging to the controller.
 
-## Inspect the logs
+## Logs
 When we look at our browser's console we see something like:
 
 <img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/counter-logs.png' alt='Logs' width='600px'>

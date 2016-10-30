@@ -18,7 +18,7 @@ export async function run(effect: Effect): Promise<any> {
   }
 }
 
-export function httpRequest<Action, State>(url: string): Ship<Effect, Action, State, string> {
+export function httpRequest<Commit, State>(url: string): Ship<Effect, Commit, State, string> {
   return call({
     type: 'HttpRequest',
     url,
