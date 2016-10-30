@@ -32,7 +32,7 @@ yarn add redux-ship
 You can optionally install [Flow](https://flowtype.org/) to get type checking and [redux-ship-logger](https://github.com/clarus/redux-ship-logger) to get logging.
 
 ## Gist
-Write side effects with the generator notation:
+Write side effects with the generator notation as in [Redux Saga](https://github.com/yelouafi/redux-saga):
 ```js
 const gifUrls = yield* Ship.all(['cat', 'minion', 'dog'].map(function* (tag) {
   const result = yield* Effect.httpRequest(
@@ -42,8 +42,9 @@ const gifUrls = yield* Ship.all(['cat', 'minion', 'dog'].map(function* (tag) {
 }));
 ```
 
-Compose components with side effects:
+Compose and type-check components with side effects as in [Elm](http://elm-lang.org/):
 ```js
+// 100% Flow type coverage in this example
 return yield* Ship.map(
   commit => ({type: 'Movies', commit}),
   state => state.movies,
