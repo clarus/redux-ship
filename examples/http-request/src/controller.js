@@ -12,40 +12,17 @@ export type Action = {
   action: MoviesController.Action,
 };
 
-export type Commit = {
-  type: 'Eye',
-  commit: EyeController.Commit,
-} | {
-  type: 'Movies',
-  commit: MoviesController.Commit,
-};
-
-export type State = Model.State;
-
-export type Patch = Model.Patch;
-
-export function applyCommit(state: State, commit: Commit): Patch {
-  switch (commit.type) {
-  case 'Eye':
-    return {eye: commit.commit};
-  case 'Movies':
-    return {movies: commit.commit};
-  default:
-    return {};
-  }
-}
-
-export function* control(action: Action): Ship.Ship<*, Commit, State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
   switch (action.type) {
   case 'Eye':
     return yield* Ship.map(
-      commit => ({type: 'Eye', commit}),
+      patch => ({type: 'Eye', patch}),
       state => state.eye,
       EyeController.control(action.action)
     );
   case 'Movies':
     return yield* Ship.map(
-      commit => ({type: 'Movies', commit}),
+      patch => ({type: 'Movies', patch}),
       state => state.movies,
       MoviesController.control(action.action)
     );

@@ -13,14 +13,26 @@ export const initialState: State = {
 };
 
 export type Patch = {
-  eye?: EyeModel.Patch,
-  movies?: MoviesModel.Patch,
+  type: 'Eye',
+  patch: EyeModel.Patch,
+} | {
+  type: 'Movies',
+  patch: MoviesModel.Patch,
 };
 
 export function reduce(state: State, patch: Patch): State {
-  return {
-    ...state,
-    ...patch.eye && {eye: EyeModel.reduce(state.eye, patch.eye)},
-    ...patch.movies && {movies: MoviesModel.reduce(state.movies, patch.movies)},
-  };
+  switch (patch.type) {
+  case 'Eye':
+    return {
+      ...state,
+      eye: EyeModel.reduce(state.eye, patch.patch),
+    };
+  case 'Movies':
+    return {
+      ...state,
+      movies: MoviesModel.reduce(state.movies, patch.patch),
+    };
+  default:
+    return state;
+  }
 }

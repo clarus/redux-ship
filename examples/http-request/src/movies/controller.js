@@ -7,11 +7,7 @@ export type Action = {
   type: 'Load',
 };
 
-export type Commit = MoviesModel.Patch;
-
-export type State = MoviesModel.State;
-
-export function* control(action: Action): Ship.Ship<*, Commit, State, void> {
+export function* control(action: Action): Ship.Ship<*, MoviesModel.Patch, MoviesModel.State, void> {
   switch (action.type) {
   case 'Load': {
     yield* Ship.commit({type: 'LoadStart'});
