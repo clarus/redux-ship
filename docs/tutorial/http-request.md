@@ -114,7 +114,7 @@ We successively:
 The function `Effect.httpRequest` is user-defined, and we now see how to define it.
 
 ## Effect
-One of the aims of Redux Ship is to serialize all the side effects to get better programming tools. In particular, we serialize the primitives effects of our application in a file `effect.js`:
+One of the aims of Redux Ship is to serialize all the side effects to get better programming tools. In particular, we define the serialization of the primitives effects of our application in a file `effect.js`. The type `Effect` is the type of the serialized effects:
 ```js
 export type Effect = {
   type: 'HttpRequest',
