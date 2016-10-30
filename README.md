@@ -13,7 +13,7 @@ Inspired by:
 * [Redux Saga](https://github.com/yelouafi/redux-saga) for the use of generators to test side-effects;
 * [Jest](https://facebook.github.io/jest/) for the idea of [snapshot testing](http://facebook.github.io/jest/docs/tutorial-react.html#snapshot-testing).
 
-See a [demo with reusable components and shared state](http://clarus.github.io/redux-ship/examples/gifs/).
+See a [demo with reusable components and shared state](http://clarus.github.io/redux-ship-examples/gifs/).
 
 Redux Ship with [redux-ship-logger](https://github.com/clarus/redux-ship-logger):
 
