@@ -8,4 +8,4 @@
   * [Testing](/docs/tutorial/testing.md)
   * [Composition with sharing](/docs/tutorial/composition-sharing.md)
 * [Architecture](/docs/architecture.md)
-* [API](/docs/api.md)
+* [API Reference](/docs/api.md)

@@ -1,4 +1,4 @@
-# API
+# API Reference
 * [`Ship<Effect, Commit, State, A>`](#shipeffect-commit-state-a)
 * [`Snapshot<Effect, Commit>`](#snapshoteffect-commit)
 * [`all`](#all)
