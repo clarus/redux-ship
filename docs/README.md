@@ -6,5 +6,4 @@
   * [HTTP Request](/docs/tutorial/http-request.md)
   * [Composition](/docs/tutorial/composition.md)
   * [Testing](/docs/tutorial/testing.md)
-  * [Composition with sharing](/docs/tutorial/composition-sharing.md)
 * [API Reference](/docs/api.md)
