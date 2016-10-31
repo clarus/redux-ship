@@ -65,7 +65,6 @@ test('controller with live snapshot', () => {
 
 ## Documentation
 * [Tutorial](https://clarus.github.io/redux-ship/docs/tutorial/)
-* [Architecture](https://clarus.github.io/redux-ship/docs/architecture.html)
 * [API Reference](https://clarus.github.io/redux-ship/docs/api.html)
 
 ## License
