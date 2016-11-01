@@ -161,7 +161,7 @@ returns a result of type `any`. Thus, by defining the function `httpRequest` we 
 
 A general recommendation is to try to have the smallest possible type for `Effect` to reduce the number of primitives. For example, make one primitive effect for the HTTP requests and then define the different API calls on top of it, rather than one primitive effect per API call.
 
-## Logs
+## Snapshots
 When we click on the button to get the color of the eye of R2-D2, we get the following snapshot in the logs of [redux-ship-logger](https://github.com/clarus/redux-ship-logger):
 ```js
 [

@@ -192,7 +192,7 @@ Ship.run(() => {}, store.dispatch, store.getState, logControl(Controller.control
 ```
 This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. We call `logControl` to add logging to the controller.
 
-## Logs
+## Snapshots
 When we look at our browser's console we see something like:
 
 <img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/counter-logs.png' alt='Logs' width='600px'>

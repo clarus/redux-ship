@@ -5,4 +5,3 @@ In this tutorial we step through the main features of Redux Ship. We make some d
 * [HTTP Request](/docs/tutorial/http-request.md)
 * [Composition](/docs/tutorial/composition.md)
 * [Testing](/docs/tutorial/testing.md)
-* [Composition with sharing](/docs/tutorial/composition-sharing.md)

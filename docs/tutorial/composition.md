@@ -166,3 +166,77 @@ Ship.map(
 We declare:
 * how to lift a patch of the `eye` controller to a patch of the application controller;
 * how to extract the state of the `eye` controller from the state of the application controller.
+
+## Snapshots
+We get the following snapshot when clicking on the eye button:
+```js
+[
+  {
+    "type": "Commit",
+    "commit": {
+      "type": "Eye",
+      "patch": {
+        "type": "LoadStart"
+      }
+    }
+  },
+  {
+    "type": "Effect",
+    "effect": {
+      "type": "HttpRequest",
+      "url": "http://swapi.co/api/people/3/"
+    },
+    "result": "{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}"
+  },
+  {
+    "type": "Commit",
+    "commit": {
+      "type": "Eye",
+      "patch": {
+        "type": "LoadSuccess",
+        "color": "red"
+      }
+    }
+  }
+]
+```
+The `"type": "Effect"` event is not changed by the composition. We can see that the `"type": "Commit"` events originate from the `eye` controller thanks to the `"type": "Eye"` field.
+
+## What we gain
+By composing components in this way, we get isolated components which help reusability. As an illustration, the `eye` controller only knows about the `eye` state and the `eye` patches, so we are sure it cannot interact with other elements. We did compose the `eye` controller with the `movies` controller, but we could as well compose the `eye` controller with... itself:
+```js
+// model.js
+export type State = {
+  first: EyeModel.State,
+  second: EyeModel.State,
+};
+
+export type Patch = {
+  type: 'First',
+  patch: EyeModel.Patch,
+} | {
+  type: 'Second',
+  patch: EyeModel.Patch,
+};
+
+// controller.js
+export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+  switch (action.type) {
+  case 'First':
+    return yield* Ship.map(
+      patch => ({type: 'First', patch}),
+      state => state.first,
+      EyeController.control(action.action)
+    );
+  case 'Second':
+    return yield* Ship.map(
+      patch => ({type: 'Second', patch}),
+      state => state.second,
+      MoviesController.control(action.action)
+    );
+  default:
+    return;
+  }
+}
+```
+This is important because a component (like a form input with auto-complete) may appear several times in one web page.
