@@ -30,3 +30,12 @@ test('controller with generated snapshot', async () => {
   const snapshot = await Ship.run(runEffect, store.dispatch, store.getState, ship);
   expect(snapshot).toMatchSnapshot();
 });
+
+test('controller step by step', () => {
+  const action = {type: 'Load'};
+  const gen = EyeController.control(action);
+  expect(gen.next()).toMatchSnapshot();
+  expect(gen.next()).toMatchSnapshot();
+  expect(gen.next(JSON.stringify({eye_color: 'red'}))).toMatchSnapshot();
+  expect(gen.next()).toMatchSnapshot();
+});
