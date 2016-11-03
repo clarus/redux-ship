@@ -9,8 +9,10 @@ import './index.css';
 import * as Controller from './controller';
 import store from './store';
 
+function runEffect() {}
+
 function dispatch(action: Controller.Action): void {
-  Ship.run(() => {}, store.dispatch, store.getState, logControl(Controller.control)(action));
+  Ship.run(runEffect, store.dispatch, store.getState, logControl(Controller.control)(action));
 }
 
 function render(): void {

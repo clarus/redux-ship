@@ -3,6 +3,13 @@ We start by the simple example of a counter. A counter does not have asynchronou
 
 <img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/counter.png' alt='Screenshot' width='150px'>
 
+* [Create a React application](#create-a-react-application)
+* [Model](#model)
+* [View](#view)
+* [Controller](#controller)
+* [Wrapping everything up](#wrapping-everything-up)
+* [Snapshots](#snapshots)
+
 ## Create a React application
 Use [`create-react-app`](https://github.com/facebookincubator/create-react-app#getting-started) to create a `counter` application:
 ```
@@ -17,8 +24,6 @@ index.css
 index.js
 logo.svg
 ```
-
-## Install dependencies
 Install [Redux](http://redux.js.org/) and Redux Ship with their dev tools:
 ```
 npm install --save redux redux-ship redux-logger redux-ship-logger babel-polyfill
@@ -170,8 +175,10 @@ import './index.css';
 import * as Controller from './controller';
 import store from './store';
 
+function runEffect() {}
+
 function dispatch(action: Controller.Action): void {
-  Ship.run(() => {}, store.dispatch, store.getState, logControl(Controller.control)(action));
+  Ship.run(runEffect, store.dispatch, store.getState, logControl(Controller.control)(action));
 }
 
 function render(): void {
@@ -188,9 +195,13 @@ We define a [React](https://facebook.github.io/react/) `render` function to rend
 
 We define the function `dispatch` with `Ship.run`:
 ```js
-Ship.run(() => {}, store.dispatch, store.getState, logControl(Controller.control)(action));
+function runEffect() {}
+
+function dispatch(action: Controller.Action): void {
+  Ship.run(runEffect, store.dispatch, store.getState, logControl(Controller.control)(action));
+}
 ```
-This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. We call `logControl` to add logging to the controller.
+This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. The function `runEffect` is empty for now, as we have asynchronous actions. We call `logControl` to add logging to the controller.
 
 ## Snapshots
 When we look at our browser's console we see something like:

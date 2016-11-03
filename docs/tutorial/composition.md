@@ -3,6 +3,13 @@ Most Javascript applications contain many components. Each of the components can
 
 <img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/composition.png' alt='Screenshot' width='200px'>
 
+* [Components](#components)
+* [Model](#model)
+* [View](#view)
+* [Controller](#controller)
+* [Snapshots](#snapshots)
+* [What we gain](#what-we-gain)
+
 ## Components
 We compose two components with some API calls to [SWAPI](http://swapi.co/):
 * `eye` which gets the color of the eye of R2-D2;

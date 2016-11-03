@@ -3,6 +3,12 @@ Most useful Javascript applications run asynchronous actions with side effects. 
 
 <img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/http-request.png' alt='Screenshot' width='150px'>
 
+* [Model](#model)
+* [View](#view)
+* [Controller](#controller)
+* [Effect](#effect)
+* [Snapshots](#snapshots)
+
 ## Model
 We start by the definition of the `model.js`:
 ```js
@@ -136,9 +142,14 @@ export async function run(effect: Effect): Promise<any> {
   }
 }
 ```
-The `run` function must return the promise of the expected result of each effect.
+The `run` function must return the promise of the expected result of each effect. We use this function as the `runEffect` parameter of `Ship.run`:
+```js
+function dispatch(action: Controller.Action): void {
+  Ship.run(Effect.run, store.dispatch, store.getState, logControl(Controller.control)(action));
+}
+```
 
-To make the use of the effects easier, we create functions to wrap the calls to our effects. In our case, we only have the HTTP request:
+To simplify the use of our effects, we also create functions to wrap the calls to our effects. In our case, we only have the HTTP request:
 ```js
 export function httpRequest<Commit, State>(
   url: string
