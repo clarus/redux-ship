@@ -24,14 +24,13 @@ export type Ship<Effect, Commit, State, A> = Generator<Yield<Effect, Commit, Sta
 export function* call<Effect, Commit, State>(
   effect: Effect
 ): Ship<Effect, Commit, State, any> {
-  const result: any = yield {
+  return yield {
     type: 'Command',
     command: {
       type: 'Effect',
       effect,
     },
   };
-  return result;
 }
 
 export function* commit<Effect, Commit, State>(
@@ -49,24 +48,22 @@ export function* commit<Effect, Commit, State>(
 export function* getState<Effect, Commit, State, A>(
   selector: (state: State) => A
 ): Ship<Effect, Commit, State, A> {
-  const state: any = yield {
+  return yield {
     type: 'Command',
     command: {
       type: 'GetState',
       selector,
     },
   };
-  return state;
 }
 
 export function* allAny<Effect, Commit, State>(
   ...ships: Ship<Effect, Commit, State, any>[]
 ): Ship<Effect, Commit, State, any[]> {
-  const result: any = yield {
+  return yield {
     type: 'All',
     ships,
   };
-  return result;
 }
 
 export function all<Effect, Commit, State, A>(
