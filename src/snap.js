@@ -59,7 +59,7 @@ function* snapCommand<Effect, Commit, State>(
     };
   }
   default:
-    return command;
+    return (command: empty);
   }
 }
 
@@ -105,7 +105,7 @@ function* snapWithAnswer<Effect, Commit, State, A>(
     };
   }
   default:
-    return result.value;
+    return (result.value: empty);
   }
 }
 

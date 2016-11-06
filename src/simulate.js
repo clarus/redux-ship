@@ -48,7 +48,7 @@ function simulateCommand<Effect, Commit, State>(
     }
     break;
   default:
-    return command;
+    return (command: empty);
   }
   return {
     result: null,
@@ -154,7 +154,7 @@ function simulateWithAnswer<Effect, Commit, State, A>(
     };
   }
   default:
-    return result.value;
+    return (result.value: empty);
   }
 }
 

@@ -16,7 +16,7 @@ function runCommand<Effect, Commit, State>(
     case 'GetState':
       return command.selector(runGetState());
     default:
-      return command;
+      return (command: empty);
     }
   })());
 }
@@ -44,7 +44,7 @@ function runWithAnswer<Effect, Commit, State, A>(
       runWithAnswer(runEffect, runCommit, runGetState, ship, newAnswer)
     );
   default:
-    return result.value;
+    return (result.value: empty);
   }
 }
 

@@ -18,7 +18,7 @@ function* mapCommand<Effect1, Commit1, State1, Effect2, Commit2, State2>(
     return yield* getState(state => selector(extractState(state)));
   }
   default:
-    return command;
+    return (command: empty);
   }
 }
 
@@ -45,7 +45,7 @@ function* mapWithAnswer<Effect1, Commit1, State1, Effect2, Commit2, State2, A>(
     return yield* mapWithAnswer(liftEffect, liftCommit, extractState, ship, newAnswer);
   }
   default:
-    return result.value;
+    return (result.value: empty);
   }
 }
 
