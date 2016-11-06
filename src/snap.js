@@ -87,10 +87,10 @@ function* snapWithAnswer<Effect, Commit, State, A>(
     };
   }
   case 'All': {
-    const newAnswer = yield* allAny(...result.value.ships.map((currentShip) =>
+    const newAnswer = yield* allAny(...result.value.ships.map(currentShip =>
       snapWithAnswer(currentShip)
     ));
-    const next = yield* snapWithAnswer(ship, newAnswer.map((currentAnswer) =>
+    const next = yield* snapWithAnswer(ship, newAnswer.map(currentAnswer =>
       currentAnswer.result
     ));
     return {
@@ -98,7 +98,7 @@ function* snapWithAnswer<Effect, Commit, State, A>(
       snapshot: [
         {
           type: 'All',
-          snapshots: newAnswer.map((currentAnswer) => currentAnswer.snapshot),
+          snapshots: newAnswer.map(currentAnswer => currentAnswer.snapshot),
         },
         ...next.snapshot,
       ],

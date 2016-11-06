@@ -39,8 +39,8 @@ function* mapWithAnswer<Effect1, Commit1, State1, Effect2, Commit2, State2, A>(
     return yield* mapWithAnswer(liftEffect, liftCommit, extractState, ship, newAnswer);
   }
   case 'All': {
-    const newAnswer = yield* allAny(...result.value.ships.map((currenyShip) =>
-      mapWithAnswer(liftEffect, liftCommit, extractState, currenyShip)
+    const newAnswer = yield* allAny(...result.value.ships.map(currentShip =>
+      mapWithAnswer(liftEffect, liftCommit, extractState, currentShip)
     ));
     return yield* mapWithAnswer(liftEffect, liftCommit, extractState, ship, newAnswer);
   }
@@ -54,5 +54,5 @@ export function map<Effect, Commit1, State1, Commit2, State2, A>(
   extractState: (state2: State2) => State1,
   ship: Ship<Effect, Commit1, State1, A>
 ): Ship<Effect, Commit2, State2, A> {
-  return mapWithAnswer((effect) => call(effect), liftCommit, extractState, ship);
+  return mapWithAnswer(effect => call(effect), liftCommit, extractState, ship);
 }
