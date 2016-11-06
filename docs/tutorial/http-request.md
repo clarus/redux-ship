@@ -145,7 +145,7 @@ export async function run(effect: Effect): Promise<any> {
 The `run` function must return the promise of the expected result of each effect. We use this function as the `runEffect` parameter of `Ship.run`:
 ```js
 function dispatch(action: Controller.Action): void {
-  Ship.run(Effect.run, store.dispatch, store.getState, logControl(Controller.control)(action));
+  Ship.run(Effect.run, store, logControl(Controller.control)(action));
 }
 ```
 

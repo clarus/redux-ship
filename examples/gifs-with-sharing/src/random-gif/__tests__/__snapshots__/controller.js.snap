@@ -11,7 +11,7 @@ Array [
       "type": "HttpRequest",
       "url": "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=cats"
     },
-    "result": "{\"data\":{\"image_url\":\"https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif\"}}",
+    "result": "{"data":{"image_url":"https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif"}}",
     "type": "Effect"
   },
   Object {

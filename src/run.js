@@ -2,7 +2,7 @@
 import type {Command, Ship} from './ship';
 
 function runCommand<Effect, Commit, State>(
-  runEffect: (effect: Effect) => any,
+  runEffect: (effect: Effect) => any | Promise<any>,
   runCommit: (commit: Commit) => void | Promise<void>,
   runGetState: () => State,
   command: Command<Effect, Commit, State>
@@ -22,7 +22,7 @@ function runCommand<Effect, Commit, State>(
 }
 
 function runWithAnswer<Effect, Commit, State, A>(
-  runEffect: (effect: Effect) => any,
+  runEffect: (effect: Effect) => any | Promise<any>,
   runCommit: (commit: Commit) => void | Promise<void>,
   runGetState: () => State,
   ship: Ship<Effect, Commit, State, A>,
@@ -48,12 +48,13 @@ function runWithAnswer<Effect, Commit, State, A>(
   }
 }
 
-/* eslint-disable no-undef */
-export const run: <Effect, Commit, State, A>(
-  runEffect: (effect: Effect) => any,
-  runCommit: (commit: Commit) => void | Promise<void>,
-  runGetState: () => State,
+export function run<Effect, Commit, State, A>(
+  runEffect: (effect: Effect) => any | Promise<any>,
+  store: {
+    dispatch: (commit: Commit) => void | Promise<void>,
+    getState: () => State
+  },
   ship: Ship<Effect, Commit, State, A>
-) => Promise<A> =
-  runWithAnswer;
-/* eslint-enable no-undef */
+): Promise<A> {
+  return runWithAnswer(runEffect, store.dispatch, store.getState, ship);
+}

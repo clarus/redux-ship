@@ -64,12 +64,7 @@ export function snapshotControl<Action, Effect, Commit, Patch, State>(
         (state, commit) => reduce(state, applyCommit(state, commit)),
         state
       );
-      const {snapshot} = await Ship.run(
-        runEffect,
-        store.dispatch,
-        store.getState,
-        Ship.snap(control(action))
-      );
+      const {snapshot} = await Ship.run(runEffect, store, Ship.snap(control(action)));
       expect(snapshot).toMatchSnapshot();
     });
   });

@@ -200,24 +200,25 @@ return yield* Ship.map(
 ## `run`
 ```js
 <Effect, Commit, State, A>(
-  runEffect: (effect: Effect) => any,
-  runCommit: (commit: Commit) => void | Promise<void>,
-  runGetState: () => State,
+  runEffect: (effect: Effect) => any | Promise<any>,
+  store: {
+    dispatch: (commit: Commit) => void | Promise<void>,
+    getState: () => State
+  },
   ship: Ship<Effect, Commit, State, A>
 ) => Promise<A>
 ```
 
-Runs a ship and its side effects by evaluating each `call`, `commit` and `getState` with `runEffect`, `runCommit` and `runGetState` respectively.
+Runs a ship and its side effects by evaluating each primitive effect with `runEffect` and interpreting each call to Redux with the `store`.
 
-* `runEffect` the function to evaluate a serialized side effect (usually returns a promise)
-* `runCommit` the function to apply a commit to the state
-* `runGetState` the function to get the current global state
+* `runEffect` the function to evaluate a serialized side effect
+* `store` the current Redux store
 * `ship` the ship to execute
 
 ### Example
 To connect Redux Ship to a Redux `store`, you can do:
 ```js
-Ship.run(runEffect, store.dispatch, store.getState, ship);
+Ship.run(runEffect, store, ship);
 ```
 where `runEffect` is your function to evaluate your side effects:
 ```js

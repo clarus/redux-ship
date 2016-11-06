@@ -12,7 +12,7 @@ import store from './store';
 function runEffect() {}
 
 function dispatch(action: Controller.Action): void {
-  Ship.run(runEffect, store.dispatch, store.getState, logControl(Controller.control)(action));
+  Ship.run(runEffect, store, logControl(Controller.control)(action));
 }
 
 function render(): void {

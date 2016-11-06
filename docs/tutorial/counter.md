@@ -178,7 +178,7 @@ import store from './store';
 function runEffect() {}
 
 function dispatch(action: Controller.Action): void {
-  Ship.run(runEffect, store.dispatch, store.getState, logControl(Controller.control)(action));
+  Ship.run(runEffect, store, logControl(Controller.control)(action));
 }
 
 function render(): void {
@@ -198,7 +198,7 @@ We define the function `dispatch` with `Ship.run`:
 function runEffect() {}
 
 function dispatch(action: Controller.Action): void {
-  Ship.run(runEffect, store.dispatch, store.getState, logControl(Controller.control)(action));
+  Ship.run(runEffect, store, logControl(Controller.control)(action));
 }
 ```
 This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. The function `runEffect` is empty for now, as we have asynchronous actions. We call `logControl` to add logging to the controller.

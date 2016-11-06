@@ -27,7 +27,7 @@ test('controller with generated snapshot', async () => {
   const action = {type: 'Load'};
   const store = createStore(EyeModel.reduce, EyeModel.initialState);
   const ship = Ship.snap(EyeController.control(action));
-  const snapshot = await Ship.run(runEffect, store.dispatch, store.getState, ship);
+  const snapshot = await Ship.run(runEffect, store, ship);
   expect(snapshot).toMatchSnapshot();
 });
 
