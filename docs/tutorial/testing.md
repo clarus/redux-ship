@@ -194,3 +194,59 @@ test('controller step by step', () => {
   expect(gen.next()).toMatchSnapshot(); // -> Done
 });
 ```
+The snapshot file is the following:
+```js
+exports[`test controller step by step 1`] = `
+Object {
+  "done": false,
+  "value": Object {
+    "command": Object {
+      "commit": Object {
+        "type": "LoadStart",
+      },
+      "type": "Commit",
+    },
+    "type": "Command",
+  },
+}
+`;
+
+exports[`test controller step by step 2`] = `
+Object {
+  "done": false,
+  "value": Object {
+    "command": Object {
+      "effect": Object {
+        "type": "HttpRequest",
+        "url": "http://swapi.co/api/people/3/",
+      },
+      "type": "Effect",
+    },
+    "type": "Command",
+  },
+}
+`;
+
+exports[`test controller step by step 3`] = `
+Object {
+  "done": false,
+  "value": Object {
+    "command": Object {
+      "commit": Object {
+        "color": "red",
+        "type": "LoadSuccess",
+      },
+      "type": "Commit",
+    },
+    "type": "Command",
+  },
+}
+`;
+
+exports[`test controller step by step 4`] = `
+Object {
+  "done": true,
+  "value": undefined,
+}
+`;
+```
