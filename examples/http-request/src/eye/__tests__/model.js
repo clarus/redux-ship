@@ -9,7 +9,7 @@ const patches = [{
 }]
 
 test('model', () => {
-  patches.forEach(patch => {
-    expect(EyeModel.reduce(EyeModel.initialState, patch)).toMatchSnapshot();
+  patches.forEach(commit => {
+    expect(EyeModel.reduce(EyeModel.initialState, commit)).toMatchSnapshot();
   });
 });

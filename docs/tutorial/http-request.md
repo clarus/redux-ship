@@ -23,15 +23,15 @@ export const initialState: State = {
   isLoading: false,
 };
 
-export type Patch = {
+export type Commit = {
   type: 'LoadStart',
 } | {
   type: 'LoadSuccess',
   color: string,
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'LoadStart':
     return {
       ...state,
@@ -40,7 +40,7 @@ export function reduce(state: State, patch: Patch): State {
   case 'LoadSuccess':
     return {
       ...state,
-      color: patch.color,
+      color: commit.color,
       isLoading: false,
     };
   default:
@@ -98,7 +98,7 @@ export type Action = {
   type: 'ClickLoad',
 };
 
-export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Commit, Model.State, void> {
   switch (action.type) {
   case 'ClickLoad': {
     yield* Ship.commit({type: 'LoadStart'});

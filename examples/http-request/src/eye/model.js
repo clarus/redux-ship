@@ -10,15 +10,15 @@ export const initialState: State = {
   isLoading: false,
 };
 
-export type Patch = {
+export type Commit = {
   type: 'LoadStart',
 } | {
   type: 'LoadSuccess',
   color: string,
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'LoadStart':
     return {
       ...state,
@@ -27,7 +27,7 @@ export function reduce(state: State, patch: Patch): State {
   case 'LoadSuccess':
     return {
       ...state,
-      color: patch.color,
+      color: commit.color,
       isLoading: false,
     };
   default:

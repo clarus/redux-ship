@@ -22,7 +22,7 @@ If we take the [`http-request`](https://github.com/clarus/redux-ship/tree/master
 
 we obtain the following snapshot in the console logs (using [redux-ship-logger](https://github.com/clarus/redux-ship-logger)):
 ```js
-{"action":{"type":"Eye","action":{"type":"Load"}},"snapshot":[{"type":"Commit","commit":{"type":"Eye","patch":{"type":"LoadStart"}}},{"type":"Effect","effect":{"type":"HttpRequest","url":"http://swapi.co/api/people/3/"},"result":"{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}"},{"type":"Commit","commit":{"type":"Eye","patch":{"type":"LoadSuccess","color":"red"}}}]}
+{"action":{"type":"Eye","action":{"type":"Load"}},"snapshot":[{"type":"Commit","commit":{"type":"Eye","commit":{"type":"LoadStart"}}},{"type":"Effect","effect":{"type":"HttpRequest","url":"http://swapi.co/api/people/3/"},"result":"{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}"},{"type":"Commit","commit":{"type":"Eye","commit":{"type":"LoadSuccess","color":"red"}}}]}
 ```
 This describes what happened in response to the `{"type":"Eye","action":{"type":"Load"}}` action. To test it with Jest, we create a file [`src/__tests__/controller.js`](https://github.com/clarus/redux-ship/blob/master/examples/http-request/src/__tests__/controller.js) containing:
 ```js
@@ -31,7 +31,7 @@ import 'babel-polyfill';
 import * as Controller from '../controller';
 import * as Ship from 'redux-ship';
 
-const liveSnapshot = {"action":{"type":"Eye","action":{"type":"Load"}},"snapshot":[{"type":"Commit","commit":{"type":"Eye","patch":{"type":"LoadStart"}}},{"type":"Effect","effect":{"type":"HttpRequest","url":"http://swapi.co/api/people/3/"},"result":"{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}"},{"type":"Commit","commit":{"type":"Eye","patch":{"type":"LoadSuccess","color":"red"}}}]};
+const liveSnapshot = {"action":{"type":"Eye","action":{"type":"Load"}},"snapshot":[{"type":"Commit","commit":{"type":"Eye","commit":{"type":"LoadStart"}}},{"type":"Effect","effect":{"type":"HttpRequest","url":"http://swapi.co/api/people/3/"},"result":"{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}"},{"type":"Commit","commit":{"type":"Eye","commit":{"type":"LoadSuccess","color":"red"}}}]};
 
 test('controller with live snapshot', () => {
   const {action, snapshot} = liveSnapshot;
@@ -52,9 +52,9 @@ case 'Load': {
 we would get the following test error:
 ```js
 Expected value to equal:
-      [{"commit": {"patch": {"type": "LoadStart"}, "type": "Eye"}, "type": "Commit"}, {"effect": {"type": "HttpRequest", "url": "http://swapi.co/api/people/3/"}, "result": "{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}", "type": "Effect"}, {"commit": {"patch": {"color": "red", "type": "LoadSuccess"}, "type": "Eye"}, "type": "Commit"}]
+      [{"commit": {"commit": {"type": "LoadStart"}, "type": "Eye"}, "type": "Commit"}, {"effect": {"type": "HttpRequest", "url": "http://swapi.co/api/people/3/"}, "result": "{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}", "type": "Effect"}, {"commit": {"commit": {"color": "red", "type": "LoadSuccess"}, "type": "Eye"}, "type": "Commit"}]
     Received:
-      [{"commit": {"patch": {"type": "LoadStart"}, "type": "Eye"}, "type": "Commit"}, {"effect": {"type": "HttpRequest", "url": "http://swapi.co/api/people/3/"}, "result": "{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}", "type": "Effect"}, {"commit": {"patch": {"color": "white, blue", "type": "LoadSuccess"}, "type": "Eye"}, "type": "Commit"}]
+      [{"commit": {"commit": {"type": "LoadStart"}, "type": "Eye"}, "type": "Commit"}, {"effect": {"type": "HttpRequest", "url": "http://swapi.co/api/people/3/"}, "result": "{\"name\":\"R2-D2\",\"height\":\"96\",\"mass\":\"32\",\"hair_color\":\"n/a\",\"skin_color\":\"white, blue\",\"eye_color\":\"red\",\"birth_year\":\"33BBY\",\"gender\":\"n/a\",\"homeworld\":\"http://swapi.co/api/planets/8/\",\"films\":[\"http://swapi.co/api/films/5/\",\"http://swapi.co/api/films/4/\",\"http://swapi.co/api/films/6/\",\"http://swapi.co/api/films/3/\",\"http://swapi.co/api/films/2/\",\"http://swapi.co/api/films/1/\",\"http://swapi.co/api/films/7/\"],\"species\":[\"http://swapi.co/api/species/2/\"],\"vehicles\":[],\"starships\":[],\"created\":\"2014-12-10T15:11:50.376000Z\",\"edited\":\"2014-12-20T21:17:50.311000Z\",\"url\":\"http://swapi.co/api/people/3/\"}", "type": "Effect"}, {"commit": {"commit": {"color": "white, blue", "type": "LoadSuccess"}, "type": "Eye"}, "type": "Commit"}]
 
     Difference:
 
@@ -64,7 +64,7 @@ Expected value to equal:
       Array [
         Object {
           "commit": Object {
-            "patch": Object {
+            "commit": Object {
               "type": "LoadStart",
             },
             "type": "Eye",
@@ -81,7 +81,7 @@ Expected value to equal:
         },
         Object {
           "commit": Object {
-            "patch": Object {
+            "commit": Object {
     -         "color": "red",
     +         "color": "white, blue",
               "type": "LoadSuccess",
@@ -104,8 +104,8 @@ in the logs. Being explicit about the concurrency ensures deterministic tests.
 
 We have taken the snapshot from the point of view of the whole application. Thus this snapshot tests the application controller. It can also be interesting to only test the controller of the eye component. In order to do so, we need to log the snapshots from the point of view of the eye controller by doing this modification:
 ```js
-// export function* control(action: Action): Ship.Ship<*, EyeModel.Patch, EyeModel.State, void> {
-export function* control2(action: Action): Ship.Ship<*, EyeModel.Patch, EyeModel.State, void> {
+// export function* control(action: Action): Ship.Ship<*, EyeModel.Commit, EyeModel.State, void> {
+export function* control2(action: Action): Ship.Ship<*, EyeModel.Commit, EyeModel.State, void> {
   switch (action.type) {
   case 'Load': {
     [...]

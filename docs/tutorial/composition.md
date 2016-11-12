@@ -39,32 +39,32 @@ export const initialState: State = {
   movies: MoviesModel.initialState,
 };
 
-export type Patch = {
+export type Commit = {
   type: 'Eye',
-  patch: EyeModel.Patch,
+  commit: EyeModel.Commit,
 } | {
   type: 'Movies',
-  patch: MoviesModel.Patch,
+  commit: MoviesModel.Commit,
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'Eye':
     return {
       ...state,
-      eye: EyeModel.reduce(state.eye, patch.patch),
+      eye: EyeModel.reduce(state.eye, commit.commit),
     };
   case 'Movies':
     return {
       ...state,
-      movies: MoviesModel.reduce(state.movies, patch.patch),
+      movies: MoviesModel.reduce(state.movies, commit.commit),
     };
   default:
     return state;
   }
 }
 ```
-The state of the main application is a plain object with two fields containing the states of the `eye` component *and* of the `movies` component. A patch of the main application is either a patch for the `eye` component *or* for the `movies` component. The job of the reducer is to call the right sub-reducer on the right sub-state.
+The state of the main application is a plain object with two fields containing the states of the `eye` component *and* of the `movies` component. A commit of the main application is either a commit for the `eye` component *or* for the `movies` component. The job of the reducer is to call the right sub-reducer on the right sub-state.
 
 ## View
 The main view includes the view of each sub-component.
@@ -129,17 +129,17 @@ export type Action = {
   action: MoviesController.Action,
 };
 
-export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Commit, Model.State, void> {
   switch (action.type) {
   case 'Eye':
     return yield* Ship.map(
-      patch => ({type: 'Eye', patch}),
+      commit => ({type: 'Eye', commit}),
       state => state.eye,
       EyeController.control(action.action)
     );
   case 'Movies':
     return yield* Ship.map(
-      patch => ({type: 'Movies', patch}),
+      commit => ({type: 'Movies', commit}),
       state => state.movies,
       MoviesController.control(action.action)
     );
@@ -155,23 +155,23 @@ EyeController.control(action.action)
 ```
 is of type:
 ```js
-Ship.Ship<*, EyeModel.Patch, EyeModel.State, void>
+Ship.Ship<*, EyeModel.Commit, EyeModel.State, void>
 ```
 but we want to return a controller of the following type:
 ```js
-Ship.Ship<*, Model.Patch, Model.State, void>
+Ship.Ship<*, Model.Commit, Model.State, void>
 ```
 
 With the `Ship.map` primitive, we lift the `eye` controller to the right type:
 ```js
 Ship.map(
-  patch => ({type: 'Eye', patch}),
+  commit => ({type: 'Eye', commit}),
   state => state.eye,
   EyeController.control(action.action)
 )
 ```
 We declare:
-* how to lift a patch of the `eye` controller to a patch of the application controller;
+* how to lift a commit of the `eye` controller to a commit of the application controller;
 * how to extract the state of the `eye` controller from the state of the application controller.
 
 ## Snapshots
@@ -182,7 +182,7 @@ We get the following snapshot when clicking on the eye button:
     "type": "Commit",
     "commit": {
       "type": "Eye",
-      "patch": {
+      "commit": {
         "type": "LoadStart"
       }
     }
@@ -199,7 +199,7 @@ We get the following snapshot when clicking on the eye button:
     "type": "Commit",
     "commit": {
       "type": "Eye",
-      "patch": {
+      "commit": {
         "type": "LoadSuccess",
         "color": "red"
       }
@@ -218,26 +218,26 @@ export type State = {
   second: EyeModel.State,
 };
 
-export type Patch = {
+export type Commit = {
   type: 'First',
-  patch: EyeModel.Patch,
+  commit: EyeModel.Commit,
 } | {
   type: 'Second',
-  patch: EyeModel.Patch,
+  commit: EyeModel.Commit,
 };
 
 // controller.js
-export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Commit, Model.State, void> {
   switch (action.type) {
   case 'First':
     return yield* Ship.map(
-      patch => ({type: 'First', patch}),
+      commit => ({type: 'First', commit}),
       state => state.first,
       EyeController.control(action.action)
     );
   case 'Second':
     return yield* Ship.map(
-      patch => ({type: 'Second', patch}),
+      commit => ({type: 'Second', commit}),
       state => state.second,
       MoviesController.control(action.action)
     );

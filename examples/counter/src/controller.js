@@ -8,7 +8,7 @@ export type Action = {
   type: 'ClickDecrement',
 };
 
-export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Commit, Model.State, void> {
   switch (action.type) {
   case 'ClickIncrement':
     yield* Ship.commit({type: 'Increment'});

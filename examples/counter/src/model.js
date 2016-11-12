@@ -3,14 +3,14 @@ export type State = number;
 
 export const initialState = 0;
 
-export type Patch = {
+export type Commit = {
   type: 'Increment',
 } | {
   type: 'Decrement',
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'Increment':
     return state + 1;
   case 'Decrement':

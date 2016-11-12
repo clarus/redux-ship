@@ -12,17 +12,17 @@ export type Action = {
   action: MoviesController.Action,
 };
 
-export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Commit, Model.State, void> {
   switch (action.type) {
   case 'Eye':
     return yield* Ship.map(
-      patch => ({type: 'Eye', patch}),
+      commit => ({type: 'Eye', commit}),
       state => state.eye,
       EyeController.control(action.action)
     );
   case 'Movies':
     return yield* Ship.map(
-      patch => ({type: 'Movies', patch}),
+      commit => ({type: 'Movies', commit}),
       state => state.movies,
       MoviesController.control(action.action)
     );

@@ -7,7 +7,7 @@ export type Action = {
   type: 'Load',
 };
 
-export function* control(action: Action): Ship.Ship<*, EyeModel.Patch, EyeModel.State, void> {
+export function* control(action: Action): Ship.Ship<*, EyeModel.Commit, EyeModel.State, void> {
   switch (action.type) {
   case 'Load': {
     yield* Ship.commit({type: 'LoadStart'});

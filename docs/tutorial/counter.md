@@ -43,14 +43,14 @@ export type State = number;
 
 export const initialState = 0;
 
-export type Patch = {
+export type Commit = {
   type: 'Increment',
 } | {
   type: 'Decrement',
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'Increment':
     return state + 1;
   case 'Decrement':
@@ -60,7 +60,7 @@ export function reduce(state: State, patch: Patch): State {
   }
 }
 ```
-This describes a quite standard reducer with typing. Notice that we name the actions `Patch`. This is to make clear that these actions are used to modify the state, by opposition to asynchronous actions.
+This describes a quite standard reducer with typing. Notice that we name the actions `Commit`. This is to make clear that these actions are used to modify the state, by opposition to asynchronous actions.
 
 ## View
 In `App.js` we add the view of the counter:
@@ -115,7 +115,7 @@ export type Action = {
   type: 'ClickDecrement',
 };
 
-export function* control(action: Action): Ship.Ship<*, Model.Patch, Model.State, void> {
+export function* control(action: Action): Ship.Ship<*, Model.Commit, Model.State, void> {
   switch (action.type) {
   case 'ClickIncrement':
     yield* Ship.commit({type: 'Increment'});
@@ -136,17 +136,17 @@ We call:
 ```js
 yield* Ship.commit({type: 'Increment'});
 ```
-to commit a patch to the Redux state. All functions in Redux Ship are called with `yield*`, you should never encounter a `yield`. We avoid the `yield` operator because it is a difficult to type in Flow, and instead call proxy functions with `yield*`.
+to commit a commit to the Redux state. All functions in Redux Ship are called with `yield*`, you should never encounter a `yield`. We avoid the `yield` operator because it is a difficult to type in Flow, and instead call proxy functions with `yield*`.
 
 The return type of `control` is:
 ```js
-Ship.Ship<*, Model.Patch, Model.State, void>
+Ship.Ship<*, Model.Commit, Model.State, void>
 ```
 meaning that this controller is attached to our model. We could not for example run:
 ```js
 yield* Ship.commit({type: 'Foo'}); // error
 ```
-as this would result in a Flow type error since `{type: 'Foo'}` is not of type `Model.Patch`.
+as this would result in a Flow type error since `{type: 'Foo'}` is not of type `Model.Commit`.
 
 ## Wrapping everything up
 We instantiate a Redux store in `store.js`:

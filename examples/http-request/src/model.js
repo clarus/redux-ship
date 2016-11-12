@@ -12,25 +12,25 @@ export const initialState: State = {
   movies: MoviesModel.initialState,
 };
 
-export type Patch = {
+export type Commit = {
   type: 'Eye',
-  patch: EyeModel.Patch,
+  commit: EyeModel.Commit,
 } | {
   type: 'Movies',
-  patch: MoviesModel.Patch,
+  commit: MoviesModel.Commit,
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'Eye':
     return {
       ...state,
-      eye: EyeModel.reduce(state.eye, patch.patch),
+      eye: EyeModel.reduce(state.eye, commit.commit),
     };
   case 'Movies':
     return {
       ...state,
-      movies: MoviesModel.reduce(state.movies, patch.patch),
+      movies: MoviesModel.reduce(state.movies, commit.commit),
     };
   default:
     return state;
