@@ -10,15 +10,15 @@ export const initialState: State = {
   movies: null,
 };
 
-export type Patch = {
+export type Commit = {
   type: 'LoadStart',
 } | {
   type: 'LoadSuccess',
   movies: string[],
 };
 
-export function reduce(state: State, patch: Patch): State {
-  switch (patch.type) {
+export function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
   case 'LoadStart':
     return {
       ...state,
@@ -28,7 +28,7 @@ export function reduce(state: State, patch: Patch): State {
     return {
       ...state,
       isLoading: false,
-      movies: patch.movies,
+      movies: commit.movies,
     };
   default:
     return state;

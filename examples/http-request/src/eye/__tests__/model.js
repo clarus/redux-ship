@@ -1,7 +1,7 @@
 // @flow
 import * as EyeModel from '../model';
 
-const patches = [{
+const commits = [{
   type: 'LoadStart',
 }, {
   type: 'LoadSuccess',
@@ -9,7 +9,7 @@ const patches = [{
 }]
 
 test('model', () => {
-  patches.forEach(commit => {
+  commits.forEach(commit => {
     expect(EyeModel.reduce(EyeModel.initialState, commit)).toMatchSnapshot();
   });
 });
