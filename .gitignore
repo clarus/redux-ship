@@ -1,3 +1,3 @@
 _book
-dist/
+dist/*/*.js
 node_modules/
