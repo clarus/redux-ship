@@ -13,11 +13,9 @@ Inspired by:
 * [Redux Saga](https://github.com/yelouafi/redux-saga) for the use of generators to test side-effects;
 * [Jest](https://facebook.github.io/jest/) for the idea of [snapshot testing](http://facebook.github.io/jest/docs/tutorial-react.html#snapshot-testing).
 
-See a [demo with reusable components and shared state](http://clarus.github.io/redux-ship-examples/gifs/).
+See an [online demo :rocket:](https://clarus.github.io/redux-ship-devtools/) with the [redux-ship-devtools](https://github.com/clarus/redux-ship-devtools):
 
-Redux Ship with [redux-ship-logger](https://github.com/clarus/redux-ship-logger):
-
-<img src='https://raw.githubusercontent.com/clarus/redux-ship/master/docs/logger.png' alt='Screenshot' width='700px'>
+<img src='https://raw.githubusercontent.com/clarus/redux-ship-devtools/master/screenshot.png' alt='Screenshot' width='700px'>
 
 ## Install
 Run:
