@@ -1,7 +1,7 @@
 {
   "name": "redux-ship",
   "version": "0.1.2",
-  "description": "Scalable, testable and typable side effects for Redux",
+  "description": "Composable, testable and typable side effects for Redux",
   "main": "dist/main/index.js",
   "module": "dist/module/index.js",
   "scripts": {
