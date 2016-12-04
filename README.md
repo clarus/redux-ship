@@ -15,7 +15,7 @@ Inspired by:
 
 See an [online demo :rocket:](https://clarus.github.io/redux-ship-devtools/) with the [redux-ship-devtools](https://github.com/clarus/redux-ship-devtools):
 
-[![Screenshot](https://raw.githubusercontent.com/clarus/redux-ship-devtools/master/screenshot.png)](https://clarus.github.io/redux-ship-devtools/)
+[![Screenshot](https://raw.githubusercontent.com/clarus/redux-ship-devtools/screenshots/animation.gif)](https://clarus.github.io/redux-ship-devtools/)
 
 ## Install
 Run:
