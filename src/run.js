@@ -58,3 +58,13 @@ export function run<Effect, Commit, State, A>(
 ): Promise<A> {
   return runWithAnswer(runEffect, store.dispatch, store.getState, ship);
 }
+
+export function middleware<Action, Effect, Commit, State>(
+  runEffect: (effect: Effect) => any | Promise<any>,
+  control: (action: Action) => Ship<Effect, Commit, State, void>
+): * {
+  return (store: any) => (next: any) => (action: any) => {
+    run(runEffect, store, control(action));
+    return next(action);
+  };
+}

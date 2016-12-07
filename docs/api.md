@@ -6,6 +6,7 @@
 * [`commit`](#commit)
 * [`getState`](#getstate)
 * [`map`](#map)
+* [`middleware`](#middleware)
 * [`run`](#run)
 * [`simulate`](#simulate)
 * [`snap`](#snap)
@@ -197,6 +198,31 @@ return yield* Ship.map(
 );
 ```
 
+## `middleware`
+```js
+<Action, Effect, Commit, State>(
+  runEffect: (effect: Effect) => any | Promise<any>,
+  control: (action: Action) => Ship<Effect, Commit, State, void>
+) => *
+```
+
+Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) to connect Redux Ship to Redux.
+
+* `runEffect` the function to evaluate a serialized side effect
+* `control` the function to evaluate an `action` with a ship
+
+### Example
+```js
+import {applyMiddleware, createStore} from 'redux';
+
+const middlewares = [
+  Ship.middleware(runEffect, control),
+  otherMiddleware
+];
+
+const store = createStore(reduce, initialState, applyMiddleware(...middlewares));
+```
+
 ## `run`
 ```js
 <Effect, Commit, State, A>(
@@ -227,7 +253,7 @@ export type Effect = {
   url: string,
 };
 
-export async function run(effect: Effect): Promise<any> {
+export async function runEffect(effect: Effect): Promise<any> {
   switch (effect.type) {
   case 'HttpRequest': {
     const response = await fetch(effect.url);
@@ -277,10 +303,10 @@ Returns a ship taking the snapshot and returning the result of `ship`. You can a
 ### Example
 To take the snapshot of a ship:
 ```js
-const {result, snapshot} = yield* snap(ship);
+const {result, snapshot} = yield* Ship.snap(ship);
 ```
 
 To take the snapshot of a controller (the `result` should always be `undefined`):
 ```js
-const {snapshot} = yield* snap(control(action));
+const {snapshot} = yield* Ship.snap(control(action));
 ```
