@@ -206,7 +206,7 @@ return yield* Ship.map(
 ) => *
 ```
 
-Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) to connect Redux Ship to Redux.
+Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) to connect Redux Ship to Redux. When a `Ship.commit` occurs, it get dispatched to the *next* middleware rather to the whole middleware chain. Thus, this is not possible to call another ship action with `Ship.commit`. Instead, use `yield*`. This is so to prevent any possible loops.
 
 * `runEffect` the function to evaluate a serialized side effect
 * `control` the function to evaluate an `action` with a ship

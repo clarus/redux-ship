@@ -64,7 +64,11 @@ export function middleware<Action, Effect, Commit, State>(
   control: (action: Action) => Ship<Effect, Commit, State, void>
 ): * {
   return (store: any) => (next: any) => (action: any) => {
-    run(runEffect, store, control(action));
+    const storeWithNext = {
+      dispatch: next,
+      getState: store.getState,
+    };
+    run(runEffect, storeWithNext, control(action));
     return next(action);
   };
 }
