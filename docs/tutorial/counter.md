@@ -149,41 +149,46 @@ yield* Ship.commit({type: 'Foo'}); // error
 as this would result in a Flow type error since `{type: 'Foo'}` is not of type `Model.Commit`.
 
 ## Wrapping everything up
-We instantiate a Redux store in `store.js`:
+We instantiate a Redux store together with the Redux Ship middleware in `store.js`:
 ```js
 // @flow
 import {applyMiddleware, createStore} from 'redux';
+import * as Ship from 'redux-ship';
 import createLogger from 'redux-logger';
+import {logControl} from 'redux-ship-logger';
+import * as Controller from './controller';
 import * as Model from './model';
+
+function runEffect() {}
+
+const middlewares = [
+  Ship.middleware(runEffect, logControl(Controller.control)),
+  createLogger(),
+];
 
 export default createStore(
   Model.reduce,
   Model.initialState,
-  applyMiddleware(createLogger())
+  applyMiddleware(...middlewares)
 );
 ```
-and bootstrap the application in `index.js`:
+We provide two parameters to the `Ship.middleware` function:
+* `runEffect` which is empty for now, as we only have synchronous actions;
+* `logControl(Controller.control))` which is our controller. We wrap it with a `logControl` to add loggin to the Redux Ship actions.
+
+We bootstrap the application in `index.js`:
 ```js
 // @flow
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as Ship from 'redux-ship';
-import {logControl} from 'redux-ship-logger';
 import App from './App';
 import './index.css';
-import * as Controller from './controller';
 import store from './store';
-
-function runEffect() {}
-
-function dispatch(action: Controller.Action): void {
-  Ship.run(runEffect, store, logControl(Controller.control)(action));
-}
 
 function render(): void {
   ReactDOM.render(
-    <App dispatch={dispatch} state={store.getState()} />,
+    <App dispatch={store.dispatch} state={store.getState()} />,
     document.getElementById('root')
   );
 }
@@ -191,17 +196,7 @@ function render(): void {
 store.subscribe(render);
 render();
 ```
-We define a [React](https://facebook.github.io/react/) `render` function to render the application. We subscribe to the `store` to re-render when the Redux store is updated.
-
-We define the function `dispatch` with `Ship.run`:
-```js
-function runEffect() {}
-
-function dispatch(action: Controller.Action): void {
-  Ship.run(runEffect, store, logControl(Controller.control)(action));
-}
-```
-This function effectively runs the side effects described by the `Controller.control` function using the Redux store `store`. The function `runEffect` is empty for now, as we have asynchronous actions. We call `logControl` to add logging to the controller.
+We define a [React](https://facebook.github.io/react/) `render` function to render the application. We subscribe to the `store` to re-render when the Redux store is updated. Note that you can also use [react-redux](https://github.com/reactjs/react-redux) to connect React to Redux.
 
 ## Snapshots
 When we look at our browser's console we see something like:
