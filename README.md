@@ -1,8 +1,8 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/rocket-48.png) Redux Ship
 > Composable, testable and typable side effects for Redux
 
-[![travis status](https://img.shields.io/travis/clarus/redux-ship/master.svg)](https://travis-ci.org/clarus/redux-ship)
-[![appveyor status](https://img.shields.io/appveyor/ci/clarus/redux-ship.svg)](https://ci.appveyor.com/project/clarus/redux-ship)
+[![travis status](https://img.shields.io/travis/clarus/redux-ship/master.svg?label=travis-ci)](https://travis-ci.org/clarus/redux-ship)
+[![appveyor status](https://img.shields.io/appveyor/ci/clarus/redux-ship.svg?label=app-veyor)](https://ci.appveyor.com/project/clarus/redux-ship)
 [![npm version](https://img.shields.io/npm/v/redux-ship.svg)](https://www.npmjs.com/package/redux-ship)
 [![npm downloads](https://img.shields.io/npm/dm/redux-ship.svg)](https://www.npmjs.com/package/redux-ship)
 
