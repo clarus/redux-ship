@@ -4,7 +4,10 @@
     "es6": true
   },
   "globals": {
-    "Generator": false
+    "describe": false,
+    "expect": false,
+    "Generator": false,
+    "test": false
   },
   "extends": "eslint:recommended",
   "parser": "babel-eslint",
