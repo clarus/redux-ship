@@ -11,7 +11,7 @@ export type SnapshotItem<Effect, Commit> = {
   commit: Commit
 } | {
   type: 'GetState',
-  state: any,
+  state?: any,
 } | {
   type: 'All',
   snapshots: (SnapshotItem<Effect, Commit>[])[],
