@@ -67,10 +67,6 @@ type State = {
   eye: EyeState,
 };
 
-const initialState: State = {
-  eye: initialEyeState,
-};
-
 type Commit = {
   type: 'Eye',
   commit: EyeCommit,
