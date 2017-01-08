@@ -12,7 +12,7 @@ Object {
 }
 `;
 
-exports[`snapshot with eye 1`] = `
+exports[`simulate and snap with eye 1`] = `
 Array [
   Object {
     "state": "red",
@@ -21,7 +21,7 @@ Array [
 ]
 `;
 
-exports[`snapshot with map 1`] = `
+exports[`simulate and snap with map 1`] = `
 Array [
   Object {
     "state": null,
@@ -74,7 +74,7 @@ Array [
 ]
 `;
 
-exports[`snapshot without eye 1`] = `
+exports[`simulate and snap without eye 1`] = `
 Array [
   Object {
     "state": null,

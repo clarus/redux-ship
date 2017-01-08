@@ -1,13 +1,15 @@
 // @flow
 import * as Ship from '../index';
 
+type Store<Commit, State> = {
+  dispatch: (commit: Commit) => void | Promise<void>,
+  getState: () => State,
+};
+
 function createStore<Commit, State>(
   reduce: (state: State, commit: Commit) => State,
   initialState: State
-): {
-  dispatch: (commit: Commit) => void | Promise<void>,
-  getState: () => State,
-} {
+): Store<Commit, State> {
   let state = initialState;
   return {
     dispatch(commit) {
@@ -178,22 +180,34 @@ describe('run', () => {
   });
 });
 
-describe('snapshot', () => {
-  test('without eye', async () => {
-    const store = createStore(eyeReduce, initialEyeState);
-    const {snapshot} = await Ship.run(runEffect, store, Ship.snap(eyeControl()));
-    expect(snapshot).toMatchSnapshot();
-  });
-
-  test('with eye', async () => {
-    const store = createStore(eyeReduce, {...initialEyeState, color: 'red'});
-    const {snapshot} = await Ship.run(runEffect, store, Ship.snap(eyeControl()));
-    expect(snapshot).toMatchSnapshot();
-  });
-
-  test('with map', async () => {
-    const store = createStore(reduce, initialState);
+function testSimulateAndSnap<Commit, State>(
+  name: string,
+  store: Store<Commit, State>,
+  control: () => Ship.Ship<Effect, Commit, State, void>
+): void {
+  test(name, async () => {
     const {snapshot} = await Ship.run(runEffect, store, Ship.snap(control()));
     expect(snapshot).toMatchSnapshot();
+    expect(Ship.simulate(control(), snapshot)).toEqual(snapshot);
   });
+}
+
+describe('simulate and snap', () => {
+  testSimulateAndSnap(
+    'without eye',
+    createStore(eyeReduce, initialEyeState),
+    eyeControl
+  );
+
+  testSimulateAndSnap(
+    'with eye',
+    createStore(eyeReduce, {...initialEyeState, color: 'red'}),
+    eyeControl
+  );
+
+  testSimulateAndSnap(
+    'with map',
+    createStore(reduce, initialState),
+    control
+  );
 });
