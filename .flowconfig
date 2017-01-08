@@ -4,6 +4,7 @@
 <PROJECT_ROOT>/node_modules/.*
 
 [include]
+flow-typed
 
 [libs]
 
