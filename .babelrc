@@ -1,16 +1,4 @@
 {
-  "env": {
-    "main": {
-      "presets": [
-        "es2015"
-      ]
-    },
-    "module": {
-      "presets": [
-        ["es2015", {"modules": false}]
-      ]
-    }
-  },
   "plugins": [
     "syntax-flow",
     "transform-flow-strip-types"
