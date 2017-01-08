@@ -1,7 +1,9 @@
 {
   "plugins": [
     "syntax-flow",
-    "transform-flow-strip-types"
+    "transform-async-to-generator",
+    "transform-flow-strip-types",
+    "transform-object-rest-spread"
   ],
   "presets": [
     "es2015"

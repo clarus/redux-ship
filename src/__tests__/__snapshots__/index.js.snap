@@ -1,0 +1,13 @@
+exports[`run twice 1`] = `
+Object {
+  "color": "red",
+  "isLoading": false,
+}
+`;
+
+exports[`run without eye 1`] = `
+Object {
+  "color": "red",
+  "isLoading": false,
+}
+`;
