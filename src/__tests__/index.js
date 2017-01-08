@@ -1,6 +1,24 @@
 // @flow
 import * as Ship from '../index';
 
+function createStore<Commit, State>(
+  reduce: (state: State, commit: Commit) => State,
+  initialState: State
+): {
+  dispatch: (commit: Commit) => void | Promise<void>,
+  getState: () => State,
+} {
+  let state = initialState;
+  return {
+    dispatch(commit) {
+      state = reduce(state, commit);
+    },
+    getState() {
+      return state;
+    }
+  };
+}
+
 type Effect = {
   type: 'HttpRequest',
   url: string,
@@ -11,6 +29,18 @@ function httpRequest<Commit, State>(url: string): Ship.Ship<Effect, Commit, Stat
     type: 'HttpRequest',
     url,
   });
+}
+
+function runEffect(effect: Effect) {
+  switch (effect.type) {
+  case 'HttpRequest':
+    return JSON.stringify({
+      eye_color: 'red',
+      name: 'R2-D2',
+    });
+  default:
+    return;
+  }
 }
 
 type EyeState = {
@@ -30,7 +60,7 @@ type EyeCommit = {
   color: string,
 };
 
-export function eyeReduce(state: EyeState, commit: EyeCommit): EyeState {
+function eyeReduce(state: EyeState, commit: EyeCommit): EyeState {
   switch (commit.type) {
   case 'LoadStart':
     return {
@@ -67,10 +97,26 @@ type State = {
   eye: EyeState,
 };
 
+const initialState: State = {
+  eye: initialEyeState,
+};
+
 type Commit = {
   type: 'Eye',
   commit: EyeCommit,
 };
+
+function reduce(state: State, commit: Commit): State {
+  switch (commit.type) {
+  case 'Eye':
+    return {
+      ...state,
+      eye: eyeReduce(state.eye, commit.commit),
+    };
+  default:
+    return state;
+  }
+}
 
 type Control<A> = Ship.Ship<*, Commit, State, A>;
 
@@ -118,40 +164,36 @@ describe('map', () => {
 });
 
 describe('run', () => {
-  function runEffect(effect: Effect) {
-    switch (effect.type) {
-    case 'HttpRequest':
-      return JSON.stringify({
-        eye_color: 'red',
-        name: 'R2-D2',
-      });
-    default:
-      return;
-    }
-  }
-
-  function createStore(initialState: EyeState) {
-    let state = initialState;
-    return {
-      dispatch(commit) {
-        state = eyeReduce(state, commit);
-      },
-      getState() {
-        return state;
-      }
-    };
-  }
-
   test('without eye', async () => {
-    const store = createStore(initialEyeState);
+    const store = createStore(eyeReduce, initialEyeState);
     await Ship.run(runEffect, store, eyeControl());
     expect(store.getState()).toMatchSnapshot();
   });
 
   test('twice', async () => {
-    const store = createStore(initialEyeState);
+    const store = createStore(eyeReduce, initialEyeState);
     await Ship.run(runEffect, store, eyeControl());
     await Ship.run(runEffect, store, eyeControl());
     expect(store.getState()).toMatchSnapshot();
+  });
+});
+
+describe('snapshot', () => {
+  test('without eye', async () => {
+    const store = createStore(eyeReduce, initialEyeState);
+    const {snapshot} = await Ship.run(runEffect, store, Ship.snap(eyeControl()));
+    expect(snapshot).toMatchSnapshot();
+  });
+
+  test('with eye', async () => {
+    const store = createStore(eyeReduce, {...initialEyeState, color: 'red'});
+    const {snapshot} = await Ship.run(runEffect, store, Ship.snap(eyeControl()));
+    expect(snapshot).toMatchSnapshot();
+  });
+
+  test('with map', async () => {
+    const store = createStore(reduce, initialState);
+    const {snapshot} = await Ship.run(runEffect, store, Ship.snap(control()));
+    expect(snapshot).toMatchSnapshot();
   });
 });

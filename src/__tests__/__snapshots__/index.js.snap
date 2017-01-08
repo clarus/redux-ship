@@ -11,3 +11,112 @@ Object {
   "isLoading": false,
 }
 `;
+
+exports[`snapshot with eye 1`] = `
+Array [
+  Object {
+    "state": "red",
+    "type": "GetState",
+  },
+]
+`;
+
+exports[`snapshot with map 1`] = `
+Array [
+  Object {
+    "state": null,
+    "type": "GetState",
+  },
+  Object {
+    "commit": Object {
+      "commit": Object {
+        "type": "LoadStart",
+      },
+      "type": "Eye",
+    },
+    "type": "Commit",
+  },
+  Object {
+    "snapshots": Array [
+      Array [
+        Object {
+          "effect": Object {
+            "type": "HttpRequest",
+            "url": "http://swapi.co/api/people/3/",
+          },
+          "result": "{\"eye_color\":\"red\",\"name\":\"R2-D2\"}",
+          "type": "Effect",
+        },
+      ],
+      Array [
+        Object {
+          "effect": Object {
+            "type": "HttpRequest",
+            "url": "http://swapi.co/api/people/4/",
+          },
+          "result": "{\"eye_color\":\"red\",\"name\":\"R2-D2\"}",
+          "type": "Effect",
+        },
+      ],
+    ],
+    "type": "All",
+  },
+  Object {
+    "commit": Object {
+      "commit": Object {
+        "color": "red",
+        "type": "LoadSuccess",
+      },
+      "type": "Eye",
+    },
+    "type": "Commit",
+  },
+]
+`;
+
+exports[`snapshot without eye 1`] = `
+Array [
+  Object {
+    "state": null,
+    "type": "GetState",
+  },
+  Object {
+    "commit": Object {
+      "type": "LoadStart",
+    },
+    "type": "Commit",
+  },
+  Object {
+    "snapshots": Array [
+      Array [
+        Object {
+          "effect": Object {
+            "type": "HttpRequest",
+            "url": "http://swapi.co/api/people/3/",
+          },
+          "result": "{\"eye_color\":\"red\",\"name\":\"R2-D2\"}",
+          "type": "Effect",
+        },
+      ],
+      Array [
+        Object {
+          "effect": Object {
+            "type": "HttpRequest",
+            "url": "http://swapi.co/api/people/4/",
+          },
+          "result": "{\"eye_color\":\"red\",\"name\":\"R2-D2\"}",
+          "type": "Effect",
+        },
+      ],
+    ],
+    "type": "All",
+  },
+  Object {
+    "commit": Object {
+      "color": "red",
+      "type": "LoadSuccess",
+    },
+    "type": "Commit",
+  },
+]
+`;
