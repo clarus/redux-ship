@@ -59,7 +59,7 @@ export function* getState<Effect, Commit, State, A>(
 
 export function* allAny<Effect, Commit, State>(
   ...ships: Ship<Effect, Commit, State, any>[]
-): Ship<Effect, Commit, State, any[]> {
+): Ship<Effect, Commit, State, *> {
   return yield {
     type: 'All',
     ships,
