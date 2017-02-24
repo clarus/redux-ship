@@ -1,3 +1,4 @@
 _book
 dist/*.js
+dist/__tests__
 node_modules/
