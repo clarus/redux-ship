@@ -1,51 +1,51 @@
 exports[`test counter 1`] = `
 Object {
   "counter": Object {
-    "count": 1
+    "count": 1,
   },
   "randomGifs": Object {
     "cat": Object {
       "gifUrl": null,
-      "isLoading": false
+      "isLoading": false,
     },
     "dog": Object {
       "gifUrl": null,
-      "isLoading": false
+      "isLoading": false,
     },
     "gify": Object {
       "gifUrl": null,
-      "isLoading": false
+      "isLoading": false,
     },
     "minion": Object {
       "gifUrl": null,
-      "isLoading": false
-    }
-  }
+      "isLoading": false,
+    },
+  },
 }
 `;
 
 exports[`test randomGifs 1`] = `
 Object {
   "counter": Object {
-    "count": 0
+    "count": 0,
   },
   "randomGifs": Object {
     "cat": Object {
       "gifUrl": null,
-      "isLoading": true
+      "isLoading": true,
     },
     "dog": Object {
       "gifUrl": null,
-      "isLoading": false
+      "isLoading": false,
     },
     "gify": Object {
       "gifUrl": null,
-      "isLoading": false
+      "isLoading": false,
     },
     "minion": Object {
       "gifUrl": null,
-      "isLoading": false
-    }
-  }
+      "isLoading": false,
+    },
+  },
 }
 `;

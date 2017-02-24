@@ -7,7 +7,7 @@ exports[`test default 1`] = `
     src="test-file-stub" />
   <button
     disabled={false}
-    onClick={[Function anonymous]}>
+    onClick={[Function]}>
     New cat
   </button>
 </div>
@@ -22,7 +22,7 @@ exports[`test loaded 1`] = `
     src="https://media2.giphy.com/media/m7ychnf9zOVm8/giphy.gif" />
   <button
     disabled={false}
-    onClick={[Function anonymous]}>
+    onClick={[Function]}>
     New cat
   </button>
 </div>
@@ -37,7 +37,7 @@ exports[`test loading 1`] = `
     src="test-file-stub" />
   <button
     disabled={true}
-    onClick={[Function anonymous]}>
+    onClick={[Function]}>
     Loading...
   </button>
 </div>

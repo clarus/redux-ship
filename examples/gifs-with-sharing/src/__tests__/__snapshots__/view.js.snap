@@ -41,7 +41,7 @@ exports[`test default 1`] = `
         src="test-file-stub" />
       <button
         disabled={false}
-        onClick={[Function anonymous]}>
+        onClick={[Function]}>
         New cat
       </button>
     </div>
@@ -53,7 +53,7 @@ exports[`test default 1`] = `
         src="test-file-stub" />
       <button
         disabled={false}
-        onClick={[Function anonymous]}>
+        onClick={[Function]}>
         New minion
       </button>
     </div>
@@ -65,7 +65,7 @@ exports[`test default 1`] = `
         src="test-file-stub" />
       <button
         disabled={false}
-        onClick={[Function anonymous]}>
+        onClick={[Function]}>
         New dog
       </button>
     </div>
@@ -77,7 +77,7 @@ exports[`test default 1`] = `
         src="test-file-stub" />
       <button
         disabled={false}
-        onClick={[Function anonymous]}>
+        onClick={[Function]}>
         New gify
       </button>
     </div>
