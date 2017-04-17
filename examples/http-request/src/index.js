@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Ship from 'redux-ship';
 import {logControl} from 'redux-ship-logger';
+import * as ShipDevTools from 'redux-ship-devtools';
 import Index from './view';
 import './index.css';
 import store from './store';
@@ -11,7 +12,7 @@ import * as Controller from './controller';
 import * as Effect from './effect';
 
 function dispatch(action: Controller.Action): void {
-  Ship.run(Effect.run, store, logControl(Controller.control)(action));
+  Ship.run(Effect.run, store, ShipDevTools.inspect(logControl(Controller.control))(action));
 }
 
 function render() {
