@@ -42,7 +42,7 @@
     "babylon": "^6.15.0",
     "eslint": "^3.15.0",
     "eslint-plugin-babel": "^4.0.1",
-    "flow-bin": "^0.39.0",
+    "flow-bin": "^0.57.3",
     "gitbook-cli": "^2.3.0",
     "jest": "^18.1.0",
     "rimraf": "^2.5.4"
