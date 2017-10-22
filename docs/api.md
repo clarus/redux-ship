@@ -22,8 +22,8 @@ The type of a ship. A ship is a generator and can be defined using the `function
 
 ### Example
 A controller to load a random gif:
+export function* control(action: Action): Ship.Ship<Effect, Commit, State, void> {
 ```js
-export function* control(action: Action): Ship.Ship<*, Commit, State, void> {
   switch (action.type) {
   case 'Load': {
     yield* Ship.commit({
@@ -82,21 +82,29 @@ The snapshot of a controller loading a random gif:
 
 ## `all`
 ```js
-<Effect, Commit, State, A>(
+all<Effect, Commit, State, A>(
   ships: Ship<Effect, Commit, State, A>[]
-) => Ship<Effect, Commit, State, A[]>
+): Ship<Effect, Commit, State, A[]>
 ```
 
 Returns the array of results of the `ships` by running them in parallel. This is the equivalent of `Promise.all` in Ship.
 
 * `ships` an array of ships to execute concurrently
 
-If you have a fixed number of tasks with different types of result to run in parallel, you can use:
+If you have a fixed number of tasks with different types of result to run in parallel, use:
 ```js
 all2(ship1, ship2)
 all3(ship1, ship2, ship3)
 ...
 all7(ship1, ship2, ship3, ship4, ship5, ship6, ship7)
+```
+The result type is a tuple with the same types as the arguments:
+```js
+all3<Effect, Commit, State, A1, A2, A3>(
+  ship1: Ship<Effect, Commit, State, A1>,
+  ship2: Ship<Effect, Commit, State, A2>,
+  ship3: Ship<Effect, Commit, State, A3>
+): Ship<Effect, Commit, State, [A1, A2, A3]>
 ```
 
 ### Example
@@ -112,12 +120,12 @@ const gifUrls = yield* Ship.all(['cat', 'minion', 'dog'].map(function* (tag) {
 
 ## `call`
 ```js
-<Effect, Commit, State>(
+call<Effect, Commit, State>(
   effect: Effect
 ): Ship<Effect, Commit, State, any>
 ```
 
-Calls the serialized effect `effect`. The type of the result is `any` because it depends on the value of the effect.
+Calls the serialized effect `effect`. The type of the result is `any` because it depends on the value of the effect, which is only known at runtime.
 
 * `effect` the effect to call
 
@@ -125,7 +133,7 @@ Calls the serialized effect `effect`. The type of the result is `any` because it
 To prevent type errors, we recommend to wrap your calls to `call` with one wrapper per kind of effect. For example, if you have an effect `HttpRequest` which always returns a `string`:
 
 ```js
-export function httpRequest<Commit, State>(url: string): Ship<*, Commit, State, string> {
+export function httpRequest<Commit, State>(url: string): Ship<Effect, Commit, State, string> {
   return Ship.call({
     type: 'HttpRequest',
     url,
@@ -135,7 +143,7 @@ export function httpRequest<Commit, State>(url: string): Ship<*, Commit, State, 
 
 ## `commit`
 ```js
-<Effect, Commit, State>(
+commit<Effect, Commit, State>(
   commit: Commit
 ): Ship<Effect, Commit, State, void>
 ```
@@ -155,7 +163,7 @@ yield* Ship.commit({
 
 ## `getState`
 ```js
-<Effect, Commit, State, A>(
+getState<Effect, Commit, State, A>(
   selector: (state: State) => A
 ): Ship<Effect, Commit, State, A>
 ```
@@ -172,43 +180,40 @@ const currentGif = yield* Ship.getState(state => state.randomGif.gifUrl);
 
 ## `map`
 ```js
-<Effect, Commit1, State1, Commit2, State2, A>(
-  liftCommit: (commit: Commit1) => Commit2,
-  extractState: (state2: State2) => State1,
-  ship: Ship<Effect, Commit1, State1, A>
-): Ship<Effect, Commit2, State2, A>
+map<Effect, SubCommit, SubState, Commit, State, A>(
+  liftCommit: (subCommit: SubCommit) => Commit,
+  extractState: (state: State) => SubState,
+  ship: Ship<Effect, SubCommit, SubState, A>
+): Ship<Effect, Commit, State, A>
 ```
 
-A function useful to compose nested components. Lifts a `ship` with access to "small set" of commits `Commit1` and a "small set" of states `State1` to a ship with access to the "larger sets" `Commit2` and `State2`. This function iterates through the `ship` and replace each `getState()` by `getState(state => selector(extractState(state)))` and each `commit(commit1)` by `commit(liftCommit(commit1))`.
+A function useful to compose nested components. Lifts a `ship` with access to "small set" of commits `SubCommit` and a "small set" of states `SubState` to a ship with access to the "larger sets" `Commit` and `State`.
 
-* `liftCommit` lifts a local commit
-* `extractState` extract the local state
+* `liftCommit` lifts a sub-commit to a commit
+* `extractState` extract a sub-state from a state
 * `ship` the ship to map
 
 ### Example
-To lift a controller to retrieve one random gif to a controller to retrieve two random gifs:
+To embed a controller retrieving one random gif into a controller retrieving two random gifs:
 ```js
 return yield* Ship.map(
   commit => ({type: 'First', commit}),
-  state => ({
-    counter: state.counter,
-    randomGif: state.randomGifPair.first,
-  }),
+  state => state.first,
   RandomGifController.control(action.action)
 );
 ```
 
 ## `middleware`
 ```js
-<Action, Effect, Commit, State>(
+middleware<Action, Effect, Commit, State>(
   runEffect: (effect: Effect) => any | Promise<any>,
   control: (action: Action) => Ship<Effect, Commit, State, void>
-) => *
+): ReduxMiddleware
 ```
 
 Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) to connect Redux Ship to Redux. When a `Ship.commit` occurs, it get dispatched to the *next* middleware rather to the whole middleware chain. Thus, this is not possible to call another ship action with `Ship.commit`. Instead, use `yield*`. This is so to prevent any possible loops.
 
-* `runEffect` the function to evaluate a serialized side effect
+* `runEffect` the function to evaluate a serialized side effect (may return a promise for asynchronous effects)
 * `control` the function to evaluate an `action` with a ship
 
 ### Example
@@ -225,19 +230,19 @@ const store = createStore(reduce, initialState, applyMiddleware(...middlewares))
 
 ## `run`
 ```js
-<Effect, Commit, State, A>(
+run<Effect, Commit, State, A>(
   runEffect: (effect: Effect) => any | Promise<any>,
   store: {
     dispatch: (commit: Commit) => void | Promise<void>,
     getState: () => State
   },
   ship: Ship<Effect, Commit, State, A>
-) => Promise<A>
+): Promise<A>
 ```
 
 Runs a ship and its side effects by evaluating each primitive effect with `runEffect` and interpreting each call to Redux with the `store`.
 
-* `runEffect` the function to evaluate a serialized side effect
+* `runEffect` the function to evaluate a serialized side effect (may return a promise for asynchronous effects)
 * `store` the current Redux store
 * `ship` the ship to execute
 
@@ -267,7 +272,7 @@ export async function runEffect(effect: Effect): Promise<any> {
 
 ## `simulate`
 ```js
-<Effect, Commit, State, A>(
+simulate<Effect, Commit, State, A>(
   ship: Ship<Effect, Commit, State, A>,
   snapshot: Snapshot<Effect, Commit, State>
 ): Snapshot<Effect, Commit, State>
@@ -288,9 +293,9 @@ expect(Ship.simulate(control(action), snapshot)).toEqual(snapshot);
 
 ## `snap`
 ```js
-<Effect, Commit, State, A>(
+snap<Effect, Commit, State, A>(
   ship: Ship<Effect, Commit, State, A>
-) => Ship<Effect, Commit, State, {
+): Ship<Effect, Commit, State, {
   result: A,
   snapshot: Snapshot<Effect, Commit, State>
 }>
