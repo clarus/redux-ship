@@ -1,8 +1,0 @@
-exports[`test default 1`] = `
-<div>
-  <p>
-    Count: 
-    0
-  </p>
-</div>
-`;
