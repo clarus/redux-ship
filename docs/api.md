@@ -211,10 +211,12 @@ middleware<Action, Effect, Commit, State>(
 ): ReduxMiddleware
 ```
 
-Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) to connect Redux Ship to Redux. When a `Ship.commit` occurs, it get dispatched to the *next* middleware rather to the whole middleware chain. Thus, this is not possible to call another ship action with `Ship.commit`. Instead, use `yield*`. This is so to prevent any possible loops.
+Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) to connect Redux Ship to Redux.
 
 * `runEffect` the function to evaluate a serialized side effect (may return a promise for asynchronous effects)
 * `control` the function to evaluate an `action` with a ship
+
+When a `Ship.commit` occurs, the commit is dispatched to the *next* middleware rather than to the whole middleware chain. This is so to prevent loops of commits. Thus, this is not possible to call another ship with `Ship.commit`. Instead, use the `yield*` keyword to directly call the corresponding ship.
 
 ### Example
 ```js
@@ -247,7 +249,7 @@ Runs a ship and its side effects by evaluating each primitive effect with `runEf
 * `ship` the ship to execute
 
 ### Example
-To connect Redux Ship to a Redux `store`, you can do:
+To run Redux Ship with a Redux store `store`, you can do:
 ```js
 Ship.run(runEffect, store, ship);
 ```
@@ -274,16 +276,16 @@ export async function runEffect(effect: Effect): Promise<any> {
 ```js
 simulate<Effect, Commit, State, A>(
   ship: Ship<Effect, Commit, State, A>,
-  snapshot: Snapshot<Effect, Commit, State>
-): Snapshot<Effect, Commit, State>
+  snapshot: Snapshot<Effect, Commit>
+): Snapshot<Effect, Commit>
 ```
 
 Simulates a `ship` in the context of a `snapshot` and returns the snapshot of the simulation. A simulation is a purely functional (with no side effects) execution of a ship. Useful for regression testing.
 
-To simulate a ship, we need a snapshot of a previous live execution because there are many ways to execute a ship. For example, if the ship starts an API request, we do not know which API answer to provide. In this case, we use the snapshot which already contains an API answer. Since the simulation always gives the same API answers as in the snapshot, the `ship` should behave the same as when its the snapshot was taken. In particular, the result of `simulate` should be equal to `snapshot`, unless `ship` had a regression since its snapshot was taken.
-
 * `ship` the ship to simulate
 * `snapshot` a snapshot of a previous execution of the ship
+
+To simulate a ship, we need a snapshot of a previous live execution because there are many ways to execute a ship. For example, if the ship starts an API request, we do not know which API answer to provide. In this case, we use a snapshot which already contains an API answer. Since the simulation always gives the same API answers as in the snapshot, the `ship` should behave the same as when its snapshot was taken. In particular, the result of `simulate` should be equal to `snapshot`, unless the implementation of `ship` had a regression since its snapshot was taken.
 
 ### Example
 In a unit test of a controller:
@@ -297,11 +299,11 @@ snap<Effect, Commit, State, A>(
   ship: Ship<Effect, Commit, State, A>
 ): Ship<Effect, Commit, State, {
   result: A,
-  snapshot: Snapshot<Effect, Commit, State>
+  snapshot: Snapshot<Effect, Commit>
 }>
 ```
 
-Returns a ship taking the snapshot and returning the result of `ship`. You can also get snapshots of your controllers with [redux-ship-logger](https://github.com/clarus/redux-ship-logger).
+Returns a ship behaving as `ship` but taking the snapshot of its own execution.
 
 * `ship` the ship to take in picture
 
