@@ -16,8 +16,7 @@ export function* control(action: Action): Control<void> {
     if (!currentMovies) {
       yield* Ship.commit({type: 'LoadStart'});
       const r2d2 = yield* Effect.httpRequest('https://swapi.co/api/people/3/');
-      const movieUrls: string[] = JSON.parse(r2d2).films;
-      const movies = yield* Ship.all(movieUrls.map(function* (movieUrl) {
+      const movies = yield* Ship.all(JSON.parse(r2d2).films.map(function* (movieUrl) {
         const movie = yield* Effect.httpRequest(movieUrl);
         return JSON.parse(movie).title;
       }));
