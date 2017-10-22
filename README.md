@@ -54,17 +54,17 @@ This shows us that we:
 * make seven HTTP calls in parallel (to get the movie titles);
 * dispatch the action `LoadSuccess`.
 
-Even without reading the code we get a sense of what the application does. By clicking on each pill we see the details of each element.
+Even without reading the code we get a sense of what the application does. By clicking on each pill we see the details of each element, like:
 
-* access to a value in the store:
+* an access to a value in the store:
 
 ![snapshot-get-state](docs/snapshot-get-state.png)
 
-* dispatch of an action to the store:
+* a dispatch of an action to the store:
 
 ![snapshot-load-success](docs/snapshot-load-success.png)
 
-* other side effect like an API call with the effect and its result:
+* an other side effect (API call, cookies update, ...) with the effect and its result:
 
 ![snapshot-http-request](docs/snapshot-http-request.png)
 
