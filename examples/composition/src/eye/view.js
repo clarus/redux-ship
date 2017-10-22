@@ -8,7 +8,7 @@ type Props = {
   state: EyeModel.State,
 };
 
-export default class Eye extends PureComponent<void, Props, void> {
+export default class Eye extends PureComponent<Props> {
   handleClickLoad = (): void => {
     this.props.dispatch({type: 'Load'});
   };

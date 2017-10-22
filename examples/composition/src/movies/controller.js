@@ -11,7 +11,7 @@ export function* control(action: Action): Ship.Ship<*, MoviesModel.Commit, Movie
   switch (action.type) {
   case 'Load': {
     yield* Ship.commit({type: 'LoadStart'});
-    const r2d2 = yield* Effect.httpRequest('http://swapi.co/api/people/3/');
+    const r2d2 = yield* Effect.httpRequest('https://swapi.co/api/people/3/');
     const movieUrls: string[] = JSON.parse(r2d2).films;
     const movieTitles = yield* Ship.all(movieUrls.map(function* (movieUrl) {
       const movie = yield* Effect.httpRequest(movieUrl);

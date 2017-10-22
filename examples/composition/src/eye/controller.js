@@ -11,7 +11,7 @@ export function* control(action: Action): Ship.Ship<*, EyeModel.Commit, EyeModel
   switch (action.type) {
   case 'Load': {
     yield* Ship.commit({type: 'LoadStart'});
-    const r2d2 = yield* Effect.httpRequest('http://swapi.co/api/people/3/');
+    const r2d2 = yield* Effect.httpRequest('https://swapi.co/api/people/3/');
     const eyeColor = JSON.parse(r2d2).eye_color;
     yield* Ship.commit({type: 'LoadSuccess', color: eyeColor});
     return;

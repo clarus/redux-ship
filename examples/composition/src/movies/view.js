@@ -8,7 +8,7 @@ type Props = {
   state: MoviesModel.State,
 };
 
-export default class Movies extends PureComponent<void, Props, void> {
+export default class Movies extends PureComponent<Props> {
   handleClickLoad = (): void => {
     this.props.dispatch({type: 'Load'});
   };

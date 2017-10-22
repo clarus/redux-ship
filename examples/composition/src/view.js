@@ -14,7 +14,7 @@ type Props = {
   state: Model.State,
 };
 
-export default class Index extends PureComponent<void, Props, void> {
+export default class Index extends PureComponent<Props> {
   handleDispatchEye = (action: EyeController.Action): void => {
     this.props.dispatch({type: 'Eye', action});
   };
