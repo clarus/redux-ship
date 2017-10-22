@@ -1,5 +1,6 @@
 // @flow
 import React, {PureComponent} from 'react';
+import {connect} from 'react-redux';
 import logo from './logo.svg';
 import './view.css';
 import * as Controller from './controller';
@@ -10,7 +11,7 @@ type Props = {
   state: Model.State
 };
 
-export default class Index extends PureComponent<Props> {
+class Index extends PureComponent<Props> {
   handleClickLoad = (): void => {
     this.props.dispatch({type: 'Load'});
   };
@@ -35,3 +36,5 @@ export default class Index extends PureComponent<Props> {
     );
   }
 }
+
+export default connect(state => ({state}))(Index);
