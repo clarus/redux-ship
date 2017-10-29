@@ -8,13 +8,14 @@ import * as MoviesController from './movies/controller';
 import Movies from './movies/view';
 import * as Controller from './controller';
 import * as Model from './model';
+import {connect} from 'react-redux';
 
 type Props = {
   dispatch: (action: Controller.Action) => void,
   state: Model.State,
 };
 
-export default class Index extends PureComponent<Props> {
+class Index extends PureComponent<Props> {
   handleDispatchEye = (action: EyeController.Action): void => {
     this.props.dispatch({type: 'Eye', action});
   };
@@ -45,3 +46,5 @@ export default class Index extends PureComponent<Props> {
     );
   }
 }
+
+export default connect((state: Model.State) => ({state}))(Index);
