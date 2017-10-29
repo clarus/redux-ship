@@ -68,7 +68,6 @@ export function middleware<Action, Effect, Commit, State>(
       dispatch: next,
       getState: store.getState,
     };
-    run(runEffect, storeWithNext, control(action));
-    return next(action);
+    return run(runEffect, storeWithNext, control(action));
   };
 }
