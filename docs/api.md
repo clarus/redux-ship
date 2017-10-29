@@ -216,6 +216,8 @@ Returns a [Redux middleware](http://redux.js.org/docs/advanced/Middleware.html) 
 * `runEffect` the function to evaluate a serialized side effect (may return a promise for asynchronous effects)
 * `control` the function to evaluate an `action` with a ship
 
+The Ship middleware eats all actions: it does not let actions propagate to the next middleware. If you want an action to propagate use `Ship.commit` explicitly.
+
 When a `Ship.commit` occurs, the commit is dispatched to the *next* middleware rather than to the whole middleware chain. This is so to prevent loops of commits. Thus, this is not possible to call another ship with `Ship.commit`. Instead, use the `yield*` keyword to directly call the corresponding ship.
 
 ### Example
