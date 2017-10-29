@@ -10,7 +10,7 @@
     "react-scripts": "1.0.14",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
-    "redux-ship": "^0.1.4",
+    "redux-ship": "^1.0.0",
     "redux-ship-devtools": "^0.1.4"
   },
   "scripts": {
