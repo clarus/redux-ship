@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`list the movies 1`] = `
+Object {
+  "result": undefined,
+  "snapshot": Array [
+    Object {
+      "state": null,
+      "type": "GetState",
+    },
+    Object {
+      "commit": Object {
+        "type": "LoadStart",
+      },
+      "type": "Commit",
+    },
+    Object {
+      "effect": Object {
+        "type": "HttpRequest",
+        "url": "https://swapi.co/api/people/3/",
+      },
+      "result": "{\\"films\\":[\\"https://swapi.co/api/films/2/\\",\\"https://swapi.co/api/films/5/\\",\\"https://swapi.co/api/films/4/\\",\\"https://swapi.co/api/films/6/\\",\\"https://swapi.co/api/films/3/\\",\\"https://swapi.co/api/films/1/\\",\\"https://swapi.co/api/films/7/\\"]}",
+      "type": "Effect",
+    },
+    Object {
+      "snapshots": Array [
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/2/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/2/\\"}",
+            "type": "Effect",
+          },
+        ],
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/5/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/5/\\"}",
+            "type": "Effect",
+          },
+        ],
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/4/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/4/\\"}",
+            "type": "Effect",
+          },
+        ],
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/6/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/6/\\"}",
+            "type": "Effect",
+          },
+        ],
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/3/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/3/\\"}",
+            "type": "Effect",
+          },
+        ],
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/1/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/1/\\"}",
+            "type": "Effect",
+          },
+        ],
+        Array [
+          Object {
+            "effect": Object {
+              "type": "HttpRequest",
+              "url": "https://swapi.co/api/films/7/",
+            },
+            "result": "{\\"title\\":\\"Title of https://swapi.co/api/films/7/\\"}",
+            "type": "Effect",
+          },
+        ],
+      ],
+      "type": "All",
+    },
+    Object {
+      "commit": Object {
+        "movies": Array [
+          "Title of https://swapi.co/api/films/2/",
+          "Title of https://swapi.co/api/films/5/",
+          "Title of https://swapi.co/api/films/4/",
+          "Title of https://swapi.co/api/films/6/",
+          "Title of https://swapi.co/api/films/3/",
+          "Title of https://swapi.co/api/films/1/",
+          "Title of https://swapi.co/api/films/7/",
+        ],
+        "type": "LoadSuccess",
+      },
+      "type": "Commit",
+    },
+  ],
+}
+`;

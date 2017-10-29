@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`model 1`] = `
+Object {
+  "color": null,
+  "isLoading": true,
+}
+`;
+
+exports[`model 2`] = `
+Object {
+  "color": "red",
+  "isLoading": false,
+}
+`;

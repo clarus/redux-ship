@@ -1,0 +1,12 @@
+[ignore]
+<PROJECT_ROOT>/node_modules/fbjs/.*
+
+[include]
+
+[libs]
+decls
+
+[options]
+
+[version]
+0.57.3

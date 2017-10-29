@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`controller with generated snapshot 1`] = `
+Object {
+  "result": undefined,
+  "snapshot": Array [
+    Object {
+      "commit": Object {
+        "type": "LoadStart",
+      },
+      "type": "Commit",
+    },
+    Object {
+      "effect": Object {
+        "type": "HttpRequest",
+        "url": "https://swapi.co/api/people/3/",
+      },
+      "result": "{\\"eye_color\\":\\"red\\"}",
+      "type": "Effect",
+    },
+    Object {
+      "commit": Object {
+        "color": "red",
+        "type": "LoadSuccess",
+      },
+      "type": "Commit",
+    },
+  ],
+}
+`;
