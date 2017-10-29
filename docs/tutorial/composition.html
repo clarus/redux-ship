@@ -1,0 +1,553 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Composition · Redux Ship</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="testing.html" />
+    
+    
+    <link rel="prev" href="http-request.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Read Me
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="counter.html">
+            
+                <a href="counter.html">
+            
+                    
+                    Counter
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="http-request.html">
+            
+                <a href="http-request.html">
+            
+                    
+                    HTTP Request
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.3" data-path="composition.html">
+            
+                <a href="composition.html">
+            
+                    
+                    Composition
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="testing.html">
+            
+                <a href="testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../api.html">
+            
+                <a href="../api.html">
+            
+                    
+                    API Reference
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Composition</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="composition">Composition</h1>
+<p>Most Javascript applications contain many components. Each of the components can have its own view, its own local state and run some asynchronous actions like API requests. We present how to compose isolated components in Redux Ship as in <a href="http://elm-lang.org/" target="_blank">Elm</a>, thanks to the <a href="https://clarus.github.io/redux-ship/docs/api.html" target="_blank"><code>Ship.map</code></a> primitive. The code of this tutorial is in <a href="https://github.com/clarus/redux-ship/tree/master/examples/http-request" target="_blank"><code>examples/http-request</code></a>.</p>
+<p><img src="https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/composition.png" alt="Screenshot" width="200px"></p>
+<ul>
+<li><a href="#components">Components</a></li>
+<li><a href="#model">Model</a></li>
+<li><a href="#view">View</a></li>
+<li><a href="#controller">Controller</a></li>
+<li><a href="#snapshots">Snapshots</a></li>
+<li><a href="#what-we-gain">What we gain</a></li>
+</ul>
+<h2 id="components">Components</h2>
+<p>We compose two components with some API calls to <a href="http://swapi.co/" target="_blank">SWAPI</a>:</p>
+<ul>
+<li><code>eye</code> which gets the color of the eye of R2-D2;</li>
+<li><code>movies</code> which gets the list of movies of R2-D2.</li>
+</ul>
+<p>Each component has its own folder with three files:</p>
+<ul>
+<li><code>model.js</code> (the Redux part);</li>
+<li><code>view.js</code> (the React part);</li>
+<li><code>controller.js</code> (the Redux Ship part).</li>
+</ul>
+<p>See <a href="https://github.com/clarus/redux-ship/tree/master/examples/http-request/src/eye" target="_blank"><code>src/eye</code></a> and <a href="https://github.com/clarus/redux-ship/tree/master/examples/http-request/src/movies" target="_blank"><code>src/movies</code></a> for the sources of the components.</p>
+<h2 id="model">Model</h2>
+<p>The model of the main application regroups the model of each component.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// @flow</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> EyeModel <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./eye/model&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> MoviesModel <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./movies/model&apos;</span>;
+
+<span class="hljs-keyword">export</span> type State = {
+  eye: EyeModel.State,
+  movies: MoviesModel.State,
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> initialState: State = {
+  eye: EyeModel.initialState,
+  movies: MoviesModel.initialState,
+};
+
+<span class="hljs-keyword">export</span> type Commit = {
+  type: <span class="hljs-string">&apos;Eye&apos;</span>,
+  commit: EyeModel.Commit,
+} | {
+  type: <span class="hljs-string">&apos;Movies&apos;</span>,
+  commit: MoviesModel.Commit,
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reduce</span>(<span class="hljs-params">state: State, commit: Commit</span>): <span class="hljs-title">State</span> </span>{
+  <span class="hljs-keyword">switch</span> (commit.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Eye&apos;</span>:
+    <span class="hljs-keyword">return</span> {
+      ...state,
+      eye: EyeModel.reduce(state.eye, commit.commit),
+    };
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Movies&apos;</span>:
+    <span class="hljs-keyword">return</span> {
+      ...state,
+      movies: MoviesModel.reduce(state.movies, commit.commit),
+    };
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span> state;
+  }
+}
+</code></pre>
+<p>The state of the main application is a plain object with two fields containing the states of the <code>eye</code> component <em>and</em> of the <code>movies</code> component. A commit of the main application is either a commit for the <code>eye</code> component <em>or</em> for the <code>movies</code> component. The job of the reducer is to call the right sub-reducer on the right sub-state.</p>
+<h2 id="view">View</h2>
+<p>The main view includes the view of each sub-component.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// @flow</span>
+<span class="hljs-keyword">import</span> React, { PureComponent } <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;react&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> EyeController <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./eye/controller&apos;</span>;
+<span class="hljs-keyword">import</span> Eye <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./eye/view&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> MoviesController <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./movies/controller&apos;</span>;
+<span class="hljs-keyword">import</span> Movies <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./movies/view&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Controller <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./controller&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Model <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./model&apos;</span>;
+
+type Props = {
+  dispatch: (action: Controller.Action) =&gt; <span class="hljs-keyword">void</span>,
+  state: Model.State,
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Index</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">PureComponent</span>&lt;<span class="hljs-title">void</span>, <span class="hljs-title">Props</span>, <span class="hljs-title">void</span>&gt; </span>{
+  handleDispatchEye = (action: EyeController.Action): <span class="hljs-keyword">void</span> =&gt; {
+    <span class="hljs-keyword">this</span>.props.dispatch({type: <span class="hljs-string">&apos;Eye&apos;</span>, action});
+  };
+
+  handleDispatchMovies = (action: MoviesController.Action): <span class="hljs-keyword">void</span> =&gt; {
+    <span class="hljs-keyword">this</span>.props.dispatch({type: <span class="hljs-string">&apos;Movies&apos;</span>, action});
+  };
+
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;div&gt;
+        &lt;h1&gt;Eye&lt;/h1&gt;
+        &lt;Eye
+          dispatch={this.handleDispatchEye}
+          state={this.props.state.eye}
+        /&gt;
+        &lt;h1&gt;Movies&lt;/h1&gt;
+        &lt;Movies
+          dispatch={this.handleDispatchMovies}
+          state={this.props.state.movies}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+</code></pre>
+<p>The composition of the views is simplified by the use of React. However, we must be cautious to provide the correct <code>props</code> to the children components. We compute the <code>state</code> property by extracting the sub-state the component is interested in. We compute the <code>dispatch</code> property by lifting actions of the component to actions of the application. This brings use to the definition of the controller.</p>
+<h2 id="controller">Controller</h2>
+<p>We compose the controllers of <code>eye</code> and <code>movies</code> in one controller for the whole application:</p>
+<pre><code class="lang-js"><span class="hljs-comment">// @flow</span>
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Ship <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-ship&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> EyeController <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./eye/controller&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> MoviesController <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./movies/controller&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Model <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;./model&apos;</span>;
+
+<span class="hljs-keyword">export</span> type Action = {
+  type: <span class="hljs-string">&apos;Eye&apos;</span>,
+  action: EyeController.Action,
+} | {
+  type: <span class="hljs-string">&apos;Movies&apos;</span>,
+  action: MoviesController.Action,
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">control</span>(<span class="hljs-params">action: Action</span>): <span class="hljs-title">Ship</span>.<span class="hljs-title">Ship</span>&lt;*, <span class="hljs-title">Model</span>.<span class="hljs-title">Commit</span>, <span class="hljs-title">Model</span>.<span class="hljs-title">State</span>, <span class="hljs-title">void</span>&gt; </span>{
+  <span class="hljs-keyword">switch</span> (action.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Eye&apos;</span>:
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">yield</span>* Ship.map(
+      commit =&gt; ({type: <span class="hljs-string">&apos;Eye&apos;</span>, commit}),
+      state =&gt; state.eye,
+      EyeController.control(action.action)
+    );
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Movies&apos;</span>:
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">yield</span>* Ship.map(
+      commit =&gt; ({type: <span class="hljs-string">&apos;Movies&apos;</span>, commit}),
+      state =&gt; state.movies,
+      MoviesController.control(action.action)
+    );
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span>;
+  }
+}
+</code></pre>
+<p>We define an application action as being either an action for the <code>eye</code> component <em>or</em> an action for the <code>Movies</code> component. The <code>control</code> function takes care to dispatch the right action to the right sub-controller. Because the sub-controllers does not have access to the same state and patches, we need to wrap them with the <a href="https://clarus.github.io/redux-ship/docs/api.html" target="_blank"><code>Ship.map</code></a> primitive. Indeed, the ship:</p>
+<pre><code class="lang-js">EyeController.control(action.action)
+</code></pre>
+<p>is of type:</p>
+<pre><code class="lang-js">Ship.Ship&lt;*, EyeModel.Commit, EyeModel.State, <span class="hljs-keyword">void</span>&gt;
+</code></pre>
+<p>but we want to return a controller of the following type:</p>
+<pre><code class="lang-js">Ship.Ship&lt;*, Model.Commit, Model.State, <span class="hljs-keyword">void</span>&gt;
+</code></pre>
+<p>With the <code>Ship.map</code> primitive, we lift the <code>eye</code> controller to the right type:</p>
+<pre><code class="lang-js">Ship.map(
+  commit =&gt; ({type: <span class="hljs-string">&apos;Eye&apos;</span>, commit}),
+  state =&gt; state.eye,
+  EyeController.control(action.action)
+)
+</code></pre>
+<p>We declare:</p>
+<ul>
+<li>how to lift a commit of the <code>eye</code> controller to a commit of the application controller;</li>
+<li>how to extract the state of the <code>eye</code> controller from the state of the application controller.</li>
+</ul>
+<h2 id="snapshots">Snapshots</h2>
+<p>We get the following snapshot when clicking on the eye button:</p>
+<pre><code class="lang-js">[
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+    <span class="hljs-string">&quot;commit&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>,
+      <span class="hljs-string">&quot;commit&quot;</span>: {
+        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadStart&quot;</span>
+      }
+    }
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>,
+    <span class="hljs-string">&quot;effect&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>,
+      <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://swapi.co/api/people/3/&quot;</span>
+    },
+    <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;http://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;http://swapi.co/api/films/5/\&quot;,\&quot;http://swapi.co/api/films/4/\&quot;,\&quot;http://swapi.co/api/films/6/\&quot;,\&quot;http://swapi.co/api/films/3/\&quot;,\&quot;http://swapi.co/api/films/2/\&quot;,\&quot;http://swapi.co/api/films/1/\&quot;,\&quot;http://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;http://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;http://swapi.co/api/people/3/\&quot;}&quot;</span>
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+    <span class="hljs-string">&quot;commit&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>,
+      <span class="hljs-string">&quot;commit&quot;</span>: {
+        <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadSuccess&quot;</span>,
+        <span class="hljs-string">&quot;color&quot;</span>: <span class="hljs-string">&quot;red&quot;</span>
+      }
+    }
+  }
+]
+</code></pre>
+<p>The <code>&quot;type&quot;: &quot;Effect&quot;</code> event is not changed by the composition. We can see that the <code>&quot;type&quot;: &quot;Commit&quot;</code> events originate from the <code>eye</code> controller thanks to the <code>&quot;type&quot;: &quot;Eye&quot;</code> field.</p>
+<h2 id="what-we-gain">What we gain</h2>
+<p>By composing components in this way, we get isolated components which help reusability. As an illustration, the <code>eye</code> controller only knows about the <code>eye</code> state and the <code>eye</code> patches, so we are sure it cannot interact with other elements. We did compose the <code>eye</code> controller with the <code>movies</code> controller, but we could as well compose the <code>eye</code> controller with... itself:</p>
+<pre><code class="lang-js"><span class="hljs-comment">// model.js</span>
+<span class="hljs-keyword">export</span> type State = {
+  first: EyeModel.State,
+  second: EyeModel.State,
+};
+
+<span class="hljs-keyword">export</span> type Commit = {
+  type: <span class="hljs-string">&apos;First&apos;</span>,
+  commit: EyeModel.Commit,
+} | {
+  type: <span class="hljs-string">&apos;Second&apos;</span>,
+  commit: EyeModel.Commit,
+};
+
+<span class="hljs-comment">// controller.js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">control</span>(<span class="hljs-params">action: Action</span>): <span class="hljs-title">Ship</span>.<span class="hljs-title">Ship</span>&lt;*, <span class="hljs-title">Model</span>.<span class="hljs-title">Commit</span>, <span class="hljs-title">Model</span>.<span class="hljs-title">State</span>, <span class="hljs-title">void</span>&gt; </span>{
+  <span class="hljs-keyword">switch</span> (action.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;First&apos;</span>:
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">yield</span>* Ship.map(
+      commit =&gt; ({type: <span class="hljs-string">&apos;First&apos;</span>, commit}),
+      state =&gt; state.first,
+      EyeController.control(action.action)
+    );
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Second&apos;</span>:
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">yield</span>* Ship.map(
+      commit =&gt; ({type: <span class="hljs-string">&apos;Second&apos;</span>, commit}),
+      state =&gt; state.second,
+      MoviesController.control(action.action)
+    );
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span>;
+  }
+}
+</code></pre>
+<p>This is important because a component (like a form input with auto-complete) may appear several times in one web page.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="http-request.html" class="navigation navigation-prev " aria-label="Previous page: HTTP Request">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="testing.html" class="navigation navigation-next " aria-label="Next page: Testing">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Composition","level":"1.2.3","depth":2,"next":{"title":"Testing","level":"1.2.4","depth":2,"path":"docs/tutorial/testing.md","ref":"docs/tutorial/testing.md","articles":[]},"previous":{"title":"HTTP Request","level":"1.2.2","depth":2,"path":"docs/tutorial/http-request.md","ref":"docs/tutorial/http-request.md","articles":[]},"dir":"ltr"},"config":{"plugins":["github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/clarus/redux-ship"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux Ship","gitbook":"*"},"file":{"path":"docs/tutorial/composition.md","mtime":"2017-10-29T15:01:15.589Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-10-29T17:13:42.435Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

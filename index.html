@@ -1,0 +1,439 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Read Me · Redux Ship</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="docs/tutorial/" />
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter active" data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Read Me
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="docs/tutorial/">
+            
+                <a href="docs/tutorial/">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="docs/tutorial/counter.html">
+            
+                <a href="docs/tutorial/counter.html">
+            
+                    
+                    Counter
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="docs/tutorial/http-request.html">
+            
+                <a href="docs/tutorial/http-request.html">
+            
+                    
+                    HTTP Request
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="docs/tutorial/composition.html">
+            
+                <a href="docs/tutorial/composition.html">
+            
+                    
+                    Composition
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="docs/tutorial/testing.html">
+            
+                <a href="docs/tutorial/testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="docs/api.html">
+            
+                <a href="docs/api.html">
+            
+                    
+                    API Reference
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Read Me</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="redux-ship"><img src="https://raw.githubusercontent.com/clarus/icons/master/rocket-48.png" alt="Logo"> Redux Ship</h1>
+<blockquote>
+<p>Side effects with snapshots for Redux.</p>
+</blockquote>
+<p><a href="https://travis-ci.org/clarus/redux-ship" target="_blank"><img src="https://img.shields.io/travis/clarus/redux-ship/master.svg?label=travis-ci" alt="travis status"></a>
+<a href="https://ci.appveyor.com/project/clarus/redux-ship" target="_blank"><img src="https://img.shields.io/appveyor/ci/clarus/redux-ship.svg?label=app-veyor" alt="appveyor status"></a>
+<a href="https://www.npmjs.com/package/redux-ship" target="_blank"><img src="https://img.shields.io/npm/v/redux-ship.svg" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/redux-ship" target="_blank"><img src="https://img.shields.io/npm/dm/redux-ship.svg" alt="npm downloads"></a></p>
+<p>Redux Ship is a side effects handler for <a href="https://github.com/reactjs/redux" target="_blank">Redux</a> with a built-in system of <strong>snapshots</strong> for:</p>
+<ul>
+<li><strong>live debugging</strong> thanks to a graphical visualization of the side effects;</li>
+<li>simpler <strong>unit tests</strong> with snapshot testing.</li>
+</ul>
+<p>The key insight is to use generators to serialize all the side effects, including the control flow of the code, using the approach of <em>free monads</em>. Additionally, we provide a <strong>composition mechanism</strong> of sub-stores with effects and <strong>full typing</strong> (for now only in <a href="https://flow.org/" target="_blank">Flow</a>).</p>
+<h2 id="install">Install</h2>
+<pre><code>npm install --save redux-ship
+</code></pre><h2 id="documentation">Documentation</h2>
+<ul>
+<li><a href="https://clarus.github.io/redux-ship/docs/tutorial/" target="_blank">Tutorial</a></li>
+<li><a href="https://clarus.github.io/redux-ship/docs/api.html" target="_blank">API Reference</a></li>
+</ul>
+<h2 id="example">Example</h2>
+<p>Get the movies of R2D2 using the <a href="https://swapi.co/" target="_blank">StarWars API</a>:</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Check if we already have the list of movies in the Redux store.</span>
+<span class="hljs-keyword">const</span> currentMovies = <span class="hljs-keyword">yield</span>* Ship.getState(state =&gt; state.movies);
+<span class="hljs-keyword">if</span> (!currentMovies) {
+  <span class="hljs-comment">// If not, notify Redux that we start loading the movies.</span>
+  <span class="hljs-keyword">yield</span>* Ship.commit({type: <span class="hljs-string">&apos;LoadStart&apos;</span>});
+  <span class="hljs-comment">// Get the description of R2D2 with an API call.</span>
+  <span class="hljs-keyword">const</span> r2d2 = <span class="hljs-keyword">yield</span>* Effect.httpRequest(<span class="hljs-string">&apos;https://swapi.co/api/people/3/&apos;</span>);
+  <span class="hljs-comment">// For each movie of R2D2:</span>
+  <span class="hljs-keyword">const</span> movies = <span class="hljs-keyword">yield</span>* Ship.all(<span class="hljs-built_in">JSON</span>.parse(r2d2).films.map(<span class="hljs-function"><span class="hljs-keyword">function</span>* (<span class="hljs-params">movieUrl</span>) </span>{
+    <span class="hljs-comment">// Get the movie title with an API call.</span>
+    <span class="hljs-keyword">const</span> movie = <span class="hljs-keyword">yield</span>* Effect.httpRequest(movieUrl);
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.parse(movie).title;
+  }));
+  <span class="hljs-comment">// Write the list of movies in the Redux store.</span>
+  <span class="hljs-keyword">yield</span>* Ship.commit({type: <span class="hljs-string">&apos;LoadSuccess&apos;</span>, movies});
+}
+</code></pre>
+<p>With the <a href="https://github.com/clarus/redux-ship-devtools" target="_blank">Redux Ship devtools</a> we see the following snapshot of the execution:
+<img src="docs/snapshot.png" alt="Snapshot"></p>
+<p>This shows us that we:</p>
+<ul>
+<li>access the Redux state;</li>
+<li>dispatch the action <code>LoadStart</code>;</li>
+<li>make an HTTP call;</li>
+<li>make seven HTTP calls in parallel (to get the movie titles);</li>
+<li>dispatch the action <code>LoadSuccess</code>.</li>
+</ul>
+<p>Even without reading the code we get a sense of what the application does. By clicking on each pill we see the details of each element, like:</p>
+<ul>
+<li>an access to a value in the store:</li>
+</ul>
+<p><img src="docs/snapshot-get-state.png" alt="snapshot-get-state"></p>
+<ul>
+<li>a dispatch of an action to the store:</li>
+</ul>
+<p><img src="docs/snapshot-load-success.png" alt="snapshot-load-success"></p>
+<ul>
+<li>an other side effect (API call, cookies update, ...) with the effect and its result:</li>
+</ul>
+<p><img src="docs/snapshot-http-request.png" alt="snapshot-http-request"></p>
+<p>We also get a serialized snapshot, directly usable to make a unit test:</p>
+<pre><code class="lang-js">[
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;GetState&quot;</span>,
+    <span class="hljs-string">&quot;state&quot;</span>: <span class="hljs-literal">null</span>
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+    <span class="hljs-string">&quot;commit&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadStart&quot;</span>
+    }
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>,
+    <span class="hljs-string">&quot;effect&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>,
+      <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;https://swapi.co/api/people/3/&quot;</span>
+    },
+    <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;https://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;https://swapi.co/api/films/2/\&quot;,\&quot;https://swapi.co/api/films/5/\&quot;,\&quot;https://swapi.co/api/films/4/\&quot;,\&quot;https://swapi.co/api/films/6/\&quot;,\&quot;https://swapi.co/api/films/3/\&quot;,\&quot;https://swapi.co/api/films/1/\&quot;,\&quot;https://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;https://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;https://swapi.co/api/people/3/\&quot;}&quot;</span>
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;All&quot;</span>,
+    <span class="hljs-string">&quot;snapshots&quot;</span>: [
+      [
+        {
+          <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>,
+          <span class="hljs-string">&quot;effect&quot;</span>: {
+            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>,
+            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;https://swapi.co/api/films/2/&quot;</span>
+          },
+          <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;title\&quot;:\&quot;The Empire Strikes Back\&quot;,\&quot;episode_id\&quot;:5,\&quot;opening_crawl\&quot;:\&quot;It is a dark time for the\\r\\nRebellion. Although the Death\\r\\nStar has been destroyed,\\r\\nImperial troops have driven the\\r\\nRebel forces from their hidden\\r\\nbase and pursued them across\\r\\nthe galaxy.\\r\\n\\r\\nEvading the dreaded Imperial\\r\\nStarfleet, a group of freedom\\r\\nfighters led by Luke Skywalker\\r\\nhas established a new secret\\r\\nbase on the remote ice world\\r\\nof Hoth.\\r\\n\\r\\nThe evil lord Darth Vader,\\r\\nobsessed with finding young\\r\\nSkywalker, has dispatched\\r\\nthousands of remote probes into\\r\\nthe far reaches of space....\&quot;,\&quot;director\&quot;:\&quot;Irvin Kershner\&quot;,\&quot;producer\&quot;:\&quot;Gary Kurtz, Rick McCallum\&quot;,\&quot;release_date\&quot;:\&quot;1980-05-17\&quot;,\&quot;characters\&quot;:[\&quot;https://swapi.co/api/people/1/\&quot;,\&quot;https://swapi.co/api/people/2/\&quot;,\&quot;https://swapi.co/api/people/3/\&quot;,\&quot;https://swapi.co/api/people/4/\&quot;,\&quot;https://swapi.co/api/people/5/\&quot;,\&quot;https://swapi.co/api/people/10/\&quot;,\&quot;https://swapi.co/api/people/13/\&quot;,\&quot;https://swapi.co/api/people/14/\&quot;,\&quot;https://swapi.co/api/people/18/\&quot;,\&quot;https://swapi.co/api/people/20/\&quot;,\&quot;https://swapi.co/api/people/21/\&quot;,\&quot;https://swapi.co/api/people/22/\&quot;,\&quot;https://swapi.co/api/people/23/\&quot;,\&quot;https://swapi.co/api/people/24/\&quot;,\&quot;https://swapi.co/api/people/25/\&quot;,\&quot;https://swapi.co/api/people/26/\&quot;],\&quot;planets\&quot;:[\&quot;https://swapi.co/api/planets/4/\&quot;,\&quot;https://swapi.co/api/planets/5/\&quot;,\&quot;https://swapi.co/api/planets/6/\&quot;,\&quot;https://swapi.co/api/planets/27/\&quot;],\&quot;starships\&quot;:[\&quot;https://swapi.co/api/starships/15/\&quot;,\&quot;https://swapi.co/api/starships/10/\&quot;,\&quot;https://swapi.co/api/starships/11/\&quot;,\&quot;https://swapi.co/api/starships/12/\&quot;,\&quot;https://swapi.co/api/starships/21/\&quot;,\&quot;https://swapi.co/api/starships/22/\&quot;,\&quot;https://swapi.co/api/starships/23/\&quot;,\&quot;https://swapi.co/api/starships/3/\&quot;,\&quot;https://swapi.co/api/starships/17/\&quot;],\&quot;vehicles\&quot;:[\&quot;https://swapi.co/api/vehicles/8/\&quot;,\&quot;https://swapi.co/api/vehicles/14/\&quot;,\&quot;https://swapi.co/api/vehicles/16/\&quot;,\&quot;https://swapi.co/api/vehicles/18/\&quot;,\&quot;https://swapi.co/api/vehicles/19/\&quot;,\&quot;https://swapi.co/api/vehicles/20/\&quot;],\&quot;species\&quot;:[\&quot;https://swapi.co/api/species/6/\&quot;,\&quot;https://swapi.co/api/species/7/\&quot;,\&quot;https://swapi.co/api/species/3/\&quot;,\&quot;https://swapi.co/api/species/2/\&quot;,\&quot;https://swapi.co/api/species/1/\&quot;],\&quot;created\&quot;:\&quot;2014-12-12T11:26:24.656000Z\&quot;,\&quot;edited\&quot;:\&quot;2017-04-19T10:57:29.544256Z\&quot;,\&quot;url\&quot;:\&quot;https://swapi.co/api/films/2/\&quot;}&quot;</span>
+        }
+      ],
+      [
+        {
+          <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>,
+          <span class="hljs-string">&quot;effect&quot;</span>: {
+            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>,
+            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;https://swapi.co/api/films/7/&quot;</span>
+          },
+          <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;title\&quot;:\&quot;The Force Awakens\&quot;,\&quot;episode_id\&quot;:7,\&quot;opening_crawl\&quot;:\&quot;Luke Skywalker has vanished.\\r\\nIn his absence, the sinister\\r\\nFIRST ORDER has risen from\\r\\nthe ashes of the Empire\\r\\nand will not rest until\\r\\nSkywalker, the last Jedi,\\r\\nhas been destroyed.\\r\\n \\r\\nWith the support of the\\r\\nREPUBLIC, General Leia Organa\\r\\nleads a brave RESISTANCE.\\r\\nShe is desperate to find her\\r\\nbrother Luke and gain his\\r\\nhelp in restoring peace and\\r\\njustice to the galaxy.\\r\\n \\r\\nLeia has sent her most daring\\r\\npilot on a secret mission\\r\\nto Jakku, where an old ally\\r\\nhas discovered a clue to\\r\\nLuke&apos;s whereabouts....\&quot;,\&quot;director\&quot;:\&quot;J. J. Abrams\&quot;,\&quot;producer\&quot;:\&quot;Kathleen Kennedy, J. J. Abrams, Bryan Burk\&quot;,\&quot;release_date\&quot;:\&quot;2015-12-11\&quot;,\&quot;characters\&quot;:[\&quot;https://swapi.co/api/people/1/\&quot;,\&quot;https://swapi.co/api/people/3/\&quot;,\&quot;https://swapi.co/api/people/5/\&quot;,\&quot;https://swapi.co/api/people/13/\&quot;,\&quot;https://swapi.co/api/people/14/\&quot;,\&quot;https://swapi.co/api/people/27/\&quot;,\&quot;https://swapi.co/api/people/84/\&quot;,\&quot;https://swapi.co/api/people/85/\&quot;,\&quot;https://swapi.co/api/people/86/\&quot;,\&quot;https://swapi.co/api/people/87/\&quot;,\&quot;https://swapi.co/api/people/88/\&quot;],\&quot;planets\&quot;:[\&quot;https://swapi.co/api/planets/61/\&quot;],\&quot;starships\&quot;:[\&quot;https://swapi.co/api/starships/77/\&quot;,\&quot;https://swapi.co/api/starships/10/\&quot;],\&quot;vehicles\&quot;:[],\&quot;species\&quot;:[\&quot;https://swapi.co/api/species/3/\&quot;,\&quot;https://swapi.co/api/species/2/\&quot;,\&quot;https://swapi.co/api/species/1/\&quot;],\&quot;created\&quot;:\&quot;2015-04-17T06:51:30.504780Z\&quot;,\&quot;edited\&quot;:\&quot;2015-12-17T14:31:47.617768Z\&quot;,\&quot;url\&quot;:\&quot;https://swapi.co/api/films/7/\&quot;}&quot;</span>
+        }
+      ],
+      [...] <span class="hljs-comment">// other API calls</span>
+    ]
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+    <span class="hljs-string">&quot;commit&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadSuccess&quot;</span>,
+      <span class="hljs-string">&quot;movies&quot;</span>: [
+        <span class="hljs-string">&quot;The Empire Strikes Back&quot;</span>,
+        <span class="hljs-string">&quot;Attack of the Clones&quot;</span>,
+        <span class="hljs-string">&quot;The Phantom Menace&quot;</span>,
+        <span class="hljs-string">&quot;Revenge of the Sith&quot;</span>,
+        <span class="hljs-string">&quot;Return of the Jedi&quot;</span>,
+        <span class="hljs-string">&quot;A New Hope&quot;</span>,
+        <span class="hljs-string">&quot;The Force Awakens&quot;</span>
+      ]
+    }
+  }
+]
+</code></pre>
+<h2 id="license">License</h2>
+<p>MIT</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                
+                <a href="docs/tutorial/" class="navigation navigation-next navigation-unique" aria-label="Next page: Tutorial">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Read Me","level":"1.1","depth":1,"next":{"title":"Tutorial","level":"1.2","depth":1,"path":"docs/tutorial/README.md","ref":"docs/tutorial/README.md","articles":[{"title":"Counter","level":"1.2.1","depth":2,"path":"docs/tutorial/counter.md","ref":"docs/tutorial/counter.md","articles":[]},{"title":"HTTP Request","level":"1.2.2","depth":2,"path":"docs/tutorial/http-request.md","ref":"docs/tutorial/http-request.md","articles":[]},{"title":"Composition","level":"1.2.3","depth":2,"path":"docs/tutorial/composition.md","ref":"docs/tutorial/composition.md","articles":[]},{"title":"Testing","level":"1.2.4","depth":2,"path":"docs/tutorial/testing.md","ref":"docs/tutorial/testing.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/clarus/redux-ship"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux Ship","gitbook":"*"},"file":{"path":"README.md","mtime":"2017-10-29T15:01:15.585Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-10-29T17:13:42.435Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

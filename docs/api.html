@@ -1,0 +1,582 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>API Reference · Redux Ship</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="tutorial/testing.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Read Me
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="tutorial/">
+            
+                <a href="tutorial/">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="tutorial/counter.html">
+            
+                <a href="tutorial/counter.html">
+            
+                    
+                    Counter
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="tutorial/http-request.html">
+            
+                <a href="tutorial/http-request.html">
+            
+                    
+                    HTTP Request
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="tutorial/composition.html">
+            
+                <a href="tutorial/composition.html">
+            
+                    
+                    Composition
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="tutorial/testing.html">
+            
+                <a href="tutorial/testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3" data-path="api.html">
+            
+                <a href="api.html">
+            
+                    
+                    API Reference
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >API Reference</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="api-reference">API Reference</h1>
+<ul>
+<li><a href="#shipeffect-commit-state-a"><code>Ship&lt;Effect, Commit, State, A&gt;</code></a></li>
+<li><a href="#snapshoteffect-commit"><code>Snapshot&lt;Effect, Commit&gt;</code></a></li>
+<li><a href="#all"><code>all</code></a></li>
+<li><a href="#call"><code>call</code></a></li>
+<li><a href="#commit"><code>commit</code></a></li>
+<li><a href="#getstate"><code>getState</code></a></li>
+<li><a href="#map"><code>map</code></a></li>
+<li><a href="#middleware"><code>middleware</code></a></li>
+<li><a href="#run"><code>run</code></a></li>
+<li><a href="#simulate"><code>simulate</code></a></li>
+<li><a href="#snap"><code>snap</code></a></li>
+</ul>
+<h2 id="shipeffect-commit-state-a"><code>Ship&lt;Effect, Commit, State, A&gt;</code></h2>
+<p>The type of a ship. A ship is a generator and can be defined using the <code>function*</code> syntax.</p>
+<ul>
+<li><code>Effect</code> the type of the side effects the ship can call. We often use a single <code>Effect</code> type for a whole program</li>
+<li><code>Commit</code> the type of the commits the ship can commit</li>
+<li><code>State</code> the type of the state as visible from the ship</li>
+<li><code>A</code> the type of the value returned by the ship (often <code>void</code>)</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>A controller to load a random gif:
+export function* control(action: Action): Ship.Ship<effect, commit,="" state,="" void=""> {</effect,></p>
+<pre><code class="lang-js">  <span class="hljs-keyword">switch</span> (action.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Load&apos;</span>: {
+    <span class="hljs-keyword">yield</span>* Ship.commit({
+      type: <span class="hljs-string">&apos;LoadStart&apos;</span>,
+    });
+    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">yield</span>* Effect.httpRequest(
+      <span class="hljs-string">`http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&amp;tag=<span class="hljs-subst">${action.tag}</span>`</span>
+    );
+    <span class="hljs-keyword">const</span> gifUrl: string = <span class="hljs-built_in">JSON</span>.parse(result).data.image_url;
+    <span class="hljs-keyword">yield</span>* Ship.commit({
+      type: <span class="hljs-string">&apos;LoadSuccess&apos;</span>,
+      gifUrl,
+    });
+    <span class="hljs-keyword">return</span>;
+  }
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span>;
+  }
+}
+</code></pre>
+<h2 id="snapshoteffect-commit"><code>Snapshot&lt;Effect, Commit&gt;</code></h2>
+<p>The type of the snapshot of an execution of a ship. A snapshot includes the side effects ran by a ship, as well as their execution order (sequential or concurrent). You can take a snapshot with the <a href="https://github.com/clarus/redux-ship-logger" target="_blank">redux-ship-logger</a> dev tools or with the <a href="#snap"><code>snap</code></a> function.</p>
+<ul>
+<li><code>Effect</code> the type of effects in the snapshot</li>
+<li><code>Commit</code> the type of commits in the snapshot</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>The snapshot of a controller loading a random gif:</p>
+<pre><code class="lang-js">[
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+    <span class="hljs-string">&quot;commit&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadStart&quot;</span>
+    }
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>,
+    <span class="hljs-string">&quot;effect&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>,
+      <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&amp;tag=minion&quot;</span>
+    },
+    <span class="hljs-string">&quot;result&quot;</span>: [...]
+  },
+  {
+    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+    <span class="hljs-string">&quot;commit&quot;</span>: {
+      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadSuccess&quot;</span>,
+      <span class="hljs-string">&quot;gifUrl&quot;</span>: <span class="hljs-string">&quot;http://media3.giphy.com/media/HyanD1KpfzPiw/giphy.gif&quot;</span>
+    }
+  }
+]
+</code></pre>
+<h2 id="all"><code>all</code></h2>
+<pre><code class="lang-js">all&lt;Effect, Commit, State, A&gt;(
+  ships: Ship&lt;Effect, Commit, State, A&gt;[]
+): Ship&lt;Effect, Commit, State, A[]&gt;
+</code></pre>
+<p>Returns the array of results of the <code>ships</code> by running them in parallel. This is the equivalent of <code>Promise.all</code> in Ship.</p>
+<ul>
+<li><code>ships</code> an array of ships to execute concurrently</li>
+</ul>
+<p>If you have a fixed number of tasks with different types of result to run in parallel, use:</p>
+<pre><code class="lang-js">all2(ship1, ship2)
+all3(ship1, ship2, ship3)
+...
+all7(ship1, ship2, ship3, ship4, ship5, ship6, ship7)
+</code></pre>
+<p>The result type is a tuple with the same types as the arguments:</p>
+<pre><code class="lang-js">all3&lt;Effect, Commit, State, A1, A2, A3&gt;(
+  ship1: Ship&lt;Effect, Commit, State, A1&gt;,
+  ship2: Ship&lt;Effect, Commit, State, A2&gt;,
+  ship3: Ship&lt;Effect, Commit, State, A3&gt;
+): Ship&lt;Effect, Commit, State, [A1, A2, A3]&gt;
+</code></pre>
+<h3 id="example">Example</h3>
+<p>To concurrently get three random gifs:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> gifUrls = <span class="hljs-keyword">yield</span>* Ship.all([<span class="hljs-string">&apos;cat&apos;</span>, <span class="hljs-string">&apos;minion&apos;</span>, <span class="hljs-string">&apos;dog&apos;</span>].map(<span class="hljs-function"><span class="hljs-keyword">function</span>* (<span class="hljs-params">tag</span>) </span>{
+  <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">yield</span>* Effect.httpRequest(
+    <span class="hljs-string">`http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&amp;tag=<span class="hljs-subst">${tag}</span>`</span>
+  );
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.parse(result).data.image_url;
+}));
+</code></pre>
+<h2 id="call"><code>call</code></h2>
+<pre><code class="lang-js">call&lt;Effect, Commit, State&gt;(
+  effect: Effect
+): Ship&lt;Effect, Commit, State, any&gt;
+</code></pre>
+<p>Calls the serialized effect <code>effect</code>. The type of the result is <code>any</code> because it depends on the value of the effect, which is only known at runtime.</p>
+<ul>
+<li><code>effect</code> the effect to call</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>To prevent type errors, we recommend to wrap your calls to <code>call</code> with one wrapper per kind of effect. For example, if you have an effect <code>HttpRequest</code> which always returns a <code>string</code>:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">httpRequest</span>&lt;<span class="hljs-title">Commit</span>, <span class="hljs-title">State</span>&gt;(<span class="hljs-params">url: string</span>): <span class="hljs-title">Ship</span>&lt;<span class="hljs-title">Effect</span>, <span class="hljs-title">Commit</span>, <span class="hljs-title">State</span>, <span class="hljs-title">string</span>&gt; </span>{
+  <span class="hljs-keyword">return</span> Ship.call({
+    type: <span class="hljs-string">&apos;HttpRequest&apos;</span>,
+    url,
+  });
+}
+</code></pre>
+<h2 id="commit"><code>commit</code></h2>
+<pre><code class="lang-js">commit&lt;Effect, Commit, State&gt;(
+  commit: Commit
+): Ship&lt;Effect, Commit, State, <span class="hljs-keyword">void</span>&gt;
+</code></pre>
+<p>Commits a commit of type <code>Commit</code> and waits for its termination.</p>
+<ul>
+<li><code>commit</code> the commit to apply</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>To commit the result of a successful HTTP request:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">yield</span>* Ship.commit({
+  type: <span class="hljs-string">&apos;LoadSuccess&apos;</span>,
+  gifUrl,
+});
+</code></pre>
+<h2 id="getstate"><code>getState</code></h2>
+<pre><code class="lang-js">getState&lt;Effect, Commit, State, A&gt;(
+  selector: (state: State) =&gt; A
+): Ship&lt;Effect, Commit, State, A&gt;
+</code></pre>
+<p>Returns a part of the current state by applying a selector.</p>
+<ul>
+<li><code>selector</code> a selector to extract the useful part of the current state</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>To get the current gif in the store:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> currentGif = <span class="hljs-keyword">yield</span>* Ship.getState(state =&gt; state.randomGif.gifUrl);
+</code></pre>
+<h2 id="map"><code>map</code></h2>
+<pre><code class="lang-js">map&lt;Effect, SubCommit, SubState, Commit, State, A&gt;(
+  liftCommit: (subCommit: SubCommit) =&gt; Commit,
+  extractState: (state: State) =&gt; SubState,
+  ship: Ship&lt;Effect, SubCommit, SubState, A&gt;
+): Ship&lt;Effect, Commit, State, A&gt;
+</code></pre>
+<p>A function useful to compose nested components. Lifts a <code>ship</code> with access to &quot;small set&quot; of commits <code>SubCommit</code> and a &quot;small set&quot; of states <code>SubState</code> to a ship with access to the &quot;larger sets&quot; <code>Commit</code> and <code>State</code>.</p>
+<ul>
+<li><code>liftCommit</code> lifts a sub-commit to a commit</li>
+<li><code>extractState</code> extract a sub-state from a state</li>
+<li><code>ship</code> the ship to map</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>To embed a controller retrieving one random gif into a controller retrieving two random gifs:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">return</span> <span class="hljs-keyword">yield</span>* Ship.map(
+  commit =&gt; ({type: <span class="hljs-string">&apos;First&apos;</span>, commit}),
+  state =&gt; state.first,
+  RandomGifController.control(action.action)
+);
+</code></pre>
+<h2 id="middleware"><code>middleware</code></h2>
+<pre><code class="lang-js">middleware&lt;Action, Effect, Commit, State&gt;(
+  runEffect: (effect: Effect) =&gt; any | <span class="hljs-built_in">Promise</span>&lt;any&gt;,
+  control: (action: Action) =&gt; Ship&lt;Effect, Commit, State, <span class="hljs-keyword">void</span>&gt;
+): ReduxMiddleware
+</code></pre>
+<p>Returns a <a href="http://redux.js.org/docs/advanced/Middleware.html" target="_blank">Redux middleware</a> to connect Redux Ship to Redux.</p>
+<ul>
+<li><code>runEffect</code> the function to evaluate a serialized side effect (may return a promise for asynchronous effects)</li>
+<li><code>control</code> the function to evaluate an <code>action</code> with a ship</li>
+</ul>
+<p>The Ship middleware eats all actions: it does not let actions propagate to the next middleware. If you want an action to propagate use <code>Ship.commit</code> explicitly.</p>
+<p>When a <code>Ship.commit</code> occurs, the commit is dispatched to the <em>next</em> middleware rather than to the whole middleware chain. This is so to prevent loops of commits. Thus, this is not possible to call another ship with <code>Ship.commit</code>. Instead, use the <code>yield*</code> keyword to directly call the corresponding ship.</p>
+<h3 id="example">Example</h3>
+<pre><code class="lang-js"><span class="hljs-keyword">import</span> {applyMiddleware, createStore} <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux&apos;</span>;
+
+<span class="hljs-keyword">const</span> middlewares = [
+  Ship.middleware(runEffect, control),
+  otherMiddleware
+];
+
+<span class="hljs-keyword">const</span> store = createStore(reduce, initialState, applyMiddleware(...middlewares));
+</code></pre>
+<h2 id="run"><code>run</code></h2>
+<pre><code class="lang-js">run&lt;Effect, Commit, State, A&gt;(
+  runEffect: (effect: Effect) =&gt; any | <span class="hljs-built_in">Promise</span>&lt;any&gt;,
+  store: {
+    dispatch: (commit: Commit) =&gt; <span class="hljs-keyword">void</span> | <span class="hljs-built_in">Promise</span>&lt;<span class="hljs-keyword">void</span>&gt;,
+    getState: () =&gt; State
+  },
+  ship: Ship&lt;Effect, Commit, State, A&gt;
+): <span class="hljs-built_in">Promise</span>&lt;A&gt;
+</code></pre>
+<p>Runs a ship and its side effects by evaluating each primitive effect with <code>runEffect</code> and interpreting each call to Redux with the <code>store</code>.</p>
+<ul>
+<li><code>runEffect</code> the function to evaluate a serialized side effect (may return a promise for asynchronous effects)</li>
+<li><code>store</code> the current Redux store</li>
+<li><code>ship</code> the ship to execute</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>To run Redux Ship with a Redux store <code>store</code>, you can do:</p>
+<pre><code class="lang-js">Ship.run(runEffect, store, ship);
+</code></pre>
+<p>where <code>runEffect</code> is your function to evaluate your side effects:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">export</span> type Effect = {
+  type: <span class="hljs-string">&apos;HttpRequest&apos;</span>,
+  url: string,
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">runEffect</span>(<span class="hljs-params">effect: Effect</span>): <span class="hljs-title">Promise</span>&lt;<span class="hljs-title">any</span>&gt; </span>{
+  <span class="hljs-keyword">switch</span> (effect.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;HttpRequest&apos;</span>: {
+    <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> fetch(effect.url);
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> response.text();
+  }
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span>;
+  }
+}
+</code></pre>
+<h2 id="simulate"><code>simulate</code></h2>
+<pre><code class="lang-js">simulate&lt;Effect, Commit, State, A&gt;(
+  ship: Ship&lt;Effect, Commit, State, A&gt;,
+  snapshot: Snapshot&lt;Effect, Commit&gt;
+): Snapshot&lt;Effect, Commit&gt;
+</code></pre>
+<p>Simulates a <code>ship</code> in the context of a <code>snapshot</code> and returns the snapshot of the simulation. A simulation is a purely functional (with no side effects) execution of a ship. Useful for regression testing.</p>
+<ul>
+<li><code>ship</code> the ship to simulate</li>
+<li><code>snapshot</code> a snapshot of a previous execution of the ship</li>
+</ul>
+<p>To simulate a ship, we need a snapshot of a previous live execution because there are many ways to execute a ship. For example, if the ship starts an API request, we do not know which API answer to provide. In this case, we use a snapshot which already contains an API answer. Since the simulation always gives the same API answers as in the snapshot, the <code>ship</code> should behave the same as when its snapshot was taken. In particular, the result of <code>simulate</code> should be equal to <code>snapshot</code>, unless the implementation of <code>ship</code> had a regression since its snapshot was taken.</p>
+<h3 id="example">Example</h3>
+<p>In a unit test of a controller:</p>
+<pre><code class="lang-js">expect(Ship.simulate(control(action), snapshot)).toEqual(snapshot);
+</code></pre>
+<h2 id="snap"><code>snap</code></h2>
+<pre><code class="lang-js">snap&lt;Effect, Commit, State, A&gt;(
+  ship: Ship&lt;Effect, Commit, State, A&gt;
+): Ship&lt;Effect, Commit, State, {
+  result: A,
+  snapshot: Snapshot&lt;Effect, Commit&gt;
+}&gt;
+</code></pre>
+<p>Returns a ship behaving as <code>ship</code> but taking the snapshot of its own execution.</p>
+<ul>
+<li><code>ship</code> the ship to take in picture</li>
+</ul>
+<h3 id="example">Example</h3>
+<p>To take the snapshot of a ship:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> {result, snapshot} = <span class="hljs-keyword">yield</span>* Ship.snap(ship);
+</code></pre>
+<p>To take the snapshot of a controller (the <code>result</code> should always be <code>undefined</code>):</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> {snapshot} = <span class="hljs-keyword">yield</span>* Ship.snap(control(action));
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="tutorial/testing.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Testing">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"API Reference","level":"1.3","depth":1,"previous":{"title":"Testing","level":"1.2.4","depth":2,"path":"docs/tutorial/testing.md","ref":"docs/tutorial/testing.md","articles":[]},"dir":"ltr"},"config":{"plugins":["github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/clarus/redux-ship"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux Ship","gitbook":"*"},"file":{"path":"docs/api.md","mtime":"2017-10-29T17:12:23.764Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-10-29T17:13:42.435Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

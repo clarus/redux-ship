@@ -1,0 +1,555 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Testing · Redux Ship</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../api.html" />
+    
+    
+    <link rel="prev" href="composition.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Read Me
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="counter.html">
+            
+                <a href="counter.html">
+            
+                    
+                    Counter
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="http-request.html">
+            
+                <a href="http-request.html">
+            
+                    
+                    HTTP Request
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="composition.html">
+            
+                <a href="composition.html">
+            
+                    
+                    Composition
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.4" data-path="testing.html">
+            
+                <a href="testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../api.html">
+            
+                <a href="../api.html">
+            
+                    
+                    API Reference
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Testing</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="testing">Testing</h1>
+<p>In Redux Ship the testing of side effects is central, as effectful funtions are often where critical operations happen. The main idea is to use snapshot testing to simplify and automate the creation of tests. The two involved primitives are:</p>
+<ul>
+<li><code>Ship.snap</code> to take the snapshot of a full execution trace;</li>
+<li><code>Ship.simulate</code> to simulate a ship against an existing snapshot.</li>
+</ul>
+<p>We present three kinds of snapshot testing with Redux Ship and the <a href="https://facebook.github.io/jest/" target="_blank">Jest</a> test runner. Use the method which better fits your needs.</p>
+<p><img src="https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/testing.png" alt="Screenshot" width="350px"></p>
+<ul>
+<li><a href="#test-by-live-snapshots">Test by live snapshots</a></li>
+<li><a href="#test-by-generated-snapshots">Test by generated snapshots</a></li>
+<li><a href="#test-by-step-by-step-snapshots">Test by step-by-step snapshots</a></li>
+</ul>
+<h2 id="test-by-live-snapshots">Test by live snapshots</h2>
+<p>The idea of test by live snapshots is:</p>
+<ul>
+<li>to generate the snapshot of a live execution of a ship (clicking on the submit button of a running application for example);</li>
+<li>to check by simulation that the snapshot is still valid as we modify our application.</li>
+</ul>
+<p>If we take the <a href="https://github.com/clarus/redux-ship/tree/master/examples/http-request" target="_blank"><code>http-request</code></a> example and click on the button to get the color of the eye of R2-D2:</p>
+<p><img src="https://raw.githubusercontent.com/clarus/redux-ship/master/docs/tutorial/http-request.png" alt="Screenshot" width="150px"></p>
+<p>we obtain the following snapshot in the console logs (using <a href="https://github.com/clarus/redux-ship-logger" target="_blank">redux-ship-logger</a>):</p>
+<pre><code class="lang-js">{<span class="hljs-string">&quot;action&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Eye&quot;</span>,<span class="hljs-string">&quot;action&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Load&quot;</span>}},<span class="hljs-string">&quot;snapshot&quot;</span>:[{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Commit&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Eye&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;LoadStart&quot;</span>}}},{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Effect&quot;</span>,<span class="hljs-string">&quot;effect&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;HttpRequest&quot;</span>,<span class="hljs-string">&quot;url&quot;</span>:<span class="hljs-string">&quot;http://swapi.co/api/people/3/&quot;</span>},<span class="hljs-string">&quot;result&quot;</span>:<span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;http://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;http://swapi.co/api/films/5/\&quot;,\&quot;http://swapi.co/api/films/4/\&quot;,\&quot;http://swapi.co/api/films/6/\&quot;,\&quot;http://swapi.co/api/films/3/\&quot;,\&quot;http://swapi.co/api/films/2/\&quot;,\&quot;http://swapi.co/api/films/1/\&quot;,\&quot;http://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;http://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;http://swapi.co/api/people/3/\&quot;}&quot;</span>},{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Commit&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Eye&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;LoadSuccess&quot;</span>,<span class="hljs-string">&quot;color&quot;</span>:<span class="hljs-string">&quot;red&quot;</span>}}}]}
+</code></pre>
+<p>This describes what happened in response to the <code>{&quot;type&quot;:&quot;Eye&quot;,&quot;action&quot;:{&quot;type&quot;:&quot;Load&quot;}}</code> action. To test it with Jest, we create a file <a href="https://github.com/clarus/redux-ship/blob/master/examples/http-request/src/__tests__/controller.js" target="_blank"><code>src/__tests__/controller.js</code></a> containing:</p>
+<pre><code class="lang-js"><span class="hljs-comment">// @flow</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">&apos;babel-polyfill&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Controller <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;../controller&apos;</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Ship <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-ship&apos;</span>;
+
+<span class="hljs-keyword">const</span> liveSnapshot = {<span class="hljs-string">&quot;action&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Eye&quot;</span>,<span class="hljs-string">&quot;action&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Load&quot;</span>}},<span class="hljs-string">&quot;snapshot&quot;</span>:[{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Commit&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Eye&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;LoadStart&quot;</span>}}},{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Effect&quot;</span>,<span class="hljs-string">&quot;effect&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;HttpRequest&quot;</span>,<span class="hljs-string">&quot;url&quot;</span>:<span class="hljs-string">&quot;http://swapi.co/api/people/3/&quot;</span>},<span class="hljs-string">&quot;result&quot;</span>:<span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;http://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;http://swapi.co/api/films/5/\&quot;,\&quot;http://swapi.co/api/films/4/\&quot;,\&quot;http://swapi.co/api/films/6/\&quot;,\&quot;http://swapi.co/api/films/3/\&quot;,\&quot;http://swapi.co/api/films/2/\&quot;,\&quot;http://swapi.co/api/films/1/\&quot;,\&quot;http://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;http://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;http://swapi.co/api/people/3/\&quot;}&quot;</span>},{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Commit&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;Eye&quot;</span>,<span class="hljs-string">&quot;commit&quot;</span>:{<span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;LoadSuccess&quot;</span>,<span class="hljs-string">&quot;color&quot;</span>:<span class="hljs-string">&quot;red&quot;</span>}}}]};
+
+test(<span class="hljs-string">&apos;controller with live snapshot&apos;</span>, () =&gt; {
+  <span class="hljs-keyword">const</span> {action, snapshot} = liveSnapshot;
+  expect(Ship.simulate(Controller.control(action), snapshot)).toEqual(snapshot);
+});
+</code></pre>
+<p>We use the primitive <code>Ship.simulate</code> to replay our controller and check that it replays as described by the snapshot. Notice that <code>Ship.simulate</code> is a pure function, that is to say the effects are not actually run but simulated. If later on we introduce an error in our code like:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Load&apos;</span>: {
+  <span class="hljs-keyword">yield</span>* Ship.commit({type: <span class="hljs-string">&apos;LoadStart&apos;</span>});
+  <span class="hljs-keyword">const</span> r2d2 = <span class="hljs-keyword">yield</span>* Effect.httpRequest(<span class="hljs-string">&apos;http://swapi.co/api/people/3/&apos;</span>);
+  <span class="hljs-comment">// `skin_color` instead of `eye_color`</span>
+  <span class="hljs-keyword">const</span> eyeColor = <span class="hljs-built_in">JSON</span>.parse(r2d2).skin_color;
+  <span class="hljs-keyword">yield</span>* Ship.commit({type: <span class="hljs-string">&apos;LoadSuccess&apos;</span>, color: eyeColor});
+  <span class="hljs-keyword">return</span>;
+}
+</code></pre>
+<p>we would get the following test error:</p>
+<pre><code class="lang-js">Expected value to equal:
+      [{<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadStart&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>}, {<span class="hljs-string">&quot;effect&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>, <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://swapi.co/api/people/3/&quot;</span>}, <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;http://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;http://swapi.co/api/films/5/\&quot;,\&quot;http://swapi.co/api/films/4/\&quot;,\&quot;http://swapi.co/api/films/6/\&quot;,\&quot;http://swapi.co/api/films/3/\&quot;,\&quot;http://swapi.co/api/films/2/\&quot;,\&quot;http://swapi.co/api/films/1/\&quot;,\&quot;http://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;http://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;http://swapi.co/api/people/3/\&quot;}&quot;</span>, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>}, {<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;color&quot;</span>: <span class="hljs-string">&quot;red&quot;</span>, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadSuccess&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>}]
+    Received:
+      [{<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadStart&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>}, {<span class="hljs-string">&quot;effect&quot;</span>: {<span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>, <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://swapi.co/api/people/3/&quot;</span>}, <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;http://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;http://swapi.co/api/films/5/\&quot;,\&quot;http://swapi.co/api/films/4/\&quot;,\&quot;http://swapi.co/api/films/6/\&quot;,\&quot;http://swapi.co/api/films/3/\&quot;,\&quot;http://swapi.co/api/films/2/\&quot;,\&quot;http://swapi.co/api/films/1/\&quot;,\&quot;http://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;http://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;http://swapi.co/api/people/3/\&quot;}&quot;</span>, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>}, {<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;commit&quot;</span>: {<span class="hljs-string">&quot;color&quot;</span>: <span class="hljs-string">&quot;white, blue&quot;</span>, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadSuccess&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>}, <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>}]
+
+    Difference:
+
+    - Expected
+    + Received
+
+      <span class="hljs-built_in">Array</span> [
+        <span class="hljs-built_in">Object</span> {
+          <span class="hljs-string">&quot;commit&quot;</span>: <span class="hljs-built_in">Object</span> {
+            <span class="hljs-string">&quot;commit&quot;</span>: <span class="hljs-built_in">Object</span> {
+              <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadStart&quot;</span>,
+            },
+            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>,
+          },
+          <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+        },
+        <span class="hljs-built_in">Object</span> {
+          <span class="hljs-string">&quot;effect&quot;</span>: <span class="hljs-built_in">Object</span> {
+            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;HttpRequest&quot;</span>,
+            <span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;http://swapi.co/api/people/3/&quot;</span>,
+          },
+          <span class="hljs-string">&quot;result&quot;</span>: <span class="hljs-string">&quot;{\&quot;name\&quot;:\&quot;R2-D2\&quot;,\&quot;height\&quot;:\&quot;96\&quot;,\&quot;mass\&quot;:\&quot;32\&quot;,\&quot;hair_color\&quot;:\&quot;n/a\&quot;,\&quot;skin_color\&quot;:\&quot;white, blue\&quot;,\&quot;eye_color\&quot;:\&quot;red\&quot;,\&quot;birth_year\&quot;:\&quot;33BBY\&quot;,\&quot;gender\&quot;:\&quot;n/a\&quot;,\&quot;homeworld\&quot;:\&quot;http://swapi.co/api/planets/8/\&quot;,\&quot;films\&quot;:[\&quot;http://swapi.co/api/films/5/\&quot;,\&quot;http://swapi.co/api/films/4/\&quot;,\&quot;http://swapi.co/api/films/6/\&quot;,\&quot;http://swapi.co/api/films/3/\&quot;,\&quot;http://swapi.co/api/films/2/\&quot;,\&quot;http://swapi.co/api/films/1/\&quot;,\&quot;http://swapi.co/api/films/7/\&quot;],\&quot;species\&quot;:[\&quot;http://swapi.co/api/species/2/\&quot;],\&quot;vehicles\&quot;:[],\&quot;starships\&quot;:[],\&quot;created\&quot;:\&quot;2014-12-10T15:11:50.376000Z\&quot;,\&quot;edited\&quot;:\&quot;2014-12-20T21:17:50.311000Z\&quot;,\&quot;url\&quot;:\&quot;http://swapi.co/api/people/3/\&quot;}&quot;</span>,
+          <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Effect&quot;</span>,
+        },
+        <span class="hljs-built_in">Object</span> {
+          <span class="hljs-string">&quot;commit&quot;</span>: <span class="hljs-built_in">Object</span> {
+            <span class="hljs-string">&quot;commit&quot;</span>: <span class="hljs-built_in">Object</span> {
+    -         <span class="hljs-string">&quot;color&quot;</span>: <span class="hljs-string">&quot;red&quot;</span>,
+    +         <span class="hljs-string">&quot;color&quot;</span>: <span class="hljs-string">&quot;white, blue&quot;</span>,
+              <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;LoadSuccess&quot;</span>,
+            },
+            <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Eye&quot;</span>,
+          },
+          <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;Commit&quot;</span>,
+        },
+      ]
+</code></pre>
+<p>The snapshots also contain information about the concurrency of the effects. For example, if we concurrently run several ships with <code>Ship.all</code> we get a node:</p>
+<pre><code class="lang-js">{
+  <span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;All&quot;</span>,
+  <span class="hljs-string">&quot;snapshots&quot;</span>: [...]
+}
+</code></pre>
+<p>in the logs. Being explicit about the concurrency ensures deterministic tests.</p>
+<p>We have taken the snapshot from the point of view of the whole application. Thus this snapshot tests the application controller. It can also be interesting to only test the controller of the eye component. In order to do so, we need to log the snapshots from the point of view of the eye controller by doing this modification:</p>
+<pre><code class="lang-js"><span class="hljs-comment">// export function* control(action: Action): Ship.Ship&lt;*, EyeModel.Commit, EyeModel.State, void&gt; {</span>
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">control2</span>(<span class="hljs-params">action: Action</span>): <span class="hljs-title">Ship</span>.<span class="hljs-title">Ship</span>&lt;*, <span class="hljs-title">EyeModel</span>.<span class="hljs-title">Commit</span>, <span class="hljs-title">EyeModel</span>.<span class="hljs-title">State</span>, <span class="hljs-title">void</span>&gt; </span>{
+  <span class="hljs-keyword">switch</span> (action.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;Load&apos;</span>: {
+    [...]
+  }
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span>;
+  }
+}
+
+<span class="hljs-keyword">import</span> {logControl} <span class="hljs-keyword">from</span> <span class="hljs-string">&apos;redux-ship-logger&apos;</span>;
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> control = logControl(control2);
+</code></pre>
+<p>Then we can add a test by generated snapshot for the eye controller, as illustrated in <a href="https://github.com/clarus/redux-ship/blob/master/examples/http-request/src/eye/__tests__/controller.js" target="_blank"><code>src/eye/__tests__/controller.js</code></a>.</p>
+<h2 id="test-by-generated-snapshots">Test by generated snapshots</h2>
+<p>The idea of test by generated snapshots is:</p>
+<ul>
+<li>to write a mock of the side-effects;</li>
+<li>to run the ships with the mock and take a snapshot of the execution.</li>
+</ul>
+<p>We have at least two options to mock the effects:</p>
+<ul>
+<li>to use standard tools like <a href="https://github.com/node-nock/nock" target="_blank">nock</a>;</li>
+<li>to write our own <code>runEffect</code> function.</li>
+</ul>
+<p>In this example we decide to write our own <code>runEffect</code> function to test the controller of the eye component (see <a href="https://github.com/clarus/redux-ship/blob/master/examples/http-request/src/eye/__tests__/controller.js" target="_blank"><code>src/eye/__tests__/controller.js</code></a>):</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">runEffect</span>(<span class="hljs-params">effect: Effect.Effect</span>): <span class="hljs-title">any</span> </span>{
+  <span class="hljs-keyword">switch</span> (effect.type) {
+  <span class="hljs-keyword">case</span> <span class="hljs-string">&apos;HttpRequest&apos;</span>:
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.stringify({eye_color: <span class="hljs-string">&apos;red&apos;</span>});
+  <span class="hljs-keyword">default</span>:
+    <span class="hljs-keyword">return</span>;
+  }
+}
+
+test(<span class="hljs-string">&apos;controller with generated snapshot&apos;</span>, <span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">const</span> action = {type: <span class="hljs-string">&apos;Load&apos;</span>};
+  <span class="hljs-keyword">const</span> store = Redux.createStore(EyeModel.reduce, EyeModel.initialState);
+  <span class="hljs-keyword">const</span> ship = Ship.snap(EyeController.control(action));
+  <span class="hljs-keyword">const</span> snapshot = <span class="hljs-keyword">await</span> Ship.run(runEffect, store, ship);
+  expect(snapshot).toMatchSnapshot();
+});
+</code></pre>
+<p>We define the <code>runEffect</code> function such that the HTTP requests always answer <code>{eye_color: &apos;red&apos;}</code>. Since all our side-effects should be serialized and of type <code>Effect.Effect</code>, we are sure to handle all the effects with the <code>runEffect</code> function. We use a real Redux store to handle the state in the test. Then we use and <code>Ship.run</code> and <code>Ship.snap</code> to run our controller and take its snapshot. Notice that we have to do an <code>await</code> as <code>Ship.run</code> always returns a promise, even if in this case the promise resolves immediately. Finally, we save and compare the snapshot using the snapshot testing mechanism of Jest.</p>
+<p>For information, the generated snapshot of the eye controller is the following:</p>
+<pre><code class="lang-js">exports[<span class="hljs-string">`test controller with generated snapshot 1`</span>] = <span class="hljs-string">`
+Object {
+  &quot;result&quot;: undefined,
+  &quot;snapshot&quot;: Array [
+    Object {
+      &quot;commit&quot;: Object {
+        &quot;type&quot;: &quot;LoadStart&quot;,
+      },
+      &quot;type&quot;: &quot;Commit&quot;,
+    },
+    Object {
+      &quot;effect&quot;: Object {
+        &quot;type&quot;: &quot;HttpRequest&quot;,
+        &quot;url&quot;: &quot;http://swapi.co/api/people/3/&quot;,
+      },
+      &quot;result&quot;: &quot;{\&quot;eye_color\&quot;:\&quot;red\&quot;}&quot;,
+      &quot;type&quot;: &quot;Effect&quot;,
+    },
+    Object {
+      &quot;commit&quot;: Object {
+        &quot;color&quot;: &quot;red&quot;,
+        &quot;type&quot;: &quot;LoadSuccess&quot;,
+      },
+      &quot;type&quot;: &quot;Commit&quot;,
+    },
+  ],
+}
+`</span>;
+</code></pre>
+<h2 id="test-by-step-by-step-snapshots">Test by step-by-step snapshots</h2>
+<p>The idea of test step-by-step snapshots is to take a snapshot at each step of a ship. This technique was suggested by <a href="https://github.com/gaelduplessix" target="_blank">Gael du Plessix</a> in this <a href="https://gist.github.com/gaelduplessix/46ffe7d9b90d8b527db2a631c4ae7393" target="_blank">Gist</a>. It also works with Redux Saga. This approach is more manual than taking the complete snapshot of a ship at once, but can provide more control. Here is an example to test the controller of the eye component:</p>
+<pre><code class="lang-js">test(<span class="hljs-string">&apos;controller step by step&apos;</span>, () =&gt; {
+  <span class="hljs-keyword">const</span> action = {type: <span class="hljs-string">&apos;Load&apos;</span>};
+  <span class="hljs-keyword">const</span> gen = EyeController.control(action);
+  expect(gen.next()).toMatchSnapshot(); <span class="hljs-comment">// -&gt; Commit</span>
+  expect(gen.next()).toMatchSnapshot(); <span class="hljs-comment">// -&gt; HTTP request</span>
+  expect(gen.next(<span class="hljs-built_in">JSON</span>.stringify({eye_color: <span class="hljs-string">&apos;red&apos;</span>}))).toMatchSnapshot(); <span class="hljs-comment">// -&gt; Commit</span>
+  expect(gen.next()).toMatchSnapshot(); <span class="hljs-comment">// -&gt; Done</span>
+});
+</code></pre>
+<p>The snapshot file is the following:</p>
+<pre><code class="lang-js">exports[<span class="hljs-string">`test controller step by step 1`</span>] = <span class="hljs-string">`
+Object {
+  &quot;done&quot;: false,
+  &quot;value&quot;: Object {
+    &quot;command&quot;: Object {
+      &quot;commit&quot;: Object {
+        &quot;type&quot;: &quot;LoadStart&quot;,
+      },
+      &quot;type&quot;: &quot;Commit&quot;,
+    },
+    &quot;type&quot;: &quot;Command&quot;,
+  },
+}
+`</span>;
+
+exports[<span class="hljs-string">`test controller step by step 2`</span>] = <span class="hljs-string">`
+Object {
+  &quot;done&quot;: false,
+  &quot;value&quot;: Object {
+    &quot;command&quot;: Object {
+      &quot;effect&quot;: Object {
+        &quot;type&quot;: &quot;HttpRequest&quot;,
+        &quot;url&quot;: &quot;http://swapi.co/api/people/3/&quot;,
+      },
+      &quot;type&quot;: &quot;Effect&quot;,
+    },
+    &quot;type&quot;: &quot;Command&quot;,
+  },
+}
+`</span>;
+
+exports[<span class="hljs-string">`test controller step by step 3`</span>] = <span class="hljs-string">`
+Object {
+  &quot;done&quot;: false,
+  &quot;value&quot;: Object {
+    &quot;command&quot;: Object {
+      &quot;commit&quot;: Object {
+        &quot;color&quot;: &quot;red&quot;,
+        &quot;type&quot;: &quot;LoadSuccess&quot;,
+      },
+      &quot;type&quot;: &quot;Commit&quot;,
+    },
+    &quot;type&quot;: &quot;Command&quot;,
+  },
+}
+`</span>;
+
+exports[<span class="hljs-string">`test controller step by step 4`</span>] = <span class="hljs-string">`
+Object {
+  &quot;done&quot;: true,
+  &quot;value&quot;: undefined,
+}
+`</span>;
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="composition.html" class="navigation navigation-prev " aria-label="Previous page: Composition">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../api.html" class="navigation navigation-next " aria-label="Next page: API Reference">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Testing","level":"1.2.4","depth":2,"next":{"title":"API Reference","level":"1.3","depth":1,"path":"docs/api.md","ref":"docs/api.md","articles":[]},"previous":{"title":"Composition","level":"1.2.3","depth":2,"path":"docs/tutorial/composition.md","ref":"docs/tutorial/composition.md","articles":[]},"dir":"ltr"},"config":{"plugins":["github"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/clarus/redux-ship"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux Ship","gitbook":"*"},"file":{"path":"docs/tutorial/testing.md","mtime":"2017-10-29T15:01:15.589Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-10-29T17:13:42.435Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

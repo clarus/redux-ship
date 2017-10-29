@@ -1,0 +1,14 @@
+[ignore]
+<PROJECT_ROOT>/_book/.*
+<PROJECT_ROOT>/examples/.*
+<PROJECT_ROOT>/node_modules/.*
+
+[include]
+flow-typed
+
+[libs]
+
+[options]
+
+[version]
+0.57.3

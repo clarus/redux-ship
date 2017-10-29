@@ -1,0 +1,14 @@
+branches:
+  only:
+    - master
+language: node_js
+node_js:
+  - "4"
+  - "5"
+  - "6"
+  - "7"
+  - "node"
+script:
+  - npm run eslint
+  - npm run flow
+  - npm run prepublish

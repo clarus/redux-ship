@@ -1,0 +1,45 @@
+exports[`test view 1`] = `
+<div>
+  <button
+    disabled={false}
+    onClick={[Function]}>
+    Get color
+  </button>
+</div>
+`;
+
+exports[`test view 2`] = `
+<div>
+  <button
+    disabled={true}
+    onClick={[Function]}>
+    Loading...
+  </button>
+</div>
+`;
+
+exports[`test view 3`] = `
+<div>
+  <p>
+    red
+  </p>
+  <button
+    disabled={false}
+    onClick={[Function]}>
+    Get color
+  </button>
+</div>
+`;
+
+exports[`test view 4`] = `
+<div>
+  <p>
+    red
+  </p>
+  <button
+    disabled={true}
+    onClick={[Function]}>
+    Loading...
+  </button>
+</div>
+`;

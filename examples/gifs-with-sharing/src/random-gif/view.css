@@ -1,0 +1,19 @@
+.RandomGif {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+}
+
+.RandomGif-picture {
+  height: 300px;
+  width: 300px;
+}
+
+.RandomGif-picture-loading {
+  animation: RandomGif-picture-loading-spin infinite 2s linear;
+}
+
+@keyframes RandomGif-picture-loading-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
