@@ -15,6 +15,7 @@ export function* control(action: Action): Control<void> {
     const currentMovies = yield* Ship.getState(state => state.movies);
     if (!currentMovies) {
       yield* Ship.commit({type: 'LoadStart'});
+      yield* Effect.delay(500); // just to show we can :)
       const r2d2 = yield* Effect.httpRequest('https://swapi.co/api/people/3/');
       const movies = yield* Ship.all(JSON.parse(r2d2).films.map(function* (movieUrl) {
         const movie = yield* Effect.httpRequest(movieUrl);

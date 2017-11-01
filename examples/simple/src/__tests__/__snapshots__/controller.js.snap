@@ -16,6 +16,13 @@ Object {
     },
     Object {
       "effect": Object {
+        "ms": 500,
+        "type": "Delay",
+      },
+      "type": "Effect",
+    },
+    Object {
+      "effect": Object {
         "type": "HttpRequest",
         "url": "https://swapi.co/api/people/3/",
       },
