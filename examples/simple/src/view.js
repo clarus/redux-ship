@@ -11,6 +11,7 @@ type Props = {
   state: Model.State
 };
 
+// A standard React component connected to Redux.
 class Index extends PureComponent<Props> {
   handleClickLoad = (): void => {
     this.props.dispatch({type: 'Load'});

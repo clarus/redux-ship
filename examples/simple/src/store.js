@@ -7,6 +7,7 @@ import * as Controller from './controller';
 import * as Effect from './effect';
 import * as Model from './model';
 
+// Create a Redux store with the Ship middleware, the Ship dev-tools and the Redux logger.
 export default createStore(
   Model.reduce,
   Model.initialState,
