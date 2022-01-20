@@ -19,6 +19,7 @@ npm install --save redux-ship
 ```
 
 ## Documentation
+* [Demo](https://clarus.github.io/redux-ship-devtools/)
 * [Tutorial](https://clarus.github.io/redux-ship/docs/tutorial/)
 * [API Reference](https://clarus.github.io/redux-ship/docs/api.html)
 
